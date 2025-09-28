@@ -11,23 +11,31 @@ var _items: Array = []
 var _actor_name: String = ""
 
 # Chevron cursor next to focused command
-var _cursor: Control
+var _cursor: Node2D
 var _cursor_tween: Tween
+var _cursor_outer: Polygon2D
+var _cursor_inner: Polygon2D
 
-@onready var _panel      : PanelContainer
-@onready var _header     : HBoxContainer
-@onready var _header_title: Label
-@onready var _header_name : Label
-@onready var _grid       : VBoxContainer
-@onready var _btn_attack : Button
-@onready var _btn_spells : Button
-@onready var _btn_items  : Button
-@onready var _btn_defend : Button
+# Submenu chevron + selection state
+var _sub_cursor: Node2D
+var _sub_cursor_tween: Tween
+var _sub_index: int = 0
+var _current_submenu: String = ""
 
-@onready var _bracket    : Control
-@onready var _sub_panel  : PanelContainer
-@onready var _sub_vbox   : VBoxContainer
-@onready var _sub_title  : Label
+var _panel      : PanelContainer
+var _header     : HBoxContainer
+var _header_title: Label
+var _header_name : Label
+var _grid       : VBoxContainer
+var _btn_attack : Button
+var _btn_spells : Button
+var _btn_items  : Button
+var _btn_defend : Button
+
+var _bracket    : Control
+var _sub_panel  : PanelContainer
+var _sub_vbox   : VBoxContainer
+var _sub_title  : Label
 
 var _focused_idx: int = 0
 
@@ -97,6 +105,7 @@ func _build_if_needed() -> void:
 	# Grid (vertical list of 4)
 	_grid = VBoxContainer.new()
 	_grid.add_theme_constant_override("separation", 8)
+	_grid.add_theme_constant_override("margin_left", 14)
 	outer.add_child(_grid)
 
 	_btn_attack = _make_cmd_button("Attack")
@@ -116,11 +125,12 @@ func _build_if_needed() -> void:
 	_grid.add_child(_btn_defend)
 
 	# --- Cursor chevron next to focused command ---
-	_cursor = Control.new()
+	_cursor = Node2D.new()
 	_cursor.name = "Cursor"
-	_cursor.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_cursor.custom_minimum_size = Vector2(16, 24)
-	_cursor.draw.connect(_draw_cursor)
+	_cursor_outer = Polygon2D.new(); _cursor_outer.color = Color(1,1,1)
+	_cursor_inner = Polygon2D.new(); _cursor_inner.color = Color(0.12, 0.14, 0.18, 1.0)
+	_cursor.add_child(_cursor_outer)
+	_cursor.add_child(_cursor_inner)
 	_panel.add_child(_cursor)
 
 	# place it initially by Attack (after layout)
@@ -173,6 +183,12 @@ func _build_if_needed() -> void:
 	_sub_vbox.add_theme_constant_override("separation", 6)
 	sub_outer.add_child(_sub_vbox)
 
+	# Submenu cursor (hidden until submenu opens)
+	_sub_cursor = Node2D.new()
+	_sub_cursor.name = "SubCursor"
+	_sub_cursor.visible = false
+	_sub_panel.add_child(_sub_cursor)
+
 	# Layout positions
 	_panel.position = Vector2(0, 0)
 	_bracket.position = _panel.position + Vector2(_panel.custom_minimum_size.x + 8, 26)
@@ -201,36 +217,39 @@ func _emit_main(kind: String) -> void:
 	_show_submenu("")
 	menu_action.emit(kind, {"actor": _actor_name})
 
-func _draw_cursor() -> void:
-	# Simple filled chevron ">" using two polygons
+func _set_cursor_shape(h: float, main: bool) -> void:
 	var w := 16.0
-	var h := 20.0
-	if size.y > 0.0:
-		h = size.y
 	var mid := h * 0.5
-	var c := Color(1, 1, 1, 1)
-	# outer triangle
-	var tri := PackedVector2Array([
+	var outer := PackedVector2Array([
 		Vector2(0, 0),
 		Vector2(w, mid),
 		Vector2(0, h)
 	])
-	draw_polygon(tri, PackedColorArray([c]))
-	# inner notch (carved using panel bg color)
-	var c2 := Color(0.12, 0.14, 0.18, 1.0)
 	var notch := PackedVector2Array([
 		Vector2(5, 3),
 		Vector2(w - 3, mid),
 		Vector2(5, h - 3)
 	])
-	draw_polygon(notch, PackedColorArray([c2]))
+	if main:
+		_cursor_outer.polygon = outer
+		_cursor_inner.polygon = notch
+	else:
+		# For submenu, reuse _cursor nodes on _sub_cursor by creating children on demand
+		if _sub_cursor.get_child_count() == 0:
+			var sc_outer := Polygon2D.new(); sc_outer.color = Color(1,1,1)
+			var sc_inner := Polygon2D.new(); sc_inner.color = Color(0.12,0.14,0.18,1.0)
+			_sub_cursor.add_child(sc_outer)
+			_sub_cursor.add_child(sc_inner)
+		(_sub_cursor.get_child(0) as Polygon2D).polygon = outer
+		(_sub_cursor.get_child(1) as Polygon2D).polygon = notch
 
 func _move_cursor_to(btn: Control) -> void:
 	if _cursor == null or btn == null:
 		return
 	# Convert button top-left into panel space
 	var btn_top_left: Vector2 = _panel.to_local(btn.global_position)
-	var y := btn_top_left.y + (btn.size.y - _cursor.custom_minimum_size.y) * 0.5
+	var h := max(20.0, btn.size.y * 0.65)
+	var y := btn_top_left.y + (btn.size.y - h) * 0.5
 	var x := 6.0
 	# Animate
 	if is_instance_valid(_cursor_tween):
@@ -238,37 +257,81 @@ func _move_cursor_to(btn: Control) -> void:
 	_cursor_tween = create_tween()
 	_cursor_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	_cursor_tween.tween_property(_cursor, "position", Vector2(x, y), 0.08)
-	# Keep height proportional to button
-	_cursor.custom_minimum_size = Vector2(16, max(20.0, btn.size.y * 0.65))
-	_cursor.queue_redraw()
+	# Adjust polygon size
+	_set_cursor_shape(h, true)
+
+func _move_sub_cursor_to(btn: Control) -> void:
+	if _sub_cursor == null or btn == null:
+		return
+	var btn_top_left: Vector2 = _sub_panel.to_local(btn.global_position)
+	var h := max(18.0, btn.size.y * 0.65)
+	var y := btn_top_left.y + (btn.size.y - h) * 0.5
+	var x := 10.0
+	if is_instance_valid(_sub_cursor_tween):
+		_sub_cursor_tween.kill()
+	_sub_cursor_tween = create_tween()
+	_sub_cursor_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_sub_cursor_tween.tween_property(_sub_cursor, "position", Vector2(x, y), 0.08)
+	_set_cursor_shape(h, false)
+	_sub_cursor.visible = true
 
 func _show_submenu(which: String) -> void:
 	_sub_panel.visible = (which != "")
 	_bracket.visible = _sub_panel.visible
 	if not _sub_panel.visible:
+		if _sub_cursor != null:
+			_sub_cursor.visible = false
 		return
+	_current_submenu = which
 	_sub_title.text = which.capitalize()
 	for c in _sub_vbox.get_children():
 		c.queue_free()
+
+	# Build entries with focus/hover + keyboard navigation
+	_sub_index = 0
+	var list_size := 0
 	if which == "spells":
-		for s in _spells:
-			var mp_cost := int(s.get("mp_cost", s.get("mp", 0)))
-			var line := _make_list_row(String(s.get("name", "Spell")), mp_cost > 0 ? "MP %d" % mp_cost : "")
-			line["btn"].pressed.connect(func(spell := s):
+		for i in _spells.size():
+			var s = _spells[i]
+			var mp_cost := int((s as Dictionary).get("mp_cost", (s as Dictionary).get("mp", 0)))
+			var line := _make_list_row(String((s as Dictionary).get("name", "Spell")), mp_cost > 0 ? "MP %d" % mp_cost : "")
+			var b: Button = line["btn"]
+			b.focus_mode = Control.FOCUS_ALL
+			var idx := i
+			b.gui_input.connect(_sub_nav_input)
+			b.focus_entered.connect(func(btn := b): _sub_index = idx; _move_sub_cursor_to(btn))
+			b.mouse_entered.connect(func(btn := b): btn.grab_focus())
+			b.pressed.connect(func(spell := s):
 				menu_action.emit("spell_pick", {"actor": _actor_name, "skill": spell})
 				_show_submenu("")
 			)
 			_sub_vbox.add_child(line["row"])
+			list_size += 1
 	elif which == "items":
-		for it in _items:
-			var qty := int(it.get("qty", 1))
+		for i in _items.size():
+			var it = _items[i]
+			var qty := int((it as Dictionary).get("qty", 1))
 			var right := qty > 1 ? "x%d" % qty : ""
-			var line2 := _make_list_row(String(it.get("name", "Item")), right)
-			line2["btn"].pressed.connect(func(item := it):
+			var line2 := _make_list_row(String((it as Dictionary).get("name", "Item")), right)
+			var b2: Button = line2["btn"]
+			b2.focus_mode = Control.FOCUS_ALL
+			var idx2 := i
+			b2.gui_input.connect(_sub_nav_input)
+			b2.focus_entered.connect(func(btn := b2): _sub_index = idx2; _move_sub_cursor_to(btn))
+			b2.mouse_entered.connect(func(btn := b2): btn.grab_focus())
+			b2.pressed.connect(func(item := it):
 				menu_action.emit("item_pick", {"actor": _actor_name, "item": item})
 				_show_submenu("")
 			)
 			_sub_vbox.add_child(line2["row"])
+			list_size += 1
+
+	await get_tree().process_frame
+	if list_size > 0:
+		_sub_index = clamp(_sub_index, 0, list_size - 1)
+		var btn0 := _get_sub_button_at(_sub_index)
+		if btn0 != null:
+			btn0.grab_focus()
 
 func _make_list_row(left: String, right: String) -> Dictionary:
 	var row := HBoxContainer.new()
@@ -345,4 +408,38 @@ func _grab_focus(idx: int) -> void:
 		3: _btn_defend.grab_focus()
 	# Slide cursor to focused button
 	_move_cursor_to([_btn_attack, _btn_spells, _btn_items, _btn_defend][_focused_idx])
+
+func _get_sub_button_at(idx: int) -> Button:
+	if idx < 0 or idx >= _sub_vbox.get_child_count():
+		return null
+	var row := _sub_vbox.get_child(idx)
+	for c in row.get_children():
+		if c is Button:
+			return c as Button
+	return null
+
+func _sub_nav_input(event: InputEvent) -> void:
+	if not _sub_panel.visible:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		var ek := event as InputEventKey
+		match ek.keycode:
+			KEY_UP, KEY_W:
+				_sub_index = max(0, _sub_index - 1)
+				var b := _get_sub_button_at(_sub_index)
+				if b != null: b.grab_focus()
+			KEY_DOWN, KEY_S:
+				_sub_index = min(_sub_vbox.get_child_count() - 1, _sub_index + 1)
+				var b2 := _get_sub_button_at(_sub_index)
+				if b2 != null: b2.grab_focus()
+			KEY_ESCAPE:
+				_show_submenu("")
+				if _current_submenu == "spells":
+					_btn_spells.grab_focus()
+				elif _current_submenu == "items":
+					_btn_items.grab_focus()
+			KEY_ENTER, KEY_KP_ENTER:
+				var b3 := _get_sub_button_at(_sub_index)
+				if b3 != null:
+					b3.emit_signal("pressed")
 
