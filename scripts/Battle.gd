@@ -68,6 +68,13 @@ const BAR_SIZE    := Vector2(110, 8)
 # --- Command Menu layout ---
 const MENU_POS := Vector2(780, 90)  # top-right position for 1152x648
 
+# --- Multi-target modes used by spells/items ---
+const TM_ENEMY_ALL := "enemy_all"
+const TM_ALLY_ALL  := "ally_all"
+const TM_ENEMY_ONE := "enemy_one"
+const TM_ALLY_ONE  := "ally_one"
+const TM_SELF      := "self"
+
 var cmd_root: Control = null
 var cmd_title: Label = null
 var cmd_char: Label = null
@@ -84,14 +91,15 @@ var current_actor_index: int = 0
 # --- Target Menu ---
 var target_root: Control = null
 var target_list: VBoxContainer = null
-var target_candidates: Array = []
+var target_candidates: Array[Dictionary] = []
 var pending_spell: Dictionary = {}
+var pending_item: Dictionary = {}
+var pending_mode: String = ""
 var pending_caster_index: int = 0
 
 # --- Items Menu ---
 var items_root: Control = null
 var items_list: VBoxContainer = null
-var pending_item: Dictionary = {}
 
 # Simple party inventory
 var inventory: Dictionary = {
@@ -179,6 +187,88 @@ func _prompt_next_actor() -> void:
 	var a: Dictionary = declare_allies[declare_index]
 	_show_command_menu(String(a["stats"]["name"]))
 	current_actor_index = party.find(a)
+
+func _infer_target_mode(kind: String, payload: Dictionary) -> String:
+    # If the payload (spell/item) declares an explicit target, honor it
+    if payload.has("target"):
+        var t := String(payload["target"])
+        if t == TM_ENEMY_ALL or t == TM_ALLY_ALL or t == TM_ENEMY_ONE or t == TM_ALLY_ONE or t == TM_SELF:
+            return t
+    # Fallbacks by type
+    if kind == "skill":
+        var stype := String(payload.get("type", "damage"))
+        return TM_ALLY_ONE if stype == "heal" else TM_ENEMY_ONE
+    if kind == "item":
+        var itype := String(payload.get("type", "heal"))
+        match itype:
+            "heal", "mp", "boost":
+                return TM_ALLY_ONE
+            "damage":
+                return TM_ENEMY_ONE
+            _:
+                return TM_ALLY_ONE
+    return TM_ENEMY_ONE
+
+func _expand_multi_targets(actions: Array[Dictionary]) -> Array[Dictionary]:
+    var out: Array[Dictionary] = []
+    for a: Dictionary in actions:
+        # If target already set explicitly, keep as-is
+        if a.has("target"):
+            out.append(a)
+            continue
+
+        var act: Dictionary = (a.get("action", {}) as Dictionary)
+        var kind: String = String(act.get("kind", "attack"))
+        var team: String = String(a.get("team", "party"))
+
+        # Only skills/items have multi-target; attack stays one
+        if kind == "skill":
+            var sp: Dictionary = (act.get("skill", {}) as Dictionary)
+            var mode := _infer_target_mode("skill", sp)
+            match mode:
+                TM_ENEMY_ALL:
+                    var enemies: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
+                    for t in enemies:
+                        var dup := a.duplicate(true)
+                        dup["target"] = t
+                        out.append(dup)
+                TM_ALLY_ALL:
+                    var allies: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
+                    for t in allies:
+                        var dup2 := a.duplicate(true)
+                        dup2["target"] = t
+                        out.append(dup2)
+                TM_SELF:
+                    var dup3 := a.duplicate(true)
+                    dup3["target"] = a["actor"]
+                    out.append(dup3)
+                _:
+                    out.append(a) # will set single target later
+        elif kind == "item":
+            var it: Dictionary = (act.get("item", {}) as Dictionary)
+            var mode2 := _infer_target_mode("item", it)
+            match mode2:
+                TM_ENEMY_ALL:
+                    var enemies2: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
+                    for t2 in enemies2:
+                        var idup := a.duplicate(true)
+                        idup["target"] = t2
+                        out.append(idup)
+                TM_ALLY_ALL:
+                    var allies2: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
+                    for t3 in allies2:
+                        var idup2 := a.duplicate(true)
+                        idup2["target"] = t3
+                        out.append(idup2)
+                TM_SELF:
+                    var idup3 := a.duplicate(true)
+                    idup3["target"] = a["actor"]
+                    out.append(idup3)
+                _:
+                    out.append(a)
+        else:
+            out.append(a)
+    return out
 
 func _build_command_menu() -> void:
 	# Root
@@ -454,14 +544,14 @@ func _input(event: InputEvent) -> void:
 			KEY_4, KEY_KP_4:
 				_on_menu_defend()
 
-func _alive(units:Array) -> Array:
-	return units.filter(func(u): return int(u["stats"]["hp"]) > 0)
+func _alive(units: Array[Dictionary]) -> Array[Dictionary]:
+    return units.filter(func(u: Dictionary): return int(u["stats"]["hp"]) > 0)
 
-func _is_team_dead(units:Array) -> bool:
-	return _alive(units).is_empty()
+func _is_team_dead(units: Array[Dictionary]) -> bool:
+    return _alive(units).is_empty()
 
-func _pick_random(arr:Array) -> Dictionary:
-	return arr[randi() % arr.size()]
+func _pick_random(arr: Array[Dictionary]) -> Dictionary:
+    return arr[randi() % arr.size()]
 
 func _find_cleric() -> Dictionary:
 	for u in party:
@@ -657,45 +747,48 @@ func _finish_battle(winner: String) -> void:
 		return
 
 func _commit_declare_phase() -> void:
-	# Allies done; add AI enemies
-	var foes := _alive(wave)
-	for e in foes:
-		planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
+    # Allies done; add AI enemies
+    var foes := _alive(wave)
+    for e in foes:
+        planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
 
-	# Initiative
-	for p in planned_actions:
-		var spd := int(p["actor"]["stats"].get("spd", 10))
-		p["init"] = spd + randi_range(0, int(spd * 0.25))
-	planned_actions.sort_custom(func(a,b): return a["init"] > b["init"])
+    # EXPAND multi-targets (skills/items) into per-target actions
+    var expanded: Array[Dictionary] = _expand_multi_targets(planned_actions)
 
-	# Fill any missing targets
-	for p in planned_actions:
-		if not p.has("target"):
-			if p["team"] == "party":
-				var tp := _alive(wave)
-				if tp.is_empty():
-					break
-				p["target"] = _pick_random(tp)
-			else:
-				var tp := _alive(party)
-				if tp.is_empty():
-					break
-				p["target"] = _pick_random(tp)
+    # Initiative
+    for p in expanded:
+        var spd := int(p["actor"]["stats"].get("spd", 10))
+        p["init"] = spd + randi_range(0, int(spd * 0.25))
+    expanded.sort_custom(func(a,b): return a["init"] > b["init"])
 
-	# --- Show queue ---
-	_show_queue(planned_actions)
+    # Fill any missing targets
+    for p in expanded:
+        if not p.has("target"):
+            if p["team"] == "party":
+                var tp := _alive(wave)
+                if tp.is_empty():
+                    break
+                p["target"] = _pick_random(tp)
+            else:
+                var tp := _alive(party)
+                if tp.is_empty():
+                    break
+                p["target"] = _pick_random(tp)
 
-	# Resolve with highlight
-	for i in range(planned_actions.size()):
-		var p = planned_actions[i]
-		if _is_team_dead(party) or _is_team_dead(wave):
-			break
-		_highlight_queue_index(i)
-		_resolve_action_team(p)
+    # --- Show queue ---
+    _show_queue(expanded)
 
-	# Done
-	_hide_queue()
-	_end_round()
+    # Resolve with highlight
+    for i in range(expanded.size()):
+        var p = expanded[i]
+        if _is_team_dead(party) or _is_team_dead(wave):
+            break
+        _highlight_queue_index(i)
+        _resolve_action_team(p)
+
+    # Done
+    _hide_queue()
+    _end_round()
 
 func _show_command_menu(for_name: String) -> void:
 	cmd_char.text = "  %s" % for_name
@@ -732,30 +825,37 @@ func _populate_spells_for(actor: Dictionary) -> void:
 		spells_list.add_child(btn)
 
 # --- Target helpers ---
-func _show_target_menu(caster_idx: int, candidates: Array) -> void:
-	pending_caster_index = caster_idx
-	target_candidates = candidates.duplicate()
-	for c in target_list.get_children():
-		c.queue_free()
+func _show_target_menu(caster_idx: int, candidates: Array[Dictionary]) -> void:
+    pending_caster_index = caster_idx
+    target_candidates = candidates.duplicate()
+    for c in target_list.get_children():
+        c.queue_free()
 
-	# Build a button per candidate
-	for i in target_candidates.size():
-		var u: Dictionary = target_candidates[i]
-		var name: String = String(u["stats"].get("name","?"))
-		var hp: int = int(u["stats"].get("hp",0))
-		var max_hp: int = int(u["stats"].get("max_hp",1))
-		var btn := Button.new()
-		btn.text = "%s   HP %d/%d" % [name, hp, max_hp]
-		btn.add_theme_font_size_override("font_size", 20)
-		var idx := i  # capture
-		btn.pressed.connect(func(): _on_target_chosen(idx))
-		target_list.add_child(btn)
+    # Guard: if no valid targets, bounce back to the main menu
+    if target_candidates.is_empty():
+        _log("No valid targets.")
+        _show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+        return
 
-	target_root.visible = true
+    # Build a button per candidate
+    for i in target_candidates.size():
+        var u: Dictionary = target_candidates[i]
+        var name: String = String(u["stats"].get("name","?"))
+        var hp: int = int(u["stats"].get("hp",0))
+        var max_hp: int = int(u["stats"].get("max_hp",1))
+        var btn := Button.new()
+        btn.text = "%s   HP %d/%d" % [name, hp, max_hp]
+        btn.add_theme_font_size_override("font_size", 20)
+        var idx := i  # capture
+        btn.pressed.connect(func(): _on_target_chosen(idx))
+        target_list.add_child(btn)
+
+    target_root.visible = true
 
 func _hide_target_menu() -> void:
     target_root.visible = false
     target_candidates.clear()
+    pending_mode = ""
     pending_spell.clear()
     pending_item.clear()
 
@@ -780,31 +880,50 @@ func _on_menu_items() -> void:
     items_root.visible = true
 
 func _on_spell_chosen(sp: Dictionary) -> void:
-    # Decide valid target team based on spell type, then prompt targets
-    _hide_command_menu(); spells_root.visible = false; _hide_items_menu()
-    var stype: String = String(sp.get("type","damage"))
-    if stype == "heal":
-        _show_target_menu(current_actor_index, _alive(party))
-    else:
-        _show_target_menu(current_actor_index, _alive(wave))
+    # Decide valid target mode, then either queue or prompt for targets
+    pending_mode = "spell"
     pending_spell = sp.duplicate()
+    _hide_command_menu(); spells_root.visible = false; _hide_items_menu()
+    var mode := _infer_target_mode("skill", pending_spell)
+    match mode:
+        TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
+            _queue_player_action({"kind":"skill", "skill": pending_spell})
+        TM_ALLY_ONE:
+            _show_target_menu(current_actor_index, _alive(party))
+        TM_ENEMY_ONE:
+            _show_target_menu(current_actor_index, _alive(wave))
 
 func _on_item_chosen(it: Dictionary) -> void:
     _hide_command_menu(); _hide_spells_menu()
-    # Items currently target allies (heal/MP)
+    pending_mode = "item"
     pending_item = it.duplicate()
     items_root.visible = false
-    _show_target_menu(current_actor_index, _alive(party))
+    var mode := _infer_target_mode("item", pending_item)
+    match mode:
+        TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
+            _queue_player_action({"kind":"item", "item": pending_item})
+        TM_ALLY_ONE:
+            _show_target_menu(current_actor_index, _alive(party))
+        TM_ENEMY_ONE:
+            _show_target_menu(current_actor_index, _alive(wave))
 
 func _on_target_chosen(idx: int) -> void:
-    _hide_target_menu()
+    # Guard: clicked after the list changed or empty
+    if idx < 0 or idx >= target_candidates.size():
+        _log("Target selection invalid.")
+        _hide_target_menu()
+        _show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+        return
+
     var tgt: Dictionary = target_candidates[idx]
-    if pending_spell.size() > 0:
-        _queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
-        pending_spell.clear()
-    elif pending_item.size() > 0:
-        _queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
-        pending_item.clear()
+    _hide_target_menu()
+    match pending_mode:
+        "spell":
+            _queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
+        "item":
+            _queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
+        _:
+            _queue_player_action({"kind":"attack"})
 
 func _queue_player_action(act: Dictionary) -> void:
 	var actor = declare_allies[declare_index]
