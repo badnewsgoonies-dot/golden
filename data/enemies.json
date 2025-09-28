@@ -1,0 +1,16 @@
+{
+  "goblin": {
+    "name": "Goblin",
+    "max_hp": 90,
+    "atk": 20,
+    "def": 6,
+    "spd": 10
+  },
+  "slime": {
+    "name": "Slime",
+    "max_hp": 70,
+    "atk": 14,
+    "def": 4,
+    "spd": 8
+  }
+}

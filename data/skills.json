@@ -1,0 +1,12 @@
+{
+  "attack": {
+    "name": "Attack",
+    "type": "physical",
+    "power": 1.0
+  },
+  "defend": {
+    "name": "Defend",
+    "type": "state",
+    "effect": "def_up"
+  }
+}

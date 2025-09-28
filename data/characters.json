@@ -1,0 +1,9 @@
+{
+  "adept": {
+    "name": "Adept",
+    "max_hp": 100,
+    "atk": 24,
+    "def": 8,
+    "spd": 12
+  }
+}

@@ -1,0 +1,24 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scenes/Fork.gd" id=1]
+
+[node name="Fork" type="Control"]
+script = ExtResource("1")
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+alignment = 1
+
+[node name="Lbl" type="Label" parent="VBox"]
+text = "Choose your path"
+
+[node name="BtnBattle" type="Button" parent="VBox"]
+text = "Battle"
+
+[node name="BtnShop" type="Button" parent="VBox"]
+text = "Shop"
+
+[node name="BtnEvent" type="Button" parent="VBox"]
+text = "Event"
