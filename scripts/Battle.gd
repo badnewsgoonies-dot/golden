@@ -61,7 +61,6 @@ const MAX_LOG := 8
 @onready var cmd_layer: CanvasLayer = CanvasLayer.new()
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
-const CommandMenu := preload("res://ui/CommandMenu.gd")
 
 @onready var cmd: CommandMenu = CommandMenu.new()
 
