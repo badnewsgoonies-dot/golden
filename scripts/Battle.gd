@@ -625,12 +625,12 @@ func _input(event: InputEvent) -> void:
 				_on_menu_defend()
 
 func _alive(units: Array[Dictionary]) -> Array[Dictionary]:
-    var out: Array[Dictionary] = []
-    for u in units:
-        var st: Dictionary = u.get("stats", {})
-        if int(st.get("hp", st.get("HP", 0))) > 0:
-            out.append(u)
-    return out
+	var out: Array[Dictionary] = []
+	for u in units:
+		var st: Dictionary = u.get("stats", {})
+		if int(st.get("hp", st.get("HP", 0))) > 0:
+			out.append(u)
+	return out
 
 func _is_team_dead(units: Array[Dictionary]) -> bool:
 	return _alive(units).is_empty()
