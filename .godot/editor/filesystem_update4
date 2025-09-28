@@ -1,1 +1,3 @@
 res://scripts/Battle.gd
+res://art/SpriteFactory.gd
+res://fx/SpriteAnimator.gd

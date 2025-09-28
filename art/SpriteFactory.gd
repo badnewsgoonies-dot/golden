@@ -6,6 +6,10 @@ static func make_humanoid(role: String, scale: int = 3) -> Texture2D:
     var pal: Dictionary = _role_palette(role)
     return _build_humanoid(pal, scale)
 
+static func make_humanoid_with_arm(role: String, scale: int = 3) -> Dictionary:
+    var pal: Dictionary = _role_palette(role)
+    return _build_humanoid_layers(pal, scale)
+
 static func make_monster(kind: String, scale: int = 3) -> Texture2D:
     match kind.to_lower():
         "goblin":
@@ -94,6 +98,55 @@ static func _build_humanoid(pal: Dictionary, scale: int) -> Texture2D:
     _outline(img, Color(0, 0, 0, 1))
 
     return _scaled_texture(img, scale)
+
+static func _build_humanoid_layers(pal: Dictionary, scale: int) -> Dictionary:
+    var w: int = 16
+    var h: int = 24
+    var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+    img.fill(Color(0, 0, 0, 0))
+
+    # Head / hair / eyes
+    _fill_rect(img, 5, 2, 6, 6, pal["skin"])
+    _fill_rect(img, 5, 1, 6, 2, pal["hair"])
+    _fill_rect(img, 4, 2, 2, 2, pal["hair"]) # bangs left
+    _fill_rect(img, 11, 2, 1, 2, pal["hair"]) # bangs right
+    _set_px(img, 7, 4, Color(0, 0, 0, 1))
+    _set_px(img, 9, 4, Color(0, 0, 0, 1))
+
+    # Torso / arms / hands / legs / boots
+    _fill_rect(img, 4, 8, 8, 7, pal["cloth1"])  # torso
+    _fill_rect(img, 4, 11, 8, 1, pal["cloth2"]) # belt
+    _fill_rect(img, 2, 8, 2, 5, pal["cloth1"])  # left arm
+    _fill_rect(img, 12, 8, 2, 5, pal["cloth1"]) # right arm
+    _fill_rect(img, 2, 13, 2, 2, pal["skin"])   # left hand
+    _fill_rect(img, 12, 13, 2, 2, pal["skin"])  # right hand
+    _fill_rect(img, 5, 15, 3, 6, pal["cloth2"]) # legs
+    _fill_rect(img, 8, 15, 3, 6, pal["cloth2"]) # legs
+    _fill_rect(img, 5, 20, 3, 2, pal["boots"])  # boots
+    _fill_rect(img, 8, 20, 3, 2, pal["boots"])  # boots
+    _outline(img, Color(0, 0, 0, 1))
+    var body_tex: Texture2D = _scaled_texture(img, scale)
+
+    # Arm overlay canvas (pivot at 0,0)
+    var aw: int = 12
+    var ah: int = 8
+    var arm_img: Image = Image.create(aw, ah, false, Image.FORMAT_RGBA8)
+    arm_img.fill(Color(0, 0, 0, 0))
+    _fill_rect(arm_img, 0, 3, 6, 2, pal["cloth1"]) # upper arm around pivot
+    _fill_rect(arm_img, 6, 2, 3, 4, pal["skin"])   # forearm/hand
+    _fill_rect(arm_img, 9, 3, 3, 2, Color(0.65, 0.62, 0.70, 1.0)) # weapon edge
+    _outline(arm_img, Color(0, 0, 0, 1))
+    var arm_tex: Texture2D = _scaled_texture(arm_img, scale)
+
+    # Shoulder pivot relative to body center (8,12) -> approx (11,10)
+    var px: float = (11.0 - 8.0) * float(scale)
+    var py: float = (10.0 - 12.0) * float(scale)
+
+    return {
+        "body": body_tex,
+        "arm": arm_tex,
+        "arm_pivot_local": Vector2(px, py),
+    }
 
 # Monsters
 static func _build_goblin(scale: int) -> Texture2D:
@@ -214,4 +267,3 @@ static func _scaled_texture(img: Image, scale: int) -> Texture2D:
                 for xx in range(sx, sx + s):
                     out.set_pixel(xx, yy, c)
     return ImageTexture.create_from_image(out)
-
