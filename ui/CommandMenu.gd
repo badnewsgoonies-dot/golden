@@ -236,7 +236,7 @@ func _apply_button_style(b: Button, small: bool) -> void:
     b.add_theme_stylebox_override("hover", hover)
     b.add_theme_stylebox_override("pressed", press)
     b.add_theme_color_override("font_color", Color(0.92, 0.94, 0.96))
-    b.add_theme_font_size_override("font_size", small ? 16 : 18)
+    b.add_theme_font_size_override("font_size", 16 if small else 18)
 
 func _draw_bracket() -> void:
     var w := size.x
