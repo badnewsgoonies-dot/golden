@@ -81,6 +81,18 @@ var spells_root: Control = null
 var spells_list: VBoxContainer = null
 var current_actor_index: int = 0
 
+# --- Target Menu ---
+var target_root: Control = null
+var target_list: VBoxContainer = null
+var target_candidates: Array = []
+var pending_spell: Dictionary = {}
+var pending_caster_index: int = 0
+
+# --- Declare phase state ---
+var declare_allies: Array = []          # living party members this round
+var planned_actions: Array = []         # [{team, actor, action, target?}, ...]
+var declare_index: int = 0              # which ally is being commanded (0..)
+
 func _ready() -> void:
 	randomize()
 
@@ -106,6 +118,7 @@ func _ready() -> void:
 	add_child(cmd_layer)
 	_build_command_menu()
 	_build_spells_menu()
+	_build_target_menu()
 
 	if "adept" in DataRegistry.characters:
 		party[0].stats = DataRegistry.characters["adept"]
@@ -131,7 +144,23 @@ func _ready() -> void:
 	ui.add_child(menu_label)
 
 	_log("Battle start! %s vs %s" % [party[0].stats.name, wave[0].stats.name])
-	_prompt_player()
+	_start_round_declare()
+
+func _start_round_declare() -> void:
+	planned_actions.clear()
+	declare_allies = _alive(party)
+	declare_index = 0
+	if declare_allies.is_empty():
+		return
+	_prompt_next_actor()
+
+func _prompt_next_actor() -> void:
+	if declare_index >= declare_allies.size():
+		_commit_declare_phase()
+		return
+	var a: Dictionary = declare_allies[declare_index]
+	_show_command_menu(String(a["stats"]["name"]))
+	current_actor_index = party.find(a)
 
 func _build_command_menu() -> void:
 	# Root
@@ -265,8 +294,54 @@ func _build_spells_menu() -> void:
 	spells_list.add_theme_constant_override("separation", 6)
 	vbox.add_child(spells_list)
 
+func _build_target_menu() -> void:
+	target_root = Control.new()
+	target_root.visible = false
+	target_root.position = MENU_POS + Vector2(-8, 230)  # stack below main menu
+	target_root.size = Vector2(360, 220)
+	cmd_layer.add_child(target_root)
+
+	var panel: ColorRect = ColorRect.new()
+	panel.color = Color(0.85, 0.85, 0.85, 0.95)
+	panel.size = target_root.size
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = panel.color
+	sb.corner_radius_top_left = 14
+	sb.corner_radius_top_right = 14
+	sb.corner_radius_bottom_left = 14
+	sb.corner_radius_bottom_right = 14
+	panel.add_theme_stylebox_override("panel", sb)
+	target_root.add_child(panel)
+
+	var inner := MarginContainer.new()
+	inner.add_theme_constant_override("margin_left", 14)
+	inner.add_theme_constant_override("margin_right", 14)
+	inner.add_theme_constant_override("margin_top", 10)
+	inner.add_theme_constant_override("margin_bottom", 10)
+	inner.size = target_root.size
+	target_root.add_child(inner)
+
+	var vbox := VBoxContainer.new()
+	inner.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Choose Target"
+	title.add_theme_font_size_override("font_size", 22)
+	vbox.add_child(title)
+
+	target_list = VBoxContainer.new()
+	target_list.add_theme_constant_override("separation", 6)
+	vbox.add_child(target_list)
+
 func _input(event: InputEvent) -> void:
-	if not menu_visible: return
+	# Allow canceling target menu with ESC even when main menu is hidden
+	if target_root != null and target_root.visible:
+		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+			_hide_target_menu()
+			_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+			return
+	if not menu_visible:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_1, KEY_KP_1:
@@ -382,7 +457,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 		var stype := String(sp.get("type","damage"))
 		if stype == "heal":
-			var t: Dictionary = p.has("target") ? p["target"] : actor
+			var t: Dictionary = p["target"] if p.has("target") else actor
 			var maxhp: int = int(t["stats"]["max_hp"])
 			var amount: int = int(ceil(maxhp * float(sp.get("ratio", 0.30))))
 			t["stats"]["hp"] = min(maxhp, int(t["stats"]["hp"]) + amount)
@@ -438,14 +513,14 @@ func _check_end() -> bool:
 	return false
 
 func _end_round() -> void:
-	for p in party:
-		p.defending = false
-	for e in wave:
-		e.defending = false
-	round += 1
-	_prompt_player()
+    for p in party:
+        p.defending = false
+    for e in wave:
+        e.defending = false
+    round += 1
+    _start_round_declare()
 
-	_update_all_overlays()
+    _update_all_overlays()
 
 func _finish_battle(winner: String) -> void:
 	if winner == "player":
@@ -454,6 +529,40 @@ func _finish_battle(winner: String) -> void:
 		party[0]["stats"]["hp"] = min(int(party[0]["stats"]["max_hp"]), int(party[0]["stats"]["hp"]) + int(party[0]["stats"]["max_hp"] * 0.15))
 		get_tree().change_scene_to_file("res://scenes/Fork.tscn")
 		return
+
+func _commit_declare_phase() -> void:
+    # Allies done; add AI enemies
+    var foes := _alive(wave)
+    for e in foes:
+        planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
+
+    # Initiative
+    for p in planned_actions:
+        var spd := int(p["actor"]["stats"].get("spd", 10))
+        p["init"] = spd + randi_range(0, int(spd * 0.25))
+    planned_actions.sort_custom(func(a,b): return a["init"] > b["init"])
+
+    # Fill any missing targets
+    for p in planned_actions:
+        if not p.has("target"):
+            if p["team"] == "party":
+                var tp := _alive(wave)
+                if tp.is_empty():
+                    break
+                p["target"] = _pick_random(tp)
+            else:
+                var tp := _alive(party)
+                if tp.is_empty():
+                    break
+                p["target"] = _pick_random(tp)
+
+    # Resolve
+    for p in planned_actions:
+        if _is_team_dead(party) or _is_team_dead(wave):
+            break
+        _resolve_action_team(p)
+
+    _end_round()
 
 func _show_command_menu(for_name: String) -> void:
 	cmd_char.text = "  %s" % for_name
@@ -469,28 +578,88 @@ func _hide_command_menu() -> void:
 func _hide_spells_menu() -> void:
 	spells_root.visible = false
 
+func _populate_spells_for(actor: Dictionary) -> void:
+	# Clear old buttons
+	for c in spells_list.get_children():
+		c.queue_free()
+
+	var spells: Array = actor.get("spells", [])
+	for i in spells.size():
+		var sp: Dictionary = spells[i]
+		var nm: String = String(sp.get("name", "Spell"))
+		var mp_cost: int = int(sp.get("mp", 0))
+		var btn := Button.new()
+		btn.text = "%s   MP %d" % [nm, mp_cost]
+		btn.add_theme_font_size_override("font_size", 20)
+		var s := sp  # capture
+		btn.pressed.connect(func(): _on_spell_chosen(s))
+		spells_list.add_child(btn)
+
+# --- Target helpers ---
+func _show_target_menu(caster_idx: int, candidates: Array) -> void:
+	pending_caster_index = caster_idx
+	target_candidates = candidates.duplicate()
+	for c in target_list.get_children():
+		c.queue_free()
+
+	# Build a button per candidate
+	for i in target_candidates.size():
+		var u: Dictionary = target_candidates[i]
+		var name: String = String(u["stats"].get("name","?"))
+		var hp: int = int(u["stats"].get("hp",0))
+		var max_hp: int = int(u["stats"].get("max_hp",1))
+		var btn := Button.new()
+		btn.text = "%s   HP %d/%d" % [name, hp, max_hp]
+		btn.add_theme_font_size_override("font_size", 20)
+		var idx := i  # capture
+		btn.pressed.connect(func(): _on_target_chosen(idx))
+		target_list.add_child(btn)
+
+	target_root.visible = true
+
+func _hide_target_menu() -> void:
+	target_root.visible = false
+	target_candidates.clear()
+	pending_spell.clear()
+
 # --- Menu callbacks ---
 func _on_menu_attack() -> void:
-	_hide_command_menu()
-	_hide_spells_menu()
-	_do_turn({"kind":"attack"})
+    _hide_command_menu(); _hide_spells_menu();
+    _queue_player_action({"kind":"attack"})
 
 func _on_menu_defend() -> void:
-	_hide_command_menu()
-	_hide_spells_menu()
-	_do_turn({"kind":"defend"})
+    _hide_command_menu(); _hide_spells_menu();
+    _queue_player_action({"kind":"defend"})
 
 func _on_menu_spells() -> void:
-	# Show spells for party[current_actor_index]
-	var i := clamp(current_actor_index, 0, party.size() - 1)
-	var actor: Dictionary = party[i]
-	_populate_spells_for(actor)
-	spells_root.visible = true
+    # Show spells for the current acting ally (set by _prompt_next_actor)
+    var actor: Dictionary = party[current_actor_index]
+    _populate_spells_for(actor)
+    spells_root.visible = true
 
 func _on_spell_chosen(sp: Dictionary) -> void:
-	_hide_command_menu()
-	_hide_spells_menu()
-	_do_turn({"kind":"skill", "skill": sp})
+    # Decide valid target team based on spell type, then prompt targets
+    _hide_command_menu(); spells_root.visible = false
+    var stype: String = String(sp.get("type","damage"))
+    if stype == "heal":
+        _show_target_menu(current_actor_index, _alive(party))
+    else:
+        _show_target_menu(current_actor_index, _alive(wave))
+    pending_spell = sp.duplicate()
+
+func _on_target_chosen(idx: int) -> void:
+    _hide_target_menu()
+    var tgt: Dictionary = target_candidates[idx]
+    _queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
+
+func _queue_player_action(act: Dictionary) -> void:
+    var actor = declare_allies[declare_index]
+    var entry := {"team":"party","actor":actor,"action":act}
+    if act.has("target"):
+        entry["target"] = act["target"]
+    planned_actions.append(entry)
+    declare_index += 1
+    _prompt_next_actor()
 
 func _on_menu_items() -> void:
 	# Placeholder for now; keep menu open
