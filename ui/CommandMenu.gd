@@ -1,3 +1,5 @@
+class_name CommandMenu
+
 # CommandMenu.gd
 
 # The content of this file has been updated to fix the add_spacer call.
