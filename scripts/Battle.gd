@@ -570,25 +570,24 @@ func _build_background(biome: String) -> void:
 	bg_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg_layer.add_child(bg_sky)
 
-	# Parallax clouds
-	var parallax: ParallaxBackground = ParallaxBackground.new()
-	parallax.scroll_base_offset = Vector2.ZERO
-	parallax.scroll_base_scale = Vector2.ONE
-	# Parallax limits expect Vector2i in this project (Godot 4 build)
-	var vp_size: Vector2 = get_viewport_rect().size
-	parallax.limit_begin = Vector2i.ZERO
-	parallax.limit_end = Vector2i(int(vp_size.x), int(vp_size.y))
-	bg_layer.add_child(parallax)
+    # Parallax clouds (no limits; use mirroring for seamless wrap)
+    var parallax: ParallaxBackground = ParallaxBackground.new()
+    parallax.scroll_base_offset = Vector2.ZERO
+    parallax.scroll_base_scale = Vector2.ONE
+    var vp_size: Vector2 = get_viewport_rect().size
+    bg_layer.add_child(parallax)
 
-	bg_clouds_far = ParallaxLayer.new()
-	bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
-	bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
-	parallax.add_child(bg_clouds_far)
+    bg_clouds_far = ParallaxLayer.new()
+    bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
+    bg_clouds_far.motion_mirroring = Vector2(vp_size.x, 0.0)
+    bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
+    parallax.add_child(bg_clouds_far)
 
-	bg_clouds_near = ParallaxLayer.new()
-	bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
-	bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
-	parallax.add_child(bg_clouds_near)
+    bg_clouds_near = ParallaxLayer.new()
+    bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
+    bg_clouds_near.motion_mirroring = Vector2(vp_size.x, 0.0)
+    bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
+    parallax.add_child(bg_clouds_near)
 
 	# Floor strip
 	bg_floor = ColorRect.new()
@@ -706,25 +705,25 @@ func _do_turn(player0_action: Dictionary) -> void:
 	_end_round()
 
 func _resolve_action_team(p:Dictionary) -> void:
-    var actor: Dictionary  = p["actor"]
-    var target: Dictionary = p["target"]
-    var act: Dictionary    = p["action"]
-    var kind: String = String(act.get("kind","attack"))
+	var actor: Dictionary  = p["actor"]
+	var target: Dictionary = p["target"]
+	var act: Dictionary    = p["action"]
+	var kind: String = String(act.get("kind","attack"))
 
-    # Pre-action anims
-    if kind == "skill":
-        await _anim_wait(actor, "cast")
-        var sp_pre: Dictionary = act.get("skill", {})
-        # Optional projectile for flavor
-        var elem_col: Color = _element_color(String(sp_pre.get("element", "neutral")))
-        await _cast_orb_from_to(actor, target, elem_col, int(actor.get("facing", 1)))
-    else:
-        var offensive := (kind == "attack")
-        if kind == "item":
-            var itk_pre: Dictionary = act.get("item", {})
-            offensive = String(itk_pre.get("type", "heal")) == "damage"
-        if offensive:
-            await _anim_wait(actor, "attack")
+	# Pre-action anims
+	if kind == "skill":
+		await _anim_wait(actor, "cast")
+		var sp_pre: Dictionary = act.get("skill", {})
+		# Optional projectile for flavor
+		var elem_col: Color = _element_color(String(sp_pre.get("element", "neutral")))
+		await _cast_orb_from_to(actor, target, elem_col, int(actor.get("facing", 1)))
+	else:
+		var offensive := (kind == "attack")
+		if kind == "item":
+			var itk_pre: Dictionary = act.get("item", {})
+			offensive = String(itk_pre.get("type", "heal")) == "damage"
+		if offensive:
+			await _anim_wait(actor, "attack")
 
 	if kind == "defend":
 		actor["defending"] = true
@@ -1301,8 +1300,8 @@ func _slash_effect(pos: Vector2, dir: float) -> void:
 	var t := create_tween()
 	t.tween_property(s, "modulate:a", 1.0, 0.06)
 	t.tween_property(s, "modulate:a", 0.0, 0.06)
-    await t.finished
-    s.queue_free()
+	await t.finished
+	s.queue_free()
 
 func _shake(duration: float, magnitude: float) -> void:
 	var t := create_tween()
@@ -1314,59 +1313,59 @@ func _shake(duration: float, magnitude: float) -> void:
 func _make_rect_tex(w: int, h: int, color: Color) -> Texture2D:
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	img.fill(color)
-    var tex := ImageTexture.create_from_image(img)
-    return tex
+	var tex := ImageTexture.create_from_image(img)
+	return tex
 
 func _make_spell_orb_texture(size_px: int, tint: Color) -> Texture2D:
-    var img: Image = Image.create(size_px, size_px, false, Image.FORMAT_RGBA8)
-    var c: Vector2i = Vector2i(size_px / 2, size_px / 2)
-    var r: float = float(size_px) * 0.5
-    for y in range(size_px):
-        for x in range(size_px):
-            var d: float = Vector2(float(x - c.x), float(y - c.y)).length() / r
-            var t: float = clamp(1.0 - d, 0.0, 1.0)
-            var a: float = pow(t, 1.9) * tint.a
-            img.set_pixel(x, y, Color(tint.r, tint.g, tint.b, a))
-    return ImageTexture.create_from_image(img)
+	var img: Image = Image.create(size_px, size_px, false, Image.FORMAT_RGBA8)
+	var c: Vector2i = Vector2i(size_px / 2, size_px / 2)
+	var r: float = float(size_px) * 0.5
+	for y in range(size_px):
+		for x in range(size_px):
+			var d: float = Vector2(float(x - c.x), float(y - c.y)).length() / r
+			var t: float = clamp(1.0 - d, 0.0, 1.0)
+			var a: float = pow(t, 1.9) * tint.a
+			img.set_pixel(x, y, Color(tint.r, tint.g, tint.b, a))
+	return ImageTexture.create_from_image(img)
 
 func _element_color(elem: String) -> Color:
-    match elem:
-        "fire":
-            return Color(1.0, 0.5, 0.2, 1.0)
-        "water":
-            return Color(0.3, 0.7, 1.0, 1.0)
-        "earth":
-            return Color(0.6, 0.5, 0.3, 1.0)
-        "air":
-            return Color(0.8, 0.9, 1.0, 1.0)
-        _:
-            return Color(0.9, 0.9, 1.0, 1.0)
+	match elem:
+		"fire":
+			return Color(1.0, 0.5, 0.2, 1.0)
+		"water":
+			return Color(0.3, 0.7, 1.0, 1.0)
+		"earth":
+			return Color(0.6, 0.5, 0.3, 1.0)
+		"air":
+			return Color(0.8, 0.9, 1.0, 1.0)
+		_:
+			return Color(0.9, 0.9, 1.0, 1.0)
 
 func _cast_orb_from_to(caster: Dictionary, target: Dictionary, tint: Color, facing: int) -> void:
-    var s_from: Sprite2D = caster.get("sprite", null)
-    var s_to: Sprite2D = target.get("sprite", null)
-    if s_from == null or s_to == null:
-        return
-    var tex: Texture2D = _make_spell_orb_texture(18, tint)
-    var orb: Sprite2D = Sprite2D.new()
-    orb.texture = tex
-    orb.centered = true
-    orb.modulate = Color(1, 1, 1, 0.0)
-    orb.scale = Vector2.ONE
-    add_child(orb)
-    var src: Vector2 = s_from.global_position + Vector2(12.0 * float(facing), -12.0)
-    var dst: Vector2 = s_to.global_position + Vector2(0.0, -8.0)
-    orb.global_position = src
-    var tw: Tween = create_tween()
-    tw.tween_property(orb, "modulate:a", 1.0, 0.06)
-    tw.parallel().tween_property(orb, "global_position", dst, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-    tw.parallel().tween_property(orb, "scale", Vector2(1.2, 1.2), 0.18)
-    await tw.finished
-    var tw2: Tween = create_tween()
-    tw2.tween_property(orb, "modulate:a", 0.0, 0.10)
-    tw2.parallel().tween_property(orb, "scale", Vector2(1.7, 1.7), 0.10)
-    await tw2.finished
-    orb.queue_free()
+	var s_from: Sprite2D = caster.get("sprite", null)
+	var s_to: Sprite2D = target.get("sprite", null)
+	if s_from == null or s_to == null:
+		return
+	var tex: Texture2D = _make_spell_orb_texture(18, tint)
+	var orb: Sprite2D = Sprite2D.new()
+	orb.texture = tex
+	orb.centered = true
+	orb.modulate = Color(1, 1, 1, 0.0)
+	orb.scale = Vector2.ONE
+	add_child(orb)
+	var src: Vector2 = s_from.global_position + Vector2(12.0 * float(facing), -12.0)
+	var dst: Vector2 = s_to.global_position + Vector2(0.0, -8.0)
+	orb.global_position = src
+	var tw: Tween = create_tween()
+	tw.tween_property(orb, "modulate:a", 1.0, 0.06)
+	tw.parallel().tween_property(orb, "global_position", dst, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(orb, "scale", Vector2(1.2, 1.2), 0.18)
+	await tw.finished
+	var tw2: Tween = create_tween()
+	tw2.tween_property(orb, "modulate:a", 0.0, 0.10)
+	tw2.parallel().tween_property(orb, "scale", Vector2(1.7, 1.7), 0.10)
+	await tw2.finished
+	orb.queue_free()
 
 # ---------- overlays (label + bar) ----------
 func _make_square_texture(color: Color) -> Texture2D:
@@ -1384,35 +1383,35 @@ func _process(delta: float) -> void:
 		bg_clouds_near.motion_offset.x = _bg_t * 16.0
 
 func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
-    var s: Sprite2D = u.get("sprite", null)
-    if s == null or not is_instance_valid(s):
-        var kind: String = String(u.get("art", ""))
-        if kind.begins_with("hero:"):
-            var role: String = String(kind.split(":")[1])
-            var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
-            s = Sprite2D.new()
-            s.texture = layers["body"]
-            add_child(s)
-            u["sprite"] = s
-            # Arm overlay as child of body
-            var arm := Sprite2D.new()
-            arm.name = "Arm"
-            arm.centered = false
-            arm.texture = layers["arm"]
-            arm.position = layers["arm_pivot_local"]
-            s.add_child(arm)
-            u["arm"] = arm
-        else:
-            s = Sprite2D.new()
-            var tex: Texture2D = SpriteFactory.make_monster(kind, 3) if kind != "" else SpriteFactory.make_humanoid("rogue", 3)
-            s.texture = tex
-            add_child(s)
-            u["sprite"] = s
-        u["facing"] = facing
-        var ap: AnimationPlayer = SpriteAnimator.attach(s, facing)
-        u["anim"] = ap
-    s.position = pos
-    s.z_index = 0
+	var s: Sprite2D = u.get("sprite", null)
+	if s == null or not is_instance_valid(s):
+		var kind: String = String(u.get("art", ""))
+		if kind.begins_with("hero:"):
+			var role: String = String(kind.split(":")[1])
+			var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
+			s = Sprite2D.new()
+			s.texture = layers["body"]
+			add_child(s)
+			u["sprite"] = s
+			# Arm overlay as child of body
+			var arm := Sprite2D.new()
+			arm.name = "Arm"
+			arm.centered = false
+			arm.texture = layers["arm"]
+			arm.position = layers["arm_pivot_local"]
+			s.add_child(arm)
+			u["arm"] = arm
+		else:
+			s = Sprite2D.new()
+			var tex: Texture2D = SpriteFactory.make_monster(kind, 3) if kind != "" else SpriteFactory.make_humanoid("rogue", 3)
+			s.texture = tex
+			add_child(s)
+			u["sprite"] = s
+		u["facing"] = facing
+		var ap: AnimationPlayer = SpriteAnimator.attach(s, facing)
+		u["anim"] = ap
+	s.position = pos
+	s.z_index = 0
 
 	if u.get("hud", null) == null:
 		_create_unit_overlay(u)
