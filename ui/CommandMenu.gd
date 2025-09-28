@@ -88,12 +88,14 @@ func _build_if_needed() -> void:
 	_btn_spells = _make_btn("Spells", func(): _toggle_submenu("spells")) as Button
 	_btn_items = _make_btn("Items", func(): _toggle_submenu("items")) as Button
 	_btn_defend = _make_btn("Defend", func(): _emit_main("defend")) as Button
-	for b in [_btn_attack, _btn_spells, _btn_items, _btn_defend]:
-		_grid.add_child(b)
-		b.focus_mode = Control.FOCUS_ALL
-		b.gui_input.connect(_nav_input)
-		b.mouse_entered.connect(func(btn := b): btn.grab_focus())
-		b.focus_entered.connect(func(btn := b): _move_cursor_to(btn))
+	var main_buttons: Array = [_btn_attack, _btn_spells, _btn_items, _btn_defend]
+	for b in main_buttons:
+		var btn: Button = b
+		_grid.add_child(btn)
+		btn.focus_mode = Control.FOCUS_ALL
+		btn.gui_input.connect(_nav_input)
+		btn.connect("mouse_entered", Callable(self, "_on_command_mouse_entered").bind(btn))
+		btn.connect("focus_entered", Callable(self, "_on_command_focus_entered").bind(btn))
 
 	_cursor = Control.new()
 	_cursor.custom_minimum_size = Vector2(16, 24)
@@ -266,6 +268,13 @@ func _move_cursor_to(btn: Button) -> void:
 	_cursor_tween.tween_property(_cursor, "position", Vector2(x, y), 0.08)
 	_cursor.custom_minimum_size = Vector2(16, max(20.0, btn.size.y * 0.65))
 	_cursor.queue_redraw()
+
+func _on_command_mouse_entered(btn: Button) -> void:
+	if btn != null:
+		btn.grab_focus()
+
+func _on_command_focus_entered(btn: Button) -> void:
+	_move_cursor_to(btn)
 
 func _nav_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
