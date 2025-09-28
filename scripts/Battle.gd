@@ -61,6 +61,9 @@ const MAX_LOG := 8
 @onready var cmd_layer: CanvasLayer = CanvasLayer.new()
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
+const CommandMenu := preload("res://ui/CommandMenu.gd")
+
+@onready var cmd: CommandMenu = CommandMenu.new()
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
@@ -176,6 +179,11 @@ func _ready() -> void:
 	_build_items_menu()
 	_build_queue_panel()
 
+	# New command menu UI
+	cmd.visible = false
+	cmd.menu_action.connect(_on_cmd_action)
+	cmd_layer.add_child(cmd)
+
 	if "adept" in DataRegistry.characters:
 		party[0].stats = DataRegistry.characters["adept"]
 		party[0].stats["hp"] = party[0].stats.get("max_hp", 100)
@@ -215,7 +223,18 @@ func _prompt_next_actor() -> void:
 		_commit_declare_phase()
 		return
 	var a: Dictionary = declare_allies[declare_index]
-	_show_command_menu(String(a["stats"]["name"]))
+	# Use new CommandMenu UI
+	var actor_name: String = String(a["stats"].get("name", "Adept"))
+	var spells_arr: Array = a.get("spells", [])
+	# Map to include mp_cost for display if missing
+	var spells_for_menu: Array = []
+	for s in spells_arr:
+		var sd: Dictionary = (s as Dictionary).duplicate(true)
+		if not sd.has("mp_cost") and sd.has("mp"):
+			sd["mp_cost"] = int(sd.get("mp", 0))
+		spells_for_menu.append(sd)
+	var items_for_menu: Array = _menu_items_for_actor(a)
+	cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
 	current_actor_index = party.find(a)
 
 func _infer_target_mode(kind: String, payload: Dictionary) -> String:
@@ -609,7 +628,18 @@ func _input(event: InputEvent) -> void:
 	if target_root != null and target_root.visible:
 		if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 			_hide_target_menu()
-			_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+			# Return to new CommandMenu for the current actor
+			if current_actor_index >= 0 and current_actor_index < party.size():
+				var a: Dictionary = party[current_actor_index]
+				var an: String = String(a["stats"].get("name", "Adept"))
+				var spells_arr: Array = a.get("spells", [])
+				var spells_for_menu: Array = []
+				for s in spells_arr:
+					var sd: Dictionary = (s as Dictionary).duplicate(true)
+					if not sd.has("mp_cost") and sd.has("mp"):
+						sd["mp_cost"] = int(sd.get("mp", 0))
+					spells_for_menu.append(sd)
+				cmd.show_for_actor(an, spells_for_menu, _menu_items_for_actor(a))
 			return
 	if not menu_visible:
 		return
@@ -838,6 +868,8 @@ func _end_round() -> void:
 	for e in wave:
 		e.defending = false
 	round += 1
+	# Relayout roots and reset pivot pose to avoid drift
+	_layout_units()
 	_start_round_declare()
 
 	_update_all_overlays()
@@ -1028,6 +1060,39 @@ func _on_target_chosen(idx: int) -> void:
 			_queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
 		_:
 			_queue_player_action({"kind":"attack"})
+
+# --- New CommandMenu wiring ---
+func _on_cmd_action(kind: String, payload: Dictionary) -> void:
+	match kind:
+		"attack":
+			cmd.hide_menu()
+			_queue_player_action({"kind":"attack"})
+		"defend":
+			cmd.hide_menu()
+			_queue_player_action({"kind":"defend"})
+		"spell_pick":
+			cmd.hide_menu()
+			var sp: Dictionary = payload.get("skill", {})
+			_on_spell_chosen(sp)
+		"item_pick":
+			cmd.hide_menu()
+			var it: Dictionary = payload.get("item", {})
+			_on_item_chosen(it)
+		_:
+			pass
+
+func _menu_items_for_actor(actor: Dictionary) -> Array:
+	var out: Array = []
+	for k in inventory.keys():
+		var entry: Dictionary = inventory[k]
+		var qty: int = int(entry.get("qty", 0))
+		if qty <= 0:
+			continue
+		var d := entry.duplicate(true)
+		d["id"] = k
+		d["qty"] = qty
+		out.append(d)
+	return out
 
 func _queue_player_action(act: Dictionary) -> void:
 	var actor = declare_allies[declare_index]
@@ -1290,9 +1355,15 @@ func _make_vignette_material() -> ShaderMaterial:
 	return mat
 
 func _jab(sprite: Sprite2D, dir: int) -> void:
+	# Nudge the zero-based pivot if available; fallback to sprite
+	var target: Node2D = sprite
+	var parent := sprite.get_parent()
+	if parent != null and parent is Node2D:
+		target = parent as Node2D
 	var t := create_tween()
-	t.tween_property(sprite, "position:x", sprite.position.x + 10.0 * dir, 0.08).set_trans(Tween.TRANS_SINE)
-	t.tween_property(sprite, "position:x", sprite.position.x, 0.08).set_trans(Tween.TRANS_SINE)
+	var x0: float = target.position.x
+	t.tween_property(target, "position:x", x0 + 10.0 * dir, 0.08).set_trans(Tween.TRANS_SINE)
+	t.tween_property(target, "position:x", x0, 0.08).set_trans(Tween.TRANS_SINE)
 	await t.finished
 
 func _slash_effect(pos: Vector2, dir: float) -> void:
@@ -1388,35 +1459,71 @@ func _process(delta: float) -> void:
 		bg_clouds_near.motion_offset.x = _bg_t * 16.0
 
 func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
+	var root: Node2D = u.get("root", null)
+	var pivot: Node2D = u.get("pivot", null)
 	var s: Sprite2D = u.get("sprite", null)
-	if s == null or not is_instance_valid(s):
+
+	# Build the Root→Pivot→Sprite (+Arm) structure if missing
+	if root == null or not is_instance_valid(root):
+		root = Node2D.new()
+		root.name = "UnitRoot"
+		root.position = pos
+		add_child(root)
+		u["root"] = root
+		u["facing"] = facing
+
+		pivot = Node2D.new()
+		pivot.name = "Pivot"
+		root.add_child(pivot)
+		u["pivot"] = pivot
+
 		var kind: String = String(u.get("art", ""))
 		if kind.begins_with("hero:"):
 			var role: String = String(kind.split(":")[1])
 			var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
 			s = Sprite2D.new()
 			s.texture = layers["body"]
-			add_child(s)
+			pivot.add_child(s)
 			u["sprite"] = s
-			# Arm overlay as child of body
+			# Arm overlay as a child of the pivot (not the body)
 			var arm := Sprite2D.new()
 			arm.name = "Arm"
 			arm.centered = false
 			arm.texture = layers["arm"]
 			arm.position = layers["arm_pivot_local"]
-			s.add_child(arm)
+			pivot.add_child(arm)
 			u["arm"] = arm
 		else:
 			s = Sprite2D.new()
 			var tex: Texture2D = SpriteFactory.make_monster(kind, 3) if kind != "" else SpriteFactory.make_humanoid("rogue", 3)
 			s.texture = tex
-			add_child(s)
+			pivot.add_child(s)
 			u["sprite"] = s
-		u["facing"] = facing
-		var ap: AnimationPlayer = SpriteAnimator.attach(s, facing)
+
+		var ap: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
 		u["anim"] = ap
-	s.position = pos
-	s.z_index = 0
+	else:
+		# Already spawned: only relayout the root
+		u["facing"] = facing
+		if is_instance_valid(root):
+			root.position = pos
+		# Recreate/attach pivot if somehow missing
+		if pivot == null or not is_instance_valid(pivot):
+			pivot = Node2D.new()
+			pivot.name = "Pivot"
+			root.add_child(pivot)
+			u["pivot"] = pivot
+			# Ensure sprite is under pivot
+			if s != null and is_instance_valid(s) and s.get_parent() != pivot:
+				var old_parent := s.get_parent()
+				if old_parent != null:
+					old_parent.remove_child(s)
+				pivot.add_child(s)
+			var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
+			u["anim"] = ap2
+
+	if s != null and is_instance_valid(s):
+		s.z_index = 0
 
 	if u.get("hud", null) == null:
 		_create_unit_overlay(u)
@@ -1426,10 +1533,22 @@ func _layout_units() -> void:
 	for i in ENEMY_SLOTS.size():
 		if i < wave.size():
 			_spawn_unit_sprite(wave[i], ENEMY_SLOTS[i], -1)
+			_reset_pose(wave[i])
 	# party (bottom)
 	for i in PARTY_SLOTS.size():
 		if i < party.size():
 			_spawn_unit_sprite(party[i], PARTY_SLOTS[i], +1)
+			_reset_pose(party[i])
+
+func _reset_pose(u: Dictionary) -> void:
+	var pivot: Node2D = u.get("pivot", null)
+	if pivot != null and is_instance_valid(pivot):
+		pivot.position = Vector2.ZERO
+		pivot.rotation = 0.0
+		pivot.scale = Vector2.ONE
+	var s: Sprite2D = u.get("sprite", null)
+	if s != null and is_instance_valid(s):
+		s.modulate = Color(1,1,1,1)
 
 # ---------- Overlays (HP label + bar) ----------
 func _create_unit_overlay(u: Dictionary) -> void:
@@ -1462,12 +1581,18 @@ func _create_unit_overlay(u: Dictionary) -> void:
 
 func _update_unit_overlay(u: Dictionary) -> void:
 	var s: Sprite2D = u.get("sprite", null)
+	var root: Node2D = u.get("root", null)
 	var hud: Control = u.get("hud", null)
-	if s == null or hud == null:
+	if hud == null:
 		return
 
-	# place HUD above the sprite (nudge up)
-	hud.global_position = s.global_position + Vector2(-BAR_SIZE.x * 0.5, -60)
+	# place HUD above the unit root (stable; does not bob with animations)
+	var anchor_pos: Vector2 = Vector2.ZERO
+	if root != null and is_instance_valid(root):
+		anchor_pos = root.global_position
+	elif s != null and is_instance_valid(s):
+		anchor_pos = s.global_position
+	hud.global_position = anchor_pos + Vector2(-BAR_SIZE.x * 0.5, -60)
 
 	# explicit types (avoid Variant warnings)
 	var hp: int      = int(u["stats"].get("hp", 0))
