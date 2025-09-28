@@ -1,4 +1,4 @@
-﻿extends Node2D
+extends Node2D
 
 # Minimal Golden Sunâ€“style battle with HP/MP bars (no skills/items yet).
 # Keys: 1 = Attack, 2 = Defend
@@ -85,30 +85,30 @@ var bg_clouds_near: ParallaxLayer
 
 # Palettes per biome
 const BIOMES := {
-    "forest": {
-        "top": Color(0.09, 0.11, 0.16),
-        "bottom": Color(0.12, 0.16, 0.22),
-        "floor": Color(0.06, 0.07, 0.10, 0.95),
-        "cloud": Color(0.22, 0.28, 0.35, 0.25)
-    },
-    "cave": {
-        "top": Color(0.06, 0.07, 0.09),
-        "bottom": Color(0.09, 0.10, 0.12),
-        "floor": Color(0.03, 0.03, 0.05, 0.98),
-        "cloud": Color(0.18, 0.18, 0.22, 0.18)
-    },
-    "ruins": {
-        "top": Color(0.12, 0.12, 0.16),
-        "bottom": Color(0.16, 0.16, 0.20),
-        "floor": Color(0.07, 0.07, 0.10, 0.96),
-        "cloud": Color(0.35, 0.32, 0.28, 0.22)
-    },
-    "desert": {
-        "top": Color(0.20, 0.18, 0.14),
-        "bottom": Color(0.26, 0.22, 0.16),
-        "floor": Color(0.15, 0.12, 0.09, 0.96),
-        "cloud": Color(0.40, 0.36, 0.28, 0.18)
-    }
+	"forest": {
+		"top": Color(0.09, 0.11, 0.16),
+		"bottom": Color(0.12, 0.16, 0.22),
+		"floor": Color(0.06, 0.07, 0.10, 0.95),
+		"cloud": Color(0.22, 0.28, 0.35, 0.25)
+	},
+	"cave": {
+		"top": Color(0.06, 0.07, 0.09),
+		"bottom": Color(0.09, 0.10, 0.12),
+		"floor": Color(0.03, 0.03, 0.05, 0.98),
+		"cloud": Color(0.18, 0.18, 0.22, 0.18)
+	},
+	"ruins": {
+		"top": Color(0.12, 0.12, 0.16),
+		"bottom": Color(0.16, 0.16, 0.20),
+		"floor": Color(0.07, 0.07, 0.10, 0.96),
+		"cloud": Color(0.35, 0.32, 0.28, 0.22)
+	},
+	"desert": {
+		"top": Color(0.20, 0.18, 0.14),
+		"bottom": Color(0.26, 0.22, 0.16),
+		"floor": Color(0.15, 0.12, 0.09, 0.96),
+		"cloud": Color(0.40, 0.36, 0.28, 0.18)
+	}
 }
 
 var cmd_root: Control = null
@@ -139,8 +139,8 @@ var items_list: VBoxContainer = null
 
 # Simple party inventory
 var inventory: Dictionary = {
-    "potion": {"id":"potion","name":"Potion","type":"heal","amount":40,"qty":3},
-    "ether":  {"id":"ether","name":"Ether","type":"mp","amount":10,"qty":2}
+	"potion": {"id":"potion","name":"Potion","type":"heal","amount":40,"qty":3},
+	"ether":  {"id":"ether","name":"Ether","type":"mp","amount":10,"qty":2}
 }
 
 # --- Declare phase state ---
@@ -154,15 +154,15 @@ var queue_box: VBoxContainer = null
 var queue_rows: Array[Label] = []
 
 func _ready() -> void:
-    randomize()
+	randomize()
 
-    var viewport_size := get_viewport_rect().size
-    var W := viewport_size.x
-    var H := viewport_size.y
+	var viewport_size := get_viewport_rect().size
+	var W := viewport_size.x
+	var H := viewport_size.y
 
-    # Background (procedural)
-    add_child(bg_layer)
-    _build_background("forest")
+	# Background (procedural)
+	add_child(bg_layer)
+	_build_background("forest")
 
 	add_child(overlay)
 	_layout_units()         # spawn sprites & overlays at the desired positions
@@ -217,86 +217,86 @@ func _prompt_next_actor() -> void:
 	current_actor_index = party.find(a)
 
 func _infer_target_mode(kind: String, payload: Dictionary) -> String:
-    # If the payload (spell/item) declares an explicit target, honor it
-    if payload.has("target"):
-        var t := String(payload["target"])
-        if t == TM_ENEMY_ALL or t == TM_ALLY_ALL or t == TM_ENEMY_ONE or t == TM_ALLY_ONE or t == TM_SELF:
-            return t
-    # Fallbacks by type
-    if kind == "skill":
-        var stype := String(payload.get("type", "damage"))
-        return TM_ALLY_ONE if stype == "heal" else TM_ENEMY_ONE
-    if kind == "item":
-        var itype := String(payload.get("type", "heal"))
-        match itype:
-            "heal", "mp", "boost":
-                return TM_ALLY_ONE
-            "damage":
-                return TM_ENEMY_ONE
-            _:
-                return TM_ALLY_ONE
-    return TM_ENEMY_ONE
+	# If the payload (spell/item) declares an explicit target, honor it
+	if payload.has("target"):
+		var t := String(payload["target"])
+		if t == TM_ENEMY_ALL or t == TM_ALLY_ALL or t == TM_ENEMY_ONE or t == TM_ALLY_ONE or t == TM_SELF:
+			return t
+	# Fallbacks by type
+	if kind == "skill":
+		var stype := String(payload.get("type", "damage"))
+		return TM_ALLY_ONE if stype == "heal" else TM_ENEMY_ONE
+	if kind == "item":
+		var itype := String(payload.get("type", "heal"))
+		match itype:
+			"heal", "mp", "boost":
+				return TM_ALLY_ONE
+			"damage":
+				return TM_ENEMY_ONE
+			_:
+				return TM_ALLY_ONE
+	return TM_ENEMY_ONE
 
 func _expand_multi_targets(actions: Array[Dictionary]) -> Array[Dictionary]:
-    var out: Array[Dictionary] = []
-    for a: Dictionary in actions:
-        # If target already set explicitly, keep as-is
-        if a.has("target"):
-            out.append(a)
-            continue
+	var out: Array[Dictionary] = []
+	for a: Dictionary in actions:
+		# If target already set explicitly, keep as-is
+		if a.has("target"):
+			out.append(a)
+			continue
 
-        var act: Dictionary = (a.get("action", {}) as Dictionary)
-        var kind: String = String(act.get("kind", "attack"))
-        var team: String = String(a.get("team", "party"))
+		var act: Dictionary = (a.get("action", {}) as Dictionary)
+		var kind: String = String(act.get("kind", "attack"))
+		var team: String = String(a.get("team", "party"))
 
-        # Only skills/items have multi-target; attack stays one
-        if kind == "skill":
-            var sp: Dictionary = (act.get("skill", {}) as Dictionary)
-            var mode := _infer_target_mode("skill", sp)
-            match mode:
-                TM_ENEMY_ALL:
-                    var enemies: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
-                    for t in enemies:
-                        var dup := a.duplicate(true)
-                        dup["target"] = t
-                        out.append(dup)
-                TM_ALLY_ALL:
-                    var allies: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
-                    for t in allies:
-                        var dup2 := a.duplicate(true)
-                        dup2["target"] = t
-                        out.append(dup2)
-                TM_SELF:
-                    var dup3 := a.duplicate(true)
-                    dup3["target"] = a["actor"]
-                    out.append(dup3)
-                _:
-                    out.append(a) # will set single target later
-        elif kind == "item":
-            var it: Dictionary = (act.get("item", {}) as Dictionary)
-            var mode2 := _infer_target_mode("item", it)
-            match mode2:
-                TM_ENEMY_ALL:
-                    var enemies2: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
-                    for t2 in enemies2:
-                        var idup := a.duplicate(true)
-                        idup["target"] = t2
-                        out.append(idup)
-                TM_ALLY_ALL:
-                    var allies2: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
-                    for t3 in allies2:
-                        var idup2 := a.duplicate(true)
-                        idup2["target"] = t3
-                        out.append(idup2)
-                TM_SELF:
-                    var idup3 := a.duplicate(true)
-                    idup3["target"] = a["actor"]
-                    out.append(idup3)
-                _:
-                    out.append(a)
-        else:
-            out.append(a)
-    return out
+		# Only skills/items have multi-target; attack stays one
+		if kind == "skill":
+			var sp: Dictionary = (act.get("skill", {}) as Dictionary)
+			var mode := _infer_target_mode("skill", sp)
+			match mode:
+				TM_ENEMY_ALL:
+					var enemies: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
+					for t in enemies:
+						var dup := a.duplicate(true)
+						dup["target"] = t
+						out.append(dup)
+				TM_ALLY_ALL:
+					var allies: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
+					for t in allies:
+						var dup2 := a.duplicate(true)
+						dup2["target"] = t
+						out.append(dup2)
+				TM_SELF:
+					var dup3 := a.duplicate(true)
+					dup3["target"] = a["actor"]
+					out.append(dup3)
+				_:
+					out.append(a) # will set single target later
+		elif kind == "item":
+			var it: Dictionary = (act.get("item", {}) as Dictionary)
+			var mode2 := _infer_target_mode("item", it)
+			match mode2:
+				TM_ENEMY_ALL:
+					var enemies2: Array[Dictionary] = _alive(wave) if team == "party" else _alive(party)
+					for t2 in enemies2:
+						var idup := a.duplicate(true)
+						idup["target"] = t2
+						out.append(idup)
+				TM_ALLY_ALL:
+					var allies2: Array[Dictionary] = _alive(party) if team == "party" else _alive(wave)
+					for t3 in allies2:
+						var idup2 := a.duplicate(true)
+						idup2["target"] = t3
+						out.append(idup2)
+				TM_SELF:
+					var idup3 := a.duplicate(true)
+					idup3["target"] = a["actor"]
+					out.append(idup3)
+				_:
+					out.append(a)
+		else:
+			out.append(a)
+	return out
 
 func _build_command_menu() -> void:
 	# Root
@@ -553,52 +553,55 @@ func _build_queue_panel() -> void:
 	vbox.add_child(queue_box)
 
 func _build_background(biome: String) -> void:
-    var palette: Dictionary = BIOMES.get(biome, BIOMES["forest"])
+	var palette: Dictionary = BIOMES.get(biome, BIOMES["forest"])
 
-    bg_layer.layer = -10
-    bg_layer.add_child(bg_root)
+	bg_layer.layer = -10
+	bg_layer.add_child(bg_root)
 
-    # Gradient sky
-    bg_sky = TextureRect.new()
-    bg_sky.size = get_viewport_rect().size
-    bg_sky.texture = _make_vertical_gradient(
-        Vector2i(int(bg_sky.size.x), int(bg_sky.size.y)),
-        palette["top"], palette["bottom"]
-    )
-    bg_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    bg_layer.add_child(bg_sky)
+	# Gradient sky
+	bg_sky = TextureRect.new()
+	bg_sky.size = get_viewport_rect().size
+	bg_sky.texture = _make_vertical_gradient(
+		Vector2i(int(bg_sky.size.x), int(bg_sky.size.y)),
+		palette["top"], palette["bottom"]
+	)
+	bg_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bg_layer.add_child(bg_sky)
 
-    # Parallax clouds
-    var parallax := ParallaxBackground.new()
-    parallax.scroll_base_offset = Vector2.ZERO
-    parallax.scroll_base_scale = Vector2.ONE
-    parallax.limit_end = Vector2i(int(bg_sky.size.x), int(bg_sky.size.y))
-    bg_layer.add_child(parallax)
+	# Parallax clouds
+	var parallax: ParallaxBackground = ParallaxBackground.new()
+	parallax.scroll_base_offset = Vector2.ZERO
+	parallax.scroll_base_scale = Vector2.ONE
+	# Parallax limits expect Vector2 in Godot 4
+	var vp_size: Vector2 = get_viewport_rect().size
+	parallax.limit_begin = Vector2.ZERO
+	parallax.limit_end = vp_size
+	bg_layer.add_child(parallax)
 
-    bg_clouds_far = ParallaxLayer.new()
-    bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
-    bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
-    parallax.add_child(bg_clouds_far)
+	bg_clouds_far = ParallaxLayer.new()
+	bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
+	bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
+	parallax.add_child(bg_clouds_far)
 
-    bg_clouds_near = ParallaxLayer.new()
-    bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
-    bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
-    parallax.add_child(bg_clouds_near)
+	bg_clouds_near = ParallaxLayer.new()
+	bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
+	bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
+	parallax.add_child(bg_clouds_near)
 
-    # Floor strip
-    bg_floor = ColorRect.new()
-    bg_floor.color = palette["floor"]
-    var sz := get_viewport_rect().size
-    bg_floor.size = Vector2(sz.x, sz.y * 0.24)
-    bg_floor.position = Vector2(0, sz.y - bg_floor.size.y)
-    bg_layer.add_child(bg_floor)
+	# Floor strip
+	bg_floor = ColorRect.new()
+	bg_floor.color = palette["floor"]
+	var sz := get_viewport_rect().size
+	bg_floor.size = Vector2(sz.x, sz.y * 0.24)
+	bg_floor.position = Vector2(0, sz.y - bg_floor.size.y)
+	bg_layer.add_child(bg_floor)
 
-    # Vignette
-    var vignette := TextureRect.new()
-    vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    vignette.size = sz
-    vignette.material = _make_vignette_material()
-    bg_layer.add_child(vignette)
+	# Vignette
+	var vignette := TextureRect.new()
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.size = sz
+	vignette.material = _make_vignette_material()
+	bg_layer.add_child(vignette)
 
 func _input(event: InputEvent) -> void:
 	# Allow canceling target menu with ESC even when main menu is hidden
@@ -621,13 +624,13 @@ func _input(event: InputEvent) -> void:
 				_on_menu_defend()
 
 func _alive(units: Array[Dictionary]) -> Array[Dictionary]:
-    return units.filter(func(u: Dictionary): return int(u["stats"]["hp"]) > 0)
+	return units.filter(func(u: Dictionary): return int(u["stats"]["hp"]) > 0)
 
 func _is_team_dead(units: Array[Dictionary]) -> bool:
-    return _alive(units).is_empty()
+	return _alive(units).is_empty()
 
 func _pick_random(arr: Array[Dictionary]) -> Dictionary:
-    return arr[randi() % arr.size()]
+	return arr[randi() % arr.size()]
 
 func _find_cleric() -> Dictionary:
 	for u in party:
@@ -749,30 +752,30 @@ func _resolve_action_team(p:Dictionary) -> void:
 			_update_all_overlays()
 			return
 
-    if kind == "item":
-        var it: Dictionary = act.get("item", {})
-        var itype: String = String(it.get("type", "heal"))
-        var amount: int = int(it.get("amount", 0))
-        var t: Dictionary = target
-        if itype == "heal":
-            var maxhp: int = int(t["stats"].get("max_hp", 1))
-            var before: int = int(t["stats"].get("hp", 0))
-            t["stats"]["hp"] = min(maxhp, before + amount)
-            _log("%s uses %s on %s for +%d HP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
-        elif itype == "mp":
-            var maxmp: int = int(t["stats"].get("max_mp", 0))
-            var before_mp: int = int(t["stats"].get("mp", 0))
-            t["stats"]["mp"] = min(maxmp, before_mp + amount)
-            _log("%s uses %s on %s for +%d MP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+	if kind == "item":
+		var it: Dictionary = act.get("item", {})
+		var itype: String = String(it.get("type", "heal"))
+		var amount: int = int(it.get("amount", 0))
+		var t: Dictionary = target
+		if itype == "heal":
+			var maxhp: int = int(t["stats"].get("max_hp", 1))
+			var before: int = int(t["stats"].get("hp", 0))
+			t["stats"]["hp"] = min(maxhp, before + amount)
+			_log("%s uses %s on %s for +%d HP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+		elif itype == "mp":
+			var maxmp: int = int(t["stats"].get("max_mp", 0))
+			var before_mp: int = int(t["stats"].get("mp", 0))
+			t["stats"]["mp"] = min(maxmp, before_mp + amount)
+			_log("%s uses %s on %s for +%d MP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
 
-        # decrement inventory
-        var iid: String = String(it.get("id", ""))
-        if inventory.has(iid):
-            var entry: Dictionary = inventory[iid]
-            entry["qty"] = max(0, int(entry.get("qty", 0)) - 1)
-            inventory[iid] = entry
-        _update_all_overlays()
-        return
+		# decrement inventory
+		var iid: String = String(it.get("id", ""))
+		if inventory.has(iid):
+			var entry: Dictionary = inventory[iid]
+			entry["qty"] = max(0, int(entry.get("qty", 0)) - 1)
+			inventory[iid] = entry
+		_update_all_overlays()
+		return
 
 	# default = basic attack
 	var atk:int = int(actor["stats"].get("atk", 10))
@@ -823,48 +826,48 @@ func _finish_battle(winner: String) -> void:
 		return
 
 func _commit_declare_phase() -> void:
-    # Allies done; add AI enemies
-    var foes := _alive(wave)
-    for e in foes:
-        planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
+	# Allies done; add AI enemies
+	var foes := _alive(wave)
+	for e in foes:
+		planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
 
-    # EXPAND multi-targets (skills/items) into per-target actions
-    var expanded: Array[Dictionary] = _expand_multi_targets(planned_actions)
+	# EXPAND multi-targets (skills/items) into per-target actions
+	var expanded: Array[Dictionary] = _expand_multi_targets(planned_actions)
 
-    # Initiative
-    for p in expanded:
-        var spd := int(p["actor"]["stats"].get("spd", 10))
-        p["init"] = spd + randi_range(0, int(spd * 0.25))
-    expanded.sort_custom(func(a,b): return a["init"] > b["init"])
+	# Initiative
+	for p in expanded:
+		var spd := int(p["actor"]["stats"].get("spd", 10))
+		p["init"] = spd + randi_range(0, int(spd * 0.25))
+	expanded.sort_custom(func(a,b): return a["init"] > b["init"])
 
-    # Fill any missing targets
-    for p in expanded:
-        if not p.has("target"):
-            if p["team"] == "party":
-                var tp := _alive(wave)
-                if tp.is_empty():
-                    break
-                p["target"] = _pick_random(tp)
-            else:
-                var tp := _alive(party)
-                if tp.is_empty():
-                    break
-                p["target"] = _pick_random(tp)
+	# Fill any missing targets
+	for p in expanded:
+		if not p.has("target"):
+			if p["team"] == "party":
+				var tp := _alive(wave)
+				if tp.is_empty():
+					break
+				p["target"] = _pick_random(tp)
+			else:
+				var tp := _alive(party)
+				if tp.is_empty():
+					break
+				p["target"] = _pick_random(tp)
 
-    # --- Show queue ---
-    _show_queue(expanded)
+	# --- Show queue ---
+	_show_queue(expanded)
 
-    # Resolve with highlight
-    for i in range(expanded.size()):
-        var p = expanded[i]
-        if _is_team_dead(party) or _is_team_dead(wave):
-            break
-        _highlight_queue_index(i)
-        _resolve_action_team(p)
+	# Resolve with highlight
+	for i in range(expanded.size()):
+		var p = expanded[i]
+		if _is_team_dead(party) or _is_team_dead(wave):
+			break
+		_highlight_queue_index(i)
+		_resolve_action_team(p)
 
-    # Done
-    _hide_queue()
-    _end_round()
+	# Done
+	_hide_queue()
+	_end_round()
 
 func _show_command_menu(for_name: String) -> void:
 	cmd_char.text = "  %s" % for_name
@@ -878,10 +881,10 @@ func _hide_command_menu() -> void:
 	menu_visible = false
 
 func _hide_spells_menu() -> void:
-    spells_root.visible = false
+	spells_root.visible = false
 
 func _hide_items_menu() -> void:
-    items_root.visible = false
+	items_root.visible = false
 
 func _populate_spells_for(actor: Dictionary) -> void:
 	# Clear old buttons
@@ -902,104 +905,104 @@ func _populate_spells_for(actor: Dictionary) -> void:
 
 # --- Target helpers ---
 func _show_target_menu(caster_idx: int, candidates: Array[Dictionary]) -> void:
-    pending_caster_index = caster_idx
-    target_candidates = candidates.duplicate()
-    for c in target_list.get_children():
-        c.queue_free()
+	pending_caster_index = caster_idx
+	target_candidates = candidates.duplicate()
+	for c in target_list.get_children():
+		c.queue_free()
 
-    # Guard: if no valid targets, bounce back to the main menu
-    if target_candidates.is_empty():
-        _log("No valid targets.")
-        _show_command_menu(String(party[current_actor_index]["stats"]["name"]))
-        return
+	# Guard: if no valid targets, bounce back to the main menu
+	if target_candidates.is_empty():
+		_log("No valid targets.")
+		_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+		return
 
-    # Build a button per candidate
-    for i in target_candidates.size():
-        var u: Dictionary = target_candidates[i]
-        var name: String = String(u["stats"].get("name","?"))
-        var hp: int = int(u["stats"].get("hp",0))
-        var max_hp: int = int(u["stats"].get("max_hp",1))
-        var btn := Button.new()
-        btn.text = "%s   HP %d/%d" % [name, hp, max_hp]
-        btn.add_theme_font_size_override("font_size", 20)
-        var idx := i  # capture
-        btn.pressed.connect(func(): _on_target_chosen(idx))
-        target_list.add_child(btn)
+	# Build a button per candidate
+	for i in target_candidates.size():
+		var u: Dictionary = target_candidates[i]
+		var name: String = String(u["stats"].get("name","?"))
+		var hp: int = int(u["stats"].get("hp",0))
+		var max_hp: int = int(u["stats"].get("max_hp",1))
+		var btn := Button.new()
+		btn.text = "%s   HP %d/%d" % [name, hp, max_hp]
+		btn.add_theme_font_size_override("font_size", 20)
+		var idx := i  # capture
+		btn.pressed.connect(func(): _on_target_chosen(idx))
+		target_list.add_child(btn)
 
-    target_root.visible = true
+	target_root.visible = true
 
 func _hide_target_menu() -> void:
-    target_root.visible = false
-    target_candidates.clear()
-    pending_mode = ""
-    pending_spell.clear()
-    pending_item.clear()
+	target_root.visible = false
+	target_candidates.clear()
+	pending_mode = ""
+	pending_spell.clear()
+	pending_item.clear()
 
 # --- Menu callbacks ---
 func _on_menu_attack() -> void:
-    _hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
-    _queue_player_action({"kind":"attack"})
+	_hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
+	_queue_player_action({"kind":"attack"})
 
 func _on_menu_defend() -> void:
-    _hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
-    _queue_player_action({"kind":"defend"})
+	_hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
+	_queue_player_action({"kind":"defend"})
 
 func _on_menu_spells() -> void:
-    # Show spells for the current acting ally (set by _prompt_next_actor)
-    var actor: Dictionary = party[current_actor_index]
-    _populate_spells_for(actor)
-    spells_root.visible = true
+	# Show spells for the current acting ally (set by _prompt_next_actor)
+	var actor: Dictionary = party[current_actor_index]
+	_populate_spells_for(actor)
+	spells_root.visible = true
 
 func _on_menu_items() -> void:
-    # Show items from inventory
-    _populate_items_list()
-    items_root.visible = true
+	# Show items from inventory
+	_populate_items_list()
+	items_root.visible = true
 
 func _on_spell_chosen(sp: Dictionary) -> void:
-    # Decide valid target mode, then either queue or prompt for targets
-    pending_mode = "spell"
-    pending_spell = sp.duplicate()
-    _hide_command_menu(); spells_root.visible = false; _hide_items_menu()
-    var mode := _infer_target_mode("skill", pending_spell)
-    match mode:
-        TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
-            _queue_player_action({"kind":"skill", "skill": pending_spell})
-        TM_ALLY_ONE:
-            _show_target_menu(current_actor_index, _alive(party))
-        TM_ENEMY_ONE:
-            _show_target_menu(current_actor_index, _alive(wave))
+	# Decide valid target mode, then either queue or prompt for targets
+	pending_mode = "spell"
+	pending_spell = sp.duplicate()
+	_hide_command_menu(); spells_root.visible = false; _hide_items_menu()
+	var mode := _infer_target_mode("skill", pending_spell)
+	match mode:
+		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
+			_queue_player_action({"kind":"skill", "skill": pending_spell})
+		TM_ALLY_ONE:
+			_show_target_menu(current_actor_index, _alive(party))
+		TM_ENEMY_ONE:
+			_show_target_menu(current_actor_index, _alive(wave))
 
 func _on_item_chosen(it: Dictionary) -> void:
-    _hide_command_menu(); _hide_spells_menu()
-    pending_mode = "item"
-    pending_item = it.duplicate()
-    items_root.visible = false
-    var mode := _infer_target_mode("item", pending_item)
-    match mode:
-        TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
-            _queue_player_action({"kind":"item", "item": pending_item})
-        TM_ALLY_ONE:
-            _show_target_menu(current_actor_index, _alive(party))
-        TM_ENEMY_ONE:
-            _show_target_menu(current_actor_index, _alive(wave))
+	_hide_command_menu(); _hide_spells_menu()
+	pending_mode = "item"
+	pending_item = it.duplicate()
+	items_root.visible = false
+	var mode := _infer_target_mode("item", pending_item)
+	match mode:
+		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
+			_queue_player_action({"kind":"item", "item": pending_item})
+		TM_ALLY_ONE:
+			_show_target_menu(current_actor_index, _alive(party))
+		TM_ENEMY_ONE:
+			_show_target_menu(current_actor_index, _alive(wave))
 
 func _on_target_chosen(idx: int) -> void:
-    # Guard: clicked after the list changed or empty
-    if idx < 0 or idx >= target_candidates.size():
-        _log("Target selection invalid.")
-        _hide_target_menu()
-        _show_command_menu(String(party[current_actor_index]["stats"]["name"]))
-        return
+	# Guard: clicked after the list changed or empty
+	if idx < 0 or idx >= target_candidates.size():
+		_log("Target selection invalid.")
+		_hide_target_menu()
+		_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+		return
 
-    var tgt: Dictionary = target_candidates[idx]
-    _hide_target_menu()
-    match pending_mode:
-        "spell":
-            _queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
-        "item":
-            _queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
-        _:
-            _queue_player_action({"kind":"attack"})
+	var tgt: Dictionary = target_candidates[idx]
+	_hide_target_menu()
+	match pending_mode:
+		"spell":
+			_queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
+		"item":
+			_queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
+		_:
+			_queue_player_action({"kind":"attack"})
 
 func _queue_player_action(act: Dictionary) -> void:
 	var actor = declare_allies[declare_index]
@@ -1007,101 +1010,101 @@ func _queue_player_action(act: Dictionary) -> void:
 	if act.has("target"):
 		entry["target"] = act["target"]
 	planned_actions.append(entry)
-    declare_index += 1
-    _prompt_next_actor()
+	declare_index += 1
+	_prompt_next_actor()
 
 func _populate_items_list() -> void:
-    # Clear
-    for c in items_list.get_children():
-        c.queue_free()
+	# Clear
+	for c in items_list.get_children():
+		c.queue_free()
 
-    # Build a button per item with qty > 0
-    var keys: Array = inventory.keys()
-    keys.sort()  # deterministic order
-    var any := false
-    for k in keys:
-        var entry: Dictionary = inventory[k]
-        var qty: int = int(entry.get("qty", 0))
-        if qty <= 0:
-            continue
-        any = true
-        var nm: String = String(entry.get("name", k))
-        var typ: String = String(entry.get("type", "heal"))
-        var amt: int = int(entry.get("amount", 0))
-        var btn := Button.new()
-        var desc: String = "HP +%d" % amt if typ == "heal" else "MP +%d" % amt
-        btn.text = "%s   x%d   (%s)" % [nm, qty, desc]
-        btn.add_theme_font_size_override("font_size", 20)
-        var it := entry.duplicate()
-        btn.pressed.connect(func(): _on_item_chosen(it))
-        items_list.add_child(btn)
+	# Build a button per item with qty > 0
+	var keys: Array = inventory.keys()
+	keys.sort()  # deterministic order
+	var any := false
+	for k in keys:
+		var entry: Dictionary = inventory[k]
+		var qty: int = int(entry.get("qty", 0))
+		if qty <= 0:
+			continue
+		any = true
+		var nm: String = String(entry.get("name", k))
+		var typ: String = String(entry.get("type", "heal"))
+		var amt: int = int(entry.get("amount", 0))
+		var btn := Button.new()
+		var desc: String = "HP +%d" % amt if typ == "heal" else "MP +%d" % amt
+		btn.text = "%s   x%d   (%s)" % [nm, qty, desc]
+		btn.add_theme_font_size_override("font_size", 20)
+		var it := entry.duplicate()
+		btn.pressed.connect(func(): _on_item_chosen(it))
+		items_list.add_child(btn)
 
-    if not any:
-        var lbl := Label.new()
-        lbl.text = "No items"
-        lbl.add_theme_font_size_override("font_size", 18)
-        items_list.add_child(lbl)
+	if not any:
+		var lbl := Label.new()
+		lbl.text = "No items"
+		lbl.add_theme_font_size_override("font_size", 18)
+		items_list.add_child(lbl)
 
 func _show_queue(actions: Array[Dictionary]) -> void:
-    # clear
-    for c in queue_box.get_children():
-        c.queue_free()
-    queue_rows.clear()
+	# clear
+	for c in queue_box.get_children():
+		c.queue_free()
+	queue_rows.clear()
 
-    for a: Dictionary in actions:
-        var actor: Dictionary = a["actor"]
-        var nm: String = String(actor["stats"].get("name", "?"))
-        var team: String = String(a.get("team", "?"))
+	for a: Dictionary in actions:
+		var actor: Dictionary = a["actor"]
+		var nm: String = String(actor["stats"].get("name", "?"))
+		var team: String = String(a.get("team", "?"))
 
-        # Typed action
-        var act: Dictionary = (a.get("action", {}) as Dictionary)
-        var kind: String = String(act.get("kind", "attack"))
+		# Typed action
+		var act: Dictionary = (a.get("action", {}) as Dictionary)
+		var kind: String = String(act.get("kind", "attack"))
 
-        var row := HBoxContainer.new()
-        row.add_theme_constant_override("separation", 8)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
 
-        var icon := Label.new()
-        var text := Label.new()
+		var icon := Label.new()
+		var text := Label.new()
 
-                # Icon by kind (ASCII-safe)
-        if kind == "defend":
-            icon.text = "[DEF]"
-        elif kind == "skill":
-            var sp: Dictionary = (act.get("skill", {}) as Dictionary)
-            var stype: String = String(sp.get("type", "damage"))
-            icon.text = "[HEAL]" if stype == "heal" else "[SPELL]"
-        elif kind == "item":
-            icon.text = "[ITEM]"
-        else:
-            icon.text = "[ATK]"
+				# Icon by kind (ASCII-safe)
+		if kind == "defend":
+			icon.text = "[DEF]"
+		elif kind == "skill":
+			var sp: Dictionary = (act.get("skill", {}) as Dictionary)
+			var stype: String = String(sp.get("type", "damage"))
+			icon.text = "[HEAL]" if stype == "heal" else "[SPELL]"
+		elif kind == "item":
+			icon.text = "[ITEM]"
+		else:
+			icon.text = "[ATK]"
 
-        icon.add_theme_font_size_override("font_size", 18)
-        row.add_child(icon)
+		icon.add_theme_font_size_override("font_size", 18)
+		row.add_child(icon)
 
-        # Label text
-        if kind == "skill":
-            var sp2: Dictionary = (act.get("skill", {}) as Dictionary)
-            var sn: String = String(sp2.get("name", "Skill"))
-            var mp_cost: int = int(sp2.get("mp", 0))
-            text.text = "%s - %s (MP %d)" % [nm, sn, mp_cost]
-        elif kind == "item":
-            var it: Dictionary = (act.get("item", {}) as Dictionary)
-            var iname: String = String(it.get("name", "Item"))
-            text.text = "%s - %s" % [nm, iname]
-        else:
-            text.text = "%s - %s" % [nm, kind]
+		# Label text
+		if kind == "skill":
+			var sp2: Dictionary = (act.get("skill", {}) as Dictionary)
+			var sn: String = String(sp2.get("name", "Skill"))
+			var mp_cost: int = int(sp2.get("mp", 0))
+			text.text = "%s - %s (MP %d)" % [nm, sn, mp_cost]
+		elif kind == "item":
+			var it: Dictionary = (act.get("item", {}) as Dictionary)
+			var iname: String = String(it.get("name", "Item"))
+			text.text = "%s - %s" % [nm, iname]
+		else:
+			text.text = "%s - %s" % [nm, kind]
 
-        text.add_theme_font_size_override("font_size", 16)
-        text.add_theme_color_override(
-            "font_color",
-            Color(0.8, 1, 0.8) if team == "party" else Color(1, 0.8, 0.8)
-        )
-        row.add_child(text)
+		text.add_theme_font_size_override("font_size", 16)
+		text.add_theme_color_override(
+			"font_color",
+			Color(0.8, 1, 0.8) if team == "party" else Color(1, 0.8, 0.8)
+		)
+		row.add_child(text)
 
-        queue_box.add_child(row)
-        queue_rows.append(text)
+		queue_box.add_child(row)
+		queue_rows.append(text)
 
-    queue_root.visible = true
+	queue_root.visible = true
 
 func _highlight_queue_index(i: int) -> void:
 	for idx in range(queue_rows.size()):
@@ -1116,21 +1119,21 @@ func _highlight_queue_index(i: int) -> void:
 			lbl.add_theme_font_size_override("font_size", 16)
 
 func _hide_queue() -> void:
-    queue_root.visible = false
+	queue_root.visible = false
 
 func set_biome(biome: String) -> void:
-    var palette: Dictionary = BIOMES.get(biome, BIOMES["forest"])
-    if bg_sky != null:
-        bg_sky.texture = _make_vertical_gradient(
-            Vector2i(int(bg_sky.size.x), int(bg_sky.size.y)),
-            palette["top"], palette["bottom"]
-        )
-    if bg_floor != null:
-        bg_floor.color = palette["floor"]
-    if bg_clouds_far != null:
-        _recolor_clouds(bg_clouds_far, palette["cloud"])
-    if bg_clouds_near != null:
-        _recolor_clouds(bg_clouds_near, palette["cloud"])
+	var palette: Dictionary = BIOMES.get(biome, BIOMES["forest"])
+	if bg_sky != null:
+		bg_sky.texture = _make_vertical_gradient(
+			Vector2i(int(bg_sky.size.x), int(bg_sky.size.y)),
+			palette["top"], palette["bottom"]
+		)
+	if bg_floor != null:
+		bg_floor.color = palette["floor"]
+	if bg_clouds_far != null:
+		_recolor_clouds(bg_clouds_far, palette["cloud"])
+	if bg_clouds_near != null:
+		_recolor_clouds(bg_clouds_near, palette["cloud"])
 
  
 
@@ -1140,101 +1143,103 @@ func _prompt_player() -> void:
 	_show_command_menu(String(party[0]["stats"]["name"]))
 
 func _log(msg: String) -> void:
-    _log_lines.append(msg)
-    while _log_lines.size() > MAX_LOG:
-        _log_lines.pop_front()
-    log_label.text = "\n".join(_log_lines)
+	_log_lines.append(msg)
+	while _log_lines.size() > MAX_LOG:
+		_log_lines.pop_front()
+	log_label.text = "\n".join(_log_lines)
 
 func _make_vertical_gradient(size: Vector2i, top: Color, bottom: Color) -> Texture2D:
-    var img := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
-    for y in range(size.y):
-        var t := float(y) / float(max(1, size.y - 1))
-        var c := top.lerp(bottom, t)
-        for x in range(size.x):
-            img.set_pixel(x, y, c)
-    return ImageTexture.create_from_image(img)
+	var img := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
+	for y in range(size.y):
+		var t := float(y) / float(max(1, size.y - 1))
+		var c := top.lerp(bottom, t)
+		for x in range(size.x):
+			img.set_pixel(x, y, c)
+	return ImageTexture.create_from_image(img)
 
 func _make_cloud_band(color: Color, blob_h: int, alpha_mult: float) -> Node2D:
-    var root := Node2D.new()
-    var sz := get_viewport_rect().size
-    var tex := _make_cloud_texture(int(sz.x), blob_h, color, alpha_mult)
+	var root := Node2D.new()
+	var sz := get_viewport_rect().size
+	var tex := _make_cloud_texture(int(sz.x), blob_h, color, alpha_mult)
 
-    var top := Sprite2D.new()
-    top.texture = tex
-    top.position = Vector2(sz.x * 0.5, sz.y * 0.28)
-    root.add_child(top)
+	var top := Sprite2D.new()
+	top.texture = tex
+	top.position = Vector2(sz.x * 0.5, sz.y * 0.28)
+	root.add_child(top)
 
-    var mid := Sprite2D.new()
-    mid.texture = tex
-    mid.position = Vector2(sz.x * 0.5 - 240.0, sz.y * 0.36)
-    mid.modulate = Color(1, 1, 1, 0.8 * alpha_mult)
-    root.add_child(mid)
+	var mid := Sprite2D.new()
+	mid.texture = tex
+	mid.position = Vector2(sz.x * 0.5 - 240.0, sz.y * 0.36)
+	mid.modulate = Color(1, 1, 1, 0.8 * alpha_mult)
+	root.add_child(mid)
 
-    return root
+	return root
 
 func _make_cloud_texture(width: int, height: int, color: Color, alpha_mult: float) -> Texture2D:
-    var img := Image.create(width, height, false, Image.FORMAT_RGBA8)
-    img.fill(Color(0, 0, 0, 0))
-    for i in range(10):
-        var w := randi_range(120, 260)
-        var x := randi_range(-40, width - 40)
-        var y := randi_range(0, max(0, height - 1))
-        _paint_soft_blob(img, Vector2i(x, y), w, int(w * 0.4), color.with_alpha(color.a * alpha_mult))
-    return ImageTexture.create_from_image(img)
+	var img: Image = Image.create(width, height, false, Image.FORMAT_RGBA8)
+	img.fill(Color(0, 0, 0, 0))
+	for i in range(10):
+		var w: int = randi_range(120, 260)
+		var x: int = randi_range(-40, width - 40)
+		var y: int = randi_range(0, height - 1)
+		var c: Color = Color(color.r, color.g, color.b, clamp(color.a * alpha_mult, 0.0, 1.0))
+		_paint_soft_blob(img, Vector2i(x, y), w, int(w * 0.4), c)
+	return ImageTexture.create_from_image(img)
 
 func _paint_soft_blob(img: Image, center: Vector2i, w: int, h: int, c: Color) -> void:
-    var half_w := max(1, w / 2)
-    var half_h := max(1, h / 2)
-    for yy in range(center.y - half_h, center.y + half_h):
-        if yy < 0 or yy >= img.get_height():
-            continue
-        for xx in range(center.x - half_w, center.x + half_w):
-            if xx < 0 or xx >= img.get_width():
-                continue
-            var dx := float(xx - center.x) / float(half_w)
-            var dy := float(yy - center.y) / float(half_h)
-            var d := clamp(1.0 - sqrt(dx * dx + dy * dy), 0.0, 1.0)
-            var a := pow(d, 2.0) * c.a
-            var base := img.get_pixel(xx, yy)
-            img.set_pixel(xx, yy, Color(
-                c.r * a + base.r * (1.0 - a),
-                c.g * a + base.g * (1.0 - a),
-                c.b * a + base.b * (1.0 - a),
-                min(1.0, a + base.a)
-            ))
+	var half_w: int = w / 2
+	var half_h: int = h / 2
+	for yy in range(center.y - half_h, center.y + half_h):
+		if yy < 0 or yy >= img.get_height():
+			continue
+		for xx in range(center.x - half_w, center.x + half_w):
+			if xx < 0 or xx >= img.get_width():
+				continue
+			var dx: float = float(xx - center.x) / float(half_w)
+			var dy: float = float(yy - center.y) / float(half_h)
+			var d: float = clamp(1.0 - sqrt(dx * dx + dy * dy), 0.0, 1.0)
+			var a: float = pow(d, 2.0) * c.a
+			var base: Color = img.get_pixel(xx, yy)
+			var out: Color = Color(
+				c.r * a + base.r * (1.0 - a),
+				c.g * a + base.g * (1.0 - a),
+				c.b * a + base.b * (1.0 - a),
+				min(1.0, a + base.a)
+			)
+			img.set_pixel(xx, yy, out)
 
 func _recolor_clouds(layer: ParallaxLayer, new_color: Color) -> void:
-    for child in layer.get_children():
-        if child is Sprite2D:
-            var s := child as Sprite2D
-            var tex := s.texture
-            if tex == null or not (tex is ImageTexture):
-                continue
-            var img := (tex as ImageTexture).get_image()
-            for y in range(img.get_height()):
-                for x in range(img.get_width()):
-                    var p := img.get_pixel(x, y)
-                    if p.a > 0.01:
-                        img.set_pixel(x, y, Color(new_color.r, new_color.g, new_color.b, p.a))
-            s.texture = ImageTexture.create_from_image(img)
-        elif child is Node2D:
-            for grand in (child as Node2D).get_children():
-                if grand is Sprite2D:
-                    var s2 := grand as Sprite2D
-                    var tex2 := s2.texture
-                    if tex2 == null or not (tex2 is ImageTexture):
-                        continue
-                    var img2 := (tex2 as ImageTexture).get_image()
-                    for y2 in range(img2.get_height()):
-                        for x2 in range(img2.get_width()):
-                            var p2 := img2.get_pixel(x2, y2)
-                            if p2.a > 0.01:
-                                img2.set_pixel(x2, y2, Color(new_color.r, new_color.g, new_color.b, p2.a))
-                    s2.texture = ImageTexture.create_from_image(img2)
+	for child in layer.get_children():
+		if child is Sprite2D:
+			var s := child as Sprite2D
+			var tex := s.texture
+			if tex == null or not (tex is ImageTexture):
+				continue
+			var img := (tex as ImageTexture).get_image()
+			for y in range(img.get_height()):
+				for x in range(img.get_width()):
+					var p := img.get_pixel(x, y)
+					if p.a > 0.01:
+						img.set_pixel(x, y, Color(new_color.r, new_color.g, new_color.b, p.a))
+			s.texture = ImageTexture.create_from_image(img)
+		elif child is Node2D:
+			for grand in (child as Node2D).get_children():
+				if grand is Sprite2D:
+					var s2 := grand as Sprite2D
+					var tex2 := s2.texture
+					if tex2 == null or not (tex2 is ImageTexture):
+						continue
+					var img2 := (tex2 as ImageTexture).get_image()
+					for y2 in range(img2.get_height()):
+						for x2 in range(img2.get_width()):
+							var p2 := img2.get_pixel(x2, y2)
+							if p2.a > 0.01:
+								img2.set_pixel(x2, y2, Color(new_color.r, new_color.g, new_color.b, p2.a))
+					s2.texture = ImageTexture.create_from_image(img2)
 
 func _make_vignette_material() -> ShaderMaterial:
-    var shader := Shader.new()
-    shader.code = """
+	var shader := Shader.new()
+	shader.code = """
         shader_type canvas_item;
         uniform float strength = 0.45;
         void fragment() {
@@ -1245,9 +1250,9 @@ func _make_vignette_material() -> ShaderMaterial:
             COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
         }
     """
-    var mat := ShaderMaterial.new()
-    mat.shader = shader
-    return mat
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	return mat
 
 func _jab(sprite: Sprite2D, dir: int) -> void:
 	var t := create_tween()
@@ -1285,16 +1290,16 @@ func _make_rect_tex(w: int, h: int, color: Color) -> Texture2D:
 func _make_square_texture(color: Color) -> Texture2D:
 	var img := Image.create(40, 40, false, Image.FORMAT_RGBA8)
 	img.fill(color)
-    return ImageTexture.create_from_image(img)
+	return ImageTexture.create_from_image(img)
 
 var _bg_t: float = 0.0
 
 func _process(delta: float) -> void:
-    _bg_t += delta
-    if bg_clouds_far != null:
-        bg_clouds_far.motion_offset.x = _bg_t * 8.0
-    if bg_clouds_near != null:
-        bg_clouds_near.motion_offset.x = _bg_t * 16.0
+	_bg_t += delta
+	if bg_clouds_far != null:
+		bg_clouds_far.motion_offset.x = _bg_t * 8.0
+	if bg_clouds_near != null:
+		bg_clouds_near.motion_offset.x = _bg_t * 16.0
 
 func _spawn_unit_sprite(u: Dictionary, pos: Vector2, color: Color) -> void:
 	var s: Sprite2D = u.get("sprite", null)
@@ -1382,4 +1387,3 @@ func _apply_death_visual(u: Dictionary) -> void:
 	var hud: Control = u.get("hud", null)
 	if s != null: s.modulate = Color(0.6, 0.6, 0.6, 0.9)
 	if hud != null: hud.modulate = Color(0.7, 0.7, 0.7, 0.9)
-
