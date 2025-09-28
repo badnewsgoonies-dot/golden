@@ -93,6 +93,11 @@ var declare_allies: Array = []          # living party members this round
 var planned_actions: Array = []         # [{team, actor, action, target?}, ...]
 var declare_index: int = 0              # which ally is being commanded (0..)
 
+# --- Turn Queue Panel ---
+var queue_root: Control = null
+var queue_box: VBoxContainer = null
+var queue_rows: Array[Label] = []
+
 func _ready() -> void:
 	randomize()
 
@@ -119,6 +124,7 @@ func _ready() -> void:
 	_build_command_menu()
 	_build_spells_menu()
 	_build_target_menu()
+	_build_queue_panel()
 
 	if "adept" in DataRegistry.characters:
 		party[0].stats = DataRegistry.characters["adept"]
@@ -332,6 +338,50 @@ func _build_target_menu() -> void:
 	target_list = VBoxContainer.new()
 	target_list.add_theme_constant_override("separation", 6)
 	vbox.add_child(target_list)
+
+func _build_queue_panel() -> void:
+	queue_root = Control.new()
+	queue_root.visible = false
+	queue_root.position = Vector2(24, 90)      # top-left
+	queue_root.size = Vector2(240, 260)
+	cmd_layer.add_child(queue_root)
+
+	var panel: ColorRect = ColorRect.new()
+	panel.color = Color(0.1, 0.1, 0.1, 0.65)
+	panel.size = queue_root.size
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = panel.color
+	sb.corner_radius_top_left = 12
+	sb.corner_radius_top_right = 12
+	sb.corner_radius_bottom_left = 12
+	sb.corner_radius_bottom_right = 12
+	panel.add_theme_stylebox_override("panel", sb)
+	queue_root.add_child(panel)
+
+	var inner := MarginContainer.new()
+	inner.add_theme_constant_override("margin_left", 10)
+	inner.add_theme_constant_override("margin_right", 10)
+	inner.add_theme_constant_override("margin_top", 8)
+	inner.add_theme_constant_override("margin_bottom", 8)
+	inner.size = queue_root.size
+	queue_root.add_child(inner)
+
+	var vbox := VBoxContainer.new()
+	inner.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "Turn Queue"
+	title.add_theme_font_size_override("font_size", 18)
+	vbox.add_child(title)
+
+	var sep := ColorRect.new()
+	sep.color = Color(1,1,1,0.15)
+	sep.size = Vector2(999, 2)
+	vbox.add_child(sep)
+
+	queue_box = VBoxContainer.new()
+	queue_box.add_theme_constant_override("separation", 4)
+	vbox.add_child(queue_box)
 
 func _input(event: InputEvent) -> void:
 	# Allow canceling target menu with ESC even when main menu is hidden
@@ -556,12 +606,19 @@ func _commit_declare_phase() -> void:
                     break
                 p["target"] = _pick_random(tp)
 
-    # Resolve
-    for p in planned_actions:
+    # --- Show queue ---
+    _show_queue(planned_actions)
+
+    # Resolve with highlight
+    for i in range(planned_actions.size()):
+        var p = planned_actions[i]
         if _is_team_dead(party) or _is_team_dead(wave):
             break
+        _highlight_queue_index(i)
         _resolve_action_team(p)
 
+    # Done
+    _hide_queue()
     _end_round()
 
 func _show_command_menu(for_name: String) -> void:
@@ -576,7 +633,7 @@ func _hide_command_menu() -> void:
 	menu_visible = false
 
 func _hide_spells_menu() -> void:
-	spells_root.visible = false
+    spells_root.visible = false
 
 func _populate_spells_for(actor: Dictionary) -> void:
 	# Clear old buttons
@@ -660,6 +717,41 @@ func _queue_player_action(act: Dictionary) -> void:
     planned_actions.append(entry)
     declare_index += 1
     _prompt_next_actor()
+
+func _show_queue(actions: Array) -> void:
+    for c in queue_box.get_children():
+        c.queue_free()
+    queue_rows.clear()
+
+    for a in actions:
+        var lbl := Label.new()
+        var actor: Dictionary = a["actor"]
+        var nm: String = String(actor["stats"].get("name","?"))
+        var team := String(a.get("team","?"))
+        var act := a.get("action", {})
+        var kind := String(act.get("kind","attack"))
+        lbl.text = "%s  —  %s" % [nm, kind]
+        lbl.add_theme_font_size_override("font_size", 16)
+        lbl.add_theme_color_override("font_color", Color(0.8,1,0.8) if team == "party" else Color(1,0.8,0.8))
+        queue_box.add_child(lbl)
+        queue_rows.append(lbl)
+
+    queue_root.visible = true
+
+func _highlight_queue_index(i: int) -> void:
+    for idx in range(queue_rows.size()):
+        var lbl: Label = queue_rows[idx]
+        if idx == i:
+            lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+            lbl.add_theme_constant_override("shadow_offset_x", 1)
+            lbl.add_theme_constant_override("shadow_offset_y", 1)
+            lbl.add_theme_font_size_override("font_size", 18)
+        else:
+            lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.0))
+            lbl.add_theme_font_size_override("font_size", 16)
+
+func _hide_queue() -> void:
+    queue_root.visible = false
 
 func _on_menu_items() -> void:
 	# Placeholder for now; keep menu open
