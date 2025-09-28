@@ -563,14 +563,14 @@ func _check_end() -> bool:
 	return false
 
 func _end_round() -> void:
-    for p in party:
-        p.defending = false
-    for e in wave:
-        e.defending = false
-    round += 1
-    _start_round_declare()
+	for p in party:
+		p.defending = false
+	for e in wave:
+		e.defending = false
+	round += 1
+	_start_round_declare()
 
-    _update_all_overlays()
+	_update_all_overlays()
 
 func _finish_battle(winner: String) -> void:
 	if winner == "player":
@@ -581,45 +581,45 @@ func _finish_battle(winner: String) -> void:
 		return
 
 func _commit_declare_phase() -> void:
-    # Allies done; add AI enemies
-    var foes := _alive(wave)
-    for e in foes:
-        planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
+	# Allies done; add AI enemies
+	var foes := _alive(wave)
+	for e in foes:
+		planned_actions.append({"team":"wave","actor":e,"action":{"kind":"attack"}})
 
-    # Initiative
-    for p in planned_actions:
-        var spd := int(p["actor"]["stats"].get("spd", 10))
-        p["init"] = spd + randi_range(0, int(spd * 0.25))
-    planned_actions.sort_custom(func(a,b): return a["init"] > b["init"])
+	# Initiative
+	for p in planned_actions:
+		var spd := int(p["actor"]["stats"].get("spd", 10))
+		p["init"] = spd + randi_range(0, int(spd * 0.25))
+	planned_actions.sort_custom(func(a,b): return a["init"] > b["init"])
 
-    # Fill any missing targets
-    for p in planned_actions:
-        if not p.has("target"):
-            if p["team"] == "party":
-                var tp := _alive(wave)
-                if tp.is_empty():
-                    break
-                p["target"] = _pick_random(tp)
-            else:
-                var tp := _alive(party)
-                if tp.is_empty():
-                    break
-                p["target"] = _pick_random(tp)
+	# Fill any missing targets
+	for p in planned_actions:
+		if not p.has("target"):
+			if p["team"] == "party":
+				var tp := _alive(wave)
+				if tp.is_empty():
+					break
+				p["target"] = _pick_random(tp)
+			else:
+				var tp := _alive(party)
+				if tp.is_empty():
+					break
+				p["target"] = _pick_random(tp)
 
-    # --- Show queue ---
-    _show_queue(planned_actions)
+	# --- Show queue ---
+	_show_queue(planned_actions)
 
-    # Resolve with highlight
-    for i in range(planned_actions.size()):
-        var p = planned_actions[i]
-        if _is_team_dead(party) or _is_team_dead(wave):
-            break
-        _highlight_queue_index(i)
-        _resolve_action_team(p)
+	# Resolve with highlight
+	for i in range(planned_actions.size()):
+		var p = planned_actions[i]
+		if _is_team_dead(party) or _is_team_dead(wave):
+			break
+		_highlight_queue_index(i)
+		_resolve_action_team(p)
 
-    # Done
-    _hide_queue()
-    _end_round()
+	# Done
+	_hide_queue()
+	_end_round()
 
 func _show_command_menu(for_name: String) -> void:
 	cmd_char.text = "  %s" % for_name
@@ -633,7 +633,7 @@ func _hide_command_menu() -> void:
 	menu_visible = false
 
 func _hide_spells_menu() -> void:
-    spells_root.visible = false
+	spells_root.visible = false
 
 func _populate_spells_for(actor: Dictionary) -> void:
 	# Clear old buttons
@@ -681,77 +681,86 @@ func _hide_target_menu() -> void:
 
 # --- Menu callbacks ---
 func _on_menu_attack() -> void:
-    _hide_command_menu(); _hide_spells_menu();
-    _queue_player_action({"kind":"attack"})
+	_hide_command_menu(); _hide_spells_menu();
+	_queue_player_action({"kind":"attack"})
 
 func _on_menu_defend() -> void:
-    _hide_command_menu(); _hide_spells_menu();
-    _queue_player_action({"kind":"defend"})
+	_hide_command_menu(); _hide_spells_menu();
+	_queue_player_action({"kind":"defend"})
 
 func _on_menu_spells() -> void:
-    # Show spells for the current acting ally (set by _prompt_next_actor)
-    var actor: Dictionary = party[current_actor_index]
-    _populate_spells_for(actor)
-    spells_root.visible = true
+	# Show spells for the current acting ally (set by _prompt_next_actor)
+	var actor: Dictionary = party[current_actor_index]
+	_populate_spells_for(actor)
+	spells_root.visible = true
 
 func _on_spell_chosen(sp: Dictionary) -> void:
-    # Decide valid target team based on spell type, then prompt targets
-    _hide_command_menu(); spells_root.visible = false
-    var stype: String = String(sp.get("type","damage"))
-    if stype == "heal":
-        _show_target_menu(current_actor_index, _alive(party))
-    else:
-        _show_target_menu(current_actor_index, _alive(wave))
-    pending_spell = sp.duplicate()
+	# Decide valid target team based on spell type, then prompt targets
+	_hide_command_menu(); spells_root.visible = false
+	var stype: String = String(sp.get("type","damage"))
+	if stype == "heal":
+		_show_target_menu(current_actor_index, _alive(party))
+	else:
+		_show_target_menu(current_actor_index, _alive(wave))
+	pending_spell = sp.duplicate()
 
 func _on_target_chosen(idx: int) -> void:
-    _hide_target_menu()
-    var tgt: Dictionary = target_candidates[idx]
-    _queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
+	_hide_target_menu()
+	var tgt: Dictionary = target_candidates[idx]
+	_queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
 
 func _queue_player_action(act: Dictionary) -> void:
-    var actor = declare_allies[declare_index]
-    var entry := {"team":"party","actor":actor,"action":act}
-    if act.has("target"):
-        entry["target"] = act["target"]
-    planned_actions.append(entry)
-    declare_index += 1
-    _prompt_next_actor()
+	var actor = declare_allies[declare_index]
+	var entry := {"team":"party","actor":actor,"action":act}
+	if act.has("target"):
+		entry["target"] = act["target"]
+	planned_actions.append(entry)
+	declare_index += 1
+	_prompt_next_actor()
 
-func _show_queue(actions: Array) -> void:
+func _show_queue(actions: Array[Dictionary]) -> void:
+    # clear
     for c in queue_box.get_children():
         c.queue_free()
     queue_rows.clear()
 
-    for a in actions:
+    for a: Dictionary in actions:
         var lbl := Label.new()
+
         var actor: Dictionary = a["actor"]
-        var nm: String = String(actor["stats"].get("name","?"))
-        var team := String(a.get("team","?"))
-        var act := a.get("action", {})
-        var kind := String(act.get("kind","attack"))
+        var nm: String = String(actor["stats"].get("name", "?"))
+        var team: String = String(a.get("team", "?"))
+
+        # IMPORTANT: type the dict we pull from a.get(...)
+        var act: Dictionary = (a.get("action", {}) as Dictionary)
+        var kind: String = String(act.get("kind", "attack"))
+
         lbl.text = "%s  —  %s" % [nm, kind]
         lbl.add_theme_font_size_override("font_size", 16)
-        lbl.add_theme_color_override("font_color", Color(0.8,1,0.8) if team == "party" else Color(1,0.8,0.8))
+        lbl.add_theme_color_override(
+            "font_color",
+            Color(0.8, 1, 0.8) if team == "party" else Color(1, 0.8, 0.8)
+        )
+
         queue_box.add_child(lbl)
         queue_rows.append(lbl)
 
     queue_root.visible = true
 
 func _highlight_queue_index(i: int) -> void:
-    for idx in range(queue_rows.size()):
-        var lbl: Label = queue_rows[idx]
-        if idx == i:
-            lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
-            lbl.add_theme_constant_override("shadow_offset_x", 1)
-            lbl.add_theme_constant_override("shadow_offset_y", 1)
-            lbl.add_theme_font_size_override("font_size", 18)
-        else:
-            lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.0))
-            lbl.add_theme_font_size_override("font_size", 16)
+	for idx in range(queue_rows.size()):
+		var lbl: Label = queue_rows[idx]
+		if idx == i:
+			lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.9))
+			lbl.add_theme_constant_override("shadow_offset_x", 1)
+			lbl.add_theme_constant_override("shadow_offset_y", 1)
+			lbl.add_theme_font_size_override("font_size", 18)
+		else:
+			lbl.add_theme_color_override("font_shadow_color", Color(0,0,0,0.0))
+			lbl.add_theme_font_size_override("font_size", 16)
 
 func _hide_queue() -> void:
-    queue_root.visible = false
+	queue_root.visible = false
 
 func _on_menu_items() -> void:
 	# Placeholder for now; keep menu open
