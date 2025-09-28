@@ -1,6 +1,6 @@
-extends Node2D
+﻿extends Node2D
 
-# Minimal Golden Sun–style battle with HP/MP bars (no skills/items yet).
+# Minimal Golden Sunâ€“style battle with HP/MP bars (no skills/items yet).
 # Keys: 1 = Attack, 2 = Defend
 
 const START_PLAYER := {
@@ -583,6 +583,31 @@ func _resolve_action_team(p:Dictionary) -> void:
 			_update_all_overlays()
 			return
 
+    if kind == "item":
+        var it: Dictionary = act.get("item", {})
+        var itype: String = String(it.get("type", "heal"))
+        var amount: int = int(it.get("amount", 0))
+        var t: Dictionary = target
+        if itype == "heal":
+            var maxhp: int = int(t["stats"].get("max_hp", 1))
+            var before: int = int(t["stats"].get("hp", 0))
+            t["stats"]["hp"] = min(maxhp, before + amount)
+            _log("%s uses %s on %s for +%d HP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+        elif itype == "mp":
+            var maxmp: int = int(t["stats"].get("max_mp", 0))
+            var before_mp: int = int(t["stats"].get("mp", 0))
+            t["stats"]["mp"] = min(maxmp, before_mp + amount)
+            _log("%s uses %s on %s for +%d MP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+
+        # decrement inventory
+        var iid: String = String(it.get("id", ""))
+        if inventory.has(iid):
+            var entry: Dictionary = inventory[iid]
+            entry["qty"] = max(0, int(entry.get("qty", 0)) - 1)
+            inventory[iid] = entry
+        _update_all_overlays()
+        return
+
 	# default = basic attack
 	var atk:int = int(actor["stats"].get("atk", 10))
 	var dfn:int = int(target["stats"].get("def", 10))
@@ -607,7 +632,7 @@ func _check_end() -> bool:
 		return true
 
 	if _is_team_dead(party):
-		_log("Defeat… your party falls.")
+		_log("Defeatâ€¦ your party falls.")
 		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
 		return true
 
@@ -625,7 +650,7 @@ func _end_round() -> void:
 
 func _finish_battle(winner: String) -> void:
 	if winner == "player":
-		_log("Victory! Preparing next foe…")
+		_log("Victory! Preparing next foeâ€¦")
 		# +15% HP heal
 		party[0]["stats"]["hp"] = min(int(party[0]["stats"]["max_hp"]), int(party[0]["stats"]["hp"]) + int(party[0]["stats"]["max_hp"] * 0.15))
 		get_tree().change_scene_to_file("res://scenes/Fork.tscn")
@@ -729,9 +754,10 @@ func _show_target_menu(caster_idx: int, candidates: Array) -> void:
 	target_root.visible = true
 
 func _hide_target_menu() -> void:
-	target_root.visible = false
-	target_candidates.clear()
-	pending_spell.clear()
+    target_root.visible = false
+    target_candidates.clear()
+    pending_spell.clear()
+    pending_item.clear()
 
 # --- Menu callbacks ---
 func _on_menu_attack() -> void:
@@ -763,6 +789,13 @@ func _on_spell_chosen(sp: Dictionary) -> void:
         _show_target_menu(current_actor_index, _alive(wave))
     pending_spell = sp.duplicate()
 
+func _on_item_chosen(it: Dictionary) -> void:
+    _hide_command_menu(); _hide_spells_menu()
+    # Items currently target allies (heal/MP)
+    pending_item = it.duplicate()
+    items_root.visible = false
+    _show_target_menu(current_actor_index, _alive(party))
+
 func _on_target_chosen(idx: int) -> void:
     _hide_target_menu()
     var tgt: Dictionary = target_candidates[idx]
@@ -782,34 +815,98 @@ func _queue_player_action(act: Dictionary) -> void:
     declare_index += 1
     _prompt_next_actor()
 
+func _populate_items_list() -> void:
+    # Clear
+    for c in items_list.get_children():
+        c.queue_free()
+
+    # Build a button per item with qty > 0
+    var keys: Array = inventory.keys()
+    keys.sort()  # deterministic order
+    var any := false
+    for k in keys:
+        var entry: Dictionary = inventory[k]
+        var qty: int = int(entry.get("qty", 0))
+        if qty <= 0:
+            continue
+        any = true
+        var nm: String = String(entry.get("name", k))
+        var typ: String = String(entry.get("type", "heal"))
+        var amt: int = int(entry.get("amount", 0))
+        var btn := Button.new()
+        var desc: String = "HP +%d" % amt if typ == "heal" else "MP +%d" % amt
+        btn.text = "%s   x%d   (%s)" % [nm, qty, desc]
+        btn.add_theme_font_size_override("font_size", 20)
+        var it := entry.duplicate()
+        btn.pressed.connect(func(): _on_item_chosen(it))
+        items_list.add_child(btn)
+
+    if not any:
+        var lbl := Label.new()
+        lbl.text = "No items"
+        lbl.add_theme_font_size_override("font_size", 18)
+        items_list.add_child(lbl)
+
 func _show_queue(actions: Array[Dictionary]) -> void:
-	# clear
-	for c in queue_box.get_children():
-		c.queue_free()
-	queue_rows.clear()
+    # clear
+    for c in queue_box.get_children():
+        c.queue_free()
+    queue_rows.clear()
 
-	for a: Dictionary in actions:
-		var lbl := Label.new()
+    for a: Dictionary in actions:
+        var actor: Dictionary = a["actor"]
+        var nm: String = String(actor["stats"].get("name", "?"))
+        var team: String = String(a.get("team", "?"))
 
-		var actor: Dictionary = a["actor"]
-		var nm: String = String(actor["stats"].get("name", "?"))
-		var team: String = String(a.get("team", "?"))
+        # Typed action
+        var act: Dictionary = (a.get("action", {}) as Dictionary)
+        var kind: String = String(act.get("kind", "attack"))
 
-		# IMPORTANT: type the dict we pull from a.get(...)
-		var act: Dictionary = (a.get("action", {}) as Dictionary)
-		var kind: String = String(act.get("kind", "attack"))
+        var row := HBoxContainer.new()
+        row.add_theme_constant_override("separation", 8)
 
-		lbl.text = "%s  —  %s" % [nm, kind]
-		lbl.add_theme_font_size_override("font_size", 16)
-		lbl.add_theme_color_override(
-			"font_color",
-			Color(0.8, 1, 0.8) if team == "party" else Color(1, 0.8, 0.8)
-		)
+        var icon := Label.new()
+        var text := Label.new()
 
-		queue_box.add_child(lbl)
-		queue_rows.append(lbl)
+                # Icon by kind (ASCII-safe)
+        if kind == "defend":
+            icon.text = "[DEF]"
+        elif kind == "skill":
+            var sp: Dictionary = (act.get("skill", {}) as Dictionary)
+            var stype: String = String(sp.get("type", "damage"))
+            icon.text = "[HEAL]" if stype == "heal" else "[SPELL]"
+        elif kind == "item":
+            icon.text = "[ITEM]"
+        else:
+            icon.text = "[ATK]"
 
-	queue_root.visible = true
+        icon.add_theme_font_size_override("font_size", 18)
+        row.add_child(icon)
+
+        # Label text
+        if kind == "skill":
+            var sp2: Dictionary = (act.get("skill", {}) as Dictionary)
+            var sn: String = String(sp2.get("name", "Skill"))
+            var mp_cost: int = int(sp2.get("mp", 0))
+            text.text = "%s - %s (MP %d)" % [nm, sn, mp_cost]
+        elif kind == "item":
+            var it: Dictionary = (act.get("item", {}) as Dictionary)
+            var iname: String = String(it.get("name", "Item"))
+            text.text = "%s - %s" % [nm, iname]
+        else:
+            text.text = "%s - %s" % [nm, kind]
+
+        text.add_theme_font_size_override("font_size", 16)
+        text.add_theme_color_override(
+            "font_color",
+            Color(0.8, 1, 0.8) if team == "party" else Color(1, 0.8, 0.8)
+        )
+        row.add_child(text)
+
+        queue_box.add_child(row)
+        queue_rows.append(text)
+
+    queue_root.visible = true
 
 func _highlight_queue_index(i: int) -> void:
 	for idx in range(queue_rows.size()):
@@ -826,9 +923,7 @@ func _highlight_queue_index(i: int) -> void:
 func _hide_queue() -> void:
 	queue_root.visible = false
 
-func _on_menu_items() -> void:
-	# Placeholder for now; keep menu open
-	_log("Items: not implemented yet.")
+ 
 
 func _prompt_player() -> void:
 	awaiting_player = true
@@ -965,3 +1060,4 @@ func _apply_death_visual(u: Dictionary) -> void:
 	var hud: Control = u.get("hud", null)
 	if s != null: s.modulate = Color(0.6, 0.6, 0.6, 0.9)
 	if hud != null: hud.modulate = Color(0.7, 0.7, 0.7, 0.9)
+
