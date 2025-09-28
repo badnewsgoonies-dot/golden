@@ -16,7 +16,7 @@ const START_ENEMY := {
 }
 
 # --- Party (player controls index 0 only for now) ---
-var party := [
+var party: Array[Dictionary] = [
 	{ "stats": {"name":"Adept","max_hp":100,"hp":100,"atk":24,"def":8,"spd":12,"max_mp":20,"mp":20},
 	  "defending":false, "sprite": null, "art":"hero:adept",
 	  "spells":[
@@ -38,7 +38,7 @@ var party := [
 ]
 
 # --- Enemies ---
-var wave := [
+var wave: Array[Dictionary] = [
 	{ "stats": {"name":"Goblin A","max_hp":90,"hp":90,"atk":16,"def":7,"spd":10}, "defending":false, "sprite": null, "art":"goblin" },
 	{ "stats": {"name":"Goblin B","max_hp":90,"hp":90,"atk":16,"def":7,"spd":9 },  "defending":false, "sprite": null, "art":"goblin" }
 ]
@@ -146,8 +146,8 @@ var inventory: Dictionary = {
 }
 
 # --- Declare phase state ---
-var declare_allies: Array = []          # living party members this round
-var planned_actions: Array = []         # [{team, actor, action, target?}, ...]
+var declare_allies: Array[Dictionary] = []          # living party members this round
+var planned_actions: Array[Dictionary] = []         # [{team, actor, action, target?}, ...]
 var declare_index: int = 0              # which ally is being commanded (0..)
 
 # --- Turn Queue Panel ---
@@ -570,24 +570,24 @@ func _build_background(biome: String) -> void:
 	bg_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bg_layer.add_child(bg_sky)
 
-    # Parallax clouds (no limits; use mirroring for seamless wrap)
-    var parallax: ParallaxBackground = ParallaxBackground.new()
-    parallax.scroll_base_offset = Vector2.ZERO
-    parallax.scroll_base_scale = Vector2.ONE
-    var vp_size: Vector2 = get_viewport_rect().size
-    bg_layer.add_child(parallax)
+	# Parallax clouds (no limits; use mirroring for seamless wrap)
+	var parallax: ParallaxBackground = ParallaxBackground.new()
+	parallax.scroll_base_offset = Vector2.ZERO
+	parallax.scroll_base_scale = Vector2.ONE
+	var vp_size: Vector2 = get_viewport_rect().size
+	bg_layer.add_child(parallax)
 
-    bg_clouds_far = ParallaxLayer.new()
-    bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
-    bg_clouds_far.motion_mirroring = Vector2(vp_size.x, 0.0)
-    bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
-    parallax.add_child(bg_clouds_far)
+	bg_clouds_far = ParallaxLayer.new()
+	bg_clouds_far.motion_scale = Vector2(0.1, 0.0)
+	bg_clouds_far.motion_mirroring = Vector2(vp_size.x, 0.0)
+	bg_clouds_far.add_child(_make_cloud_band(palette["cloud"], 18, 0.5))
+	parallax.add_child(bg_clouds_far)
 
-    bg_clouds_near = ParallaxLayer.new()
-    bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
-    bg_clouds_near.motion_mirroring = Vector2(vp_size.x, 0.0)
-    bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
-    parallax.add_child(bg_clouds_near)
+	bg_clouds_near = ParallaxLayer.new()
+	bg_clouds_near.motion_scale = Vector2(0.2, 0.0)
+	bg_clouds_near.motion_mirroring = Vector2(vp_size.x, 0.0)
+	bg_clouds_near.add_child(_make_cloud_band(palette["cloud"], 26, 0.8))
+	parallax.add_child(bg_clouds_near)
 
 	# Floor strip
 	bg_floor = ColorRect.new()
@@ -625,7 +625,12 @@ func _input(event: InputEvent) -> void:
 				_on_menu_defend()
 
 func _alive(units: Array[Dictionary]) -> Array[Dictionary]:
-	return units.filter(func(u: Dictionary): return int(u["stats"]["hp"]) > 0)
+    var out: Array[Dictionary] = []
+    for u in units:
+        var st: Dictionary = u.get("stats", {})
+        if int(st.get("hp", st.get("HP", 0))) > 0:
+            out.append(u)
+    return out
 
 func _is_team_dead(units: Array[Dictionary]) -> bool:
 	return _alive(units).is_empty()
