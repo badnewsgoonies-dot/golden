@@ -17,30 +17,30 @@ const START_ENEMY := {
 
 # --- Party (player controls index 0 only for now) ---
 var party := [
-	{ "stats": {"name":"Adept","max_hp":100,"hp":100,"atk":24,"def":8,"spd":12,"max_mp":20,"mp":20},
-	  "defending":false, "sprite": null,
-	  "spells":[
-		{"id":"fireball","name":"Fireball","type":"damage","power":2.0,"mp":6}
-	  ]
-	},
-	{ "stats": {"name":"Rogue","max_hp":80,"hp":80,"atk":18,"def":7,"spd":16,"max_mp":0,"mp":0},
-	  "defending":false, "sprite": null, "spells":[]
-	},
-	{ "stats": {"name":"Cleric","max_hp":90,"hp":90,"atk":12,"def":9,"spd":10,"max_mp":18,"mp":18},
-	  "defending":false, "sprite": null,
-	  "spells":[
-		{"id":"mend","name":"Mend","type":"heal","ratio":0.30,"mp":5}
-	  ]
-	},
-	{ "stats": {"name":"Guard","max_hp":120,"hp":120,"atk":14,"def":14,"spd":8,"max_mp":0,"mp":0},
-	  "defending":false, "sprite": null, "spells":[]
-	}
+    { "stats": {"name":"Adept","max_hp":100,"hp":100,"atk":24,"def":8,"spd":12,"max_mp":20,"mp":20},
+      "defending":false, "sprite": null, "art":"hero:adept",
+      "spells":[
+        {"id":"fireball","name":"Fireball","type":"damage","power":2.0,"mp":6}
+      ]
+    },
+    { "stats": {"name":"Rogue","max_hp":80,"hp":80,"atk":18,"def":7,"spd":16,"max_mp":0,"mp":0},
+      "defending":false, "sprite": null, "art":"hero:rogue", "spells":[]
+    },
+    { "stats": {"name":"Cleric","max_hp":90,"hp":90,"atk":12,"def":9,"spd":10,"max_mp":18,"mp":18},
+      "defending":false, "sprite": null, "art":"hero:cleric",
+      "spells":[
+        {"id":"mend","name":"Mend","type":"heal","ratio":0.30,"mp":5}
+      ]
+    },
+    { "stats": {"name":"Guard","max_hp":120,"hp":120,"atk":14,"def":14,"spd":8,"max_mp":0,"mp":0},
+      "defending":false, "sprite": null, "art":"hero:guard", "spells":[]
+    }
 ]
 
 # --- Enemies ---
 var wave := [
-	{ "stats": {"name":"Goblin A","max_hp":90,"hp":90,"atk":16,"def":7,"spd":10}, "defending":false, "sprite": null },
-	{ "stats": {"name":"Goblin B","max_hp":90,"hp":90,"atk":16,"def":7,"spd":9 }, "defending":false, "sprite": null }
+    { "stats": {"name":"Goblin A","max_hp":90,"hp":90,"atk":16,"def":7,"spd":10}, "defending":false, "sprite": null, "art":"goblin" },
+    { "stats": {"name":"Goblin B","max_hp":90,"hp":90,"atk":16,"def":7,"spd":9 },  "defending":false, "sprite": null, "art":"goblin" }
 ]
 
 var awaiting_player := true
@@ -59,6 +59,7 @@ const MAX_LOG := 8
 @onready var ai = preload("res://scripts/AIController.gd").new()
 @onready var overlay: CanvasLayer = CanvasLayer.new()
 @onready var cmd_layer: CanvasLayer = CanvasLayer.new()
+const SpriteFactory := preload("res://art/SpriteFactory.gd")
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
@@ -572,10 +573,10 @@ func _build_background(biome: String) -> void:
 	var parallax: ParallaxBackground = ParallaxBackground.new()
 	parallax.scroll_base_offset = Vector2.ZERO
 	parallax.scroll_base_scale = Vector2.ONE
-	# Parallax limits expect Vector2 in Godot 4
+	# Parallax limits expect Vector2i in this project (Godot 4 build)
 	var vp_size: Vector2 = get_viewport_rect().size
-	parallax.limit_begin = Vector2.ZERO
-	parallax.limit_end = vp_size
+	parallax.limit_begin = Vector2i.ZERO
+	parallax.limit_end = Vector2i(int(vp_size.x), int(vp_size.y))
 	bg_layer.add_child(parallax)
 
 	bg_clouds_far = ParallaxLayer.new()
@@ -1301,19 +1302,27 @@ func _process(delta: float) -> void:
 	if bg_clouds_near != null:
 		bg_clouds_near.motion_offset.x = _bg_t * 16.0
 
-func _spawn_unit_sprite(u: Dictionary, pos: Vector2, color: Color) -> void:
-	var s: Sprite2D = u.get("sprite", null)
-	if s == null or not is_instance_valid(s):
-		s = Sprite2D.new()
-		s.texture = _make_square_texture(color)
-		add_child(s)
-		u["sprite"] = s
-	s.position = pos
-	s.z_index = 0
+func _spawn_unit_sprite(u: Dictionary, pos: Vector2, _color: Color) -> void:
+    var s: Sprite2D = u.get("sprite", null)
+    if s == null or not is_instance_valid(s):
+        s = Sprite2D.new()
+        var tex: Texture2D
+        var kind: String = String(u.get("art", ""))
+        if kind.begins_with("hero:"):
+            var role: String = String(kind.split(":")[1])
+            tex = SpriteFactory.make_humanoid(role, 3)
+        elif kind != "":
+            tex = SpriteFactory.make_monster(kind, 3)
+        else:
+            tex = SpriteFactory.make_humanoid("rogue", 3)
+        s.texture = tex
+        add_child(s)
+        u["sprite"] = s
+    s.position = pos
+    s.z_index = 0
 
-	# Create HUD once
-	if u.get("hud", null) == null:
-		_create_unit_overlay(u)
+    if u.get("hud", null) == null:
+        _create_unit_overlay(u)
 
 func _layout_units() -> void:
 	# enemies (top)
