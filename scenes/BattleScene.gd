@@ -5,25 +5,36 @@ const Unit := preload("res://battle/models/Unit.gd")
 const Formula := preload("res://battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
+const DAMAGE_POPUP := preload("res://ui/DamagePopup.tscn")
 
-@onready var lbl_hero: Label = $UI/Root/VBox/HeroLabel
-@onready var lbl_enemy: Label = $UI/Root/VBox/EnemyLabel
-@onready var btn_attack: Button = $UI/Root/VBox/Buttons/BtnAttack
-@onready var btn_fire: Button = $UI/Root/VBox/Buttons/BtnFireball
-@onready var btn_potion: Button = $UI/Root/VBox/Buttons/BtnPotion
-@onready var btn_end: Button = $UI/Root/VBox/Buttons/BtnEndTurn
-@onready var lbl_queue: Label = $UI/Root/VBox/TurnOrder
-@onready var log_view: RichTextLabel = $UI/Root/VBox/Log
+@export var keyboard_end_turn_enabled: bool = true
+
+@onready var lbl_hero: Label = $HUD/VBox/HeroRow/HeroLabel
+@onready var hero_status_container: HBoxContainer = $HUD/VBox/HeroRow/HeroStatus
+@onready var lbl_enemy: Label = $HUD/VBox/EnemyRow/EnemyLabel
+@onready var enemy_status_container: HBoxContainer = $HUD/VBox/EnemyRow/EnemyStatus
+@onready var plan_label: Label = $HUD/VBox/PlanLabel
+@onready var btn_attack: Button = $HUD/VBox/Buttons/Attack
+@onready var btn_fire: Button = $HUD/VBox/Buttons/Fireball
+@onready var btn_potion: Button = $HUD/VBox/Buttons/Potion
+@onready var btn_end: Button = $HUD/VBox/Buttons/EndTurn
+@onready var lbl_queue: Label = $HUD/VBox/TurnOrderLabel
+@onready var log_view: RichTextLabel = $HUD/VBox/Log
 @onready var hero_sprite: Sprite2D = $Stage/HeroSprite
 @onready var enemy_sprite: Sprite2D = $Stage/EnemySprite
 @onready var hero_shadow: Sprite2D = $Stage/HeroShadow
 @onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
+@onready var popups_container: Control = $FX/Popups
+@onready var overlay_fade: ColorRect = $Overlay/Fade
+@onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
+@onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
 
 var hero: Unit
 var enemy: Unit
 var planned_actions: Array[Action] = []
 var turn_engine: TurnEngine
 var potion_used: bool = false
+var battle_finished: bool = false
 
 var skill_slash: Dictionary = {}
 var skill_fireball: Dictionary = {}
@@ -34,6 +45,7 @@ var hero_origin: Vector2 = Vector2.ZERO
 var enemy_origin: Vector2 = Vector2.ZERO
 var hero_shadow_base: Vector2 = Vector2.ONE
 var enemy_shadow_base: Vector2 = Vector2.ONE
+var status_icon_cache: Dictionary = {}
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -69,6 +81,17 @@ func _ready() -> void:
 	enemy_shadow_base = enemy_shadow.scale
 
 	_update_sprites()
+	_refresh_plan_label()
+	_refresh_end_turn_button()
+	refresh_status_hud()
+	$Overlay.visible = false
+	overlay_fade.modulate.a = 0.0
+
+	btn_attack.hint_tooltip = "Basic attack. No MP."
+	btn_fire.hint_tooltip = "Spell attack. Costs MP."
+	btn_potion.hint_tooltip = "Consume a potion to restore HP."
+	btn_end.hint_tooltip = "Resolve the queued actions."
+	btn_end.disabled = true
 
 	btn_attack.pressed.connect(_on_attack)
 	btn_fire.pressed.connect(_on_fireball)

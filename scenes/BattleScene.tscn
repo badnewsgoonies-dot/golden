@@ -32,44 +32,94 @@ position = Vector2(220, 368)
 [node name="EnemySprite" type="Sprite2D" parent="Stage"]
 position = Vector2(760, 320)
 
-[node name="EnemySprite" type="Sprite2D" parent="Stage"]
-position = Vector2(760, 320)
-
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Root" type="Control" parent="UI"]
+[node name="HUD" type="Control" parent="UI"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="VBox" type="VBoxContainer" parent="UI/Root"]
+[node name="VBox" type="VBoxContainer" parent="UI/HUD"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme_override_constants/separation = 10
 
-[node name="HeroLabel" type="Label" parent="UI/Root/VBox"]
+[node name="HeroRow" type="HBoxContainer" parent="UI/HUD/VBox"]
+custom_minimum_size = Vector2(0, 28)
+
+[node name="HeroLabel" type="Label" parent="UI/HUD/VBox/HeroRow"]
 text = "Hero:"
+size_flags_horizontal = 1
 
-[node name="EnemyLabel" type="Label" parent="UI/Root/VBox"]
+[node name="HeroStatus" type="HBoxContainer" parent="UI/HUD/VBox/HeroRow"]
+size_flags_horizontal = 8
+theme_override_constants/separation = 6
+
+[node name="EnemyRow" type="HBoxContainer" parent="UI/HUD/VBox"]
+custom_minimum_size = Vector2(0, 28)
+
+[node name="EnemyLabel" type="Label" parent="UI/HUD/VBox/EnemyRow"]
 text = "Enemy:"
+size_flags_horizontal = 1
 
-[node name="Buttons" type="HBoxContainer" parent="UI/Root/VBox"]
+[node name="EnemyStatus" type="HBoxContainer" parent="UI/HUD/VBox/EnemyRow"]
+size_flags_horizontal = 8
+theme_override_constants/separation = 6
 
-[node name="BtnAttack" type="Button" parent="UI/Root/VBox/Buttons"]
+[node name="PlanLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Planned: --"
+
+[node name="Buttons" type="HBoxContainer" parent="UI/HUD/VBox"]
+theme_override_constants/separation = 12
+
+[node name="Attack" type="Button" parent="UI/HUD/VBox/Buttons"]
 text = "Attack"
 
-[node name="BtnFireball" type="Button" parent="UI/Root/VBox/Buttons"]
+[node name="Fireball" type="Button" parent="UI/HUD/VBox/Buttons"]
 text = "Fireball"
 
-[node name="BtnPotion" type="Button" parent="UI/Root/VBox/Buttons"]
+[node name="Potion" type="Button" parent="UI/HUD/VBox/Buttons"]
 text = "Potion"
 
-[node name="BtnEndTurn" type="Button" parent="UI/Root/VBox/Buttons"]
+[node name="EndTurn" type="Button" parent="UI/HUD/VBox/Buttons"]
 text = "End Turn"
 
-[node name="TurnOrder" type="Label" parent="UI/Root/VBox"]
-text = "Turn order:"
+[node name="TurnOrderLabel" type="Label" parent="UI/HUD/VBox"]
+text = "Turn order: --"
 
-[node name="Log" type="RichTextLabel" parent="UI/Root/VBox"]
+[node name="Log" type="RichTextLabel" parent="UI/HUD/VBox"]
 size_flags_vertical = 3
 autowrap_mode = 2
 scroll_active = true
 scroll_following = true
+
+[node name="FX" type="CanvasLayer" parent="."]
+
+[node name="Popups" type="Control" parent="FX"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="SFX" type="AudioStreamPlayer" parent="."]
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Fade" type="ColorRect" parent="Overlay"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0)
+
+[node name="CenterContainer" type="CenterContainer" parent="Overlay"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Overlay/CenterContainer"]
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Overlay/CenterContainer/VBoxContainer"]
+text = "Victory!"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="Overlay/CenterContainer/VBoxContainer"]
+text = "XP +0\nLoot: --"
+horizontal_alignment = 1

@@ -75,3 +75,13 @@ func tick_statuses() -> Array[Status]:
 			expired.append(st)
 			statuses.erase(st)
 	return expired
+
+func get_status_types() -> Array[String]:
+	var types: Array[String] = []
+	for st in statuses:
+		if st == null:
+			continue
+		if st.type.is_empty():
+			continue
+		types.append(st.type)
+	return types

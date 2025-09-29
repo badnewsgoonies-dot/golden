@@ -41,6 +41,24 @@ static func make_shadow(width: int = 48, height: int = 16, alpha: float = 0.45) 
                 img.set_pixel(x, y, Color(0, 0, 0, alpha * falloff))
     return ImageTexture.create_from_image(img)
 
+static func make_status_icon(status: String) -> Texture2D:
+    var color := Color(0.85, 0.85, 0.85, 1.0)
+    match status.to_lower():
+        "burn":
+            color = Color(0.95, 0.36, 0.18, 1.0)
+        "poison":
+            color = Color(0.40, 0.85, 0.35, 1.0)
+        "stun":
+            color = Color(0.95, 0.88, 0.35, 1.0)
+        _:
+            pass
+    var size: int = 16
+    var img: Image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+    img.fill(Color(0, 0, 0, 0))
+    _fill_circle(img, size / 2, size / 2, size / 2 - 1, color)
+    _outline(img, Color(0, 0, 0, 1))
+    return ImageTexture.create_from_image(img)
+
 # Palettes
 static func _role_palette(role: String) -> Dictionary:
     match role.to_lower():
