@@ -4,6 +4,7 @@ const Action := preload("res://battle/models/Action.gd")
 const Unit := preload("res://battle/models/Unit.gd")
 const Formula := preload("res://battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
+const SpriteFactory := preload("res://art/SpriteFactory.gd")
 
 @onready var lbl_hero: Label = $UI/Root/VBox/HeroLabel
 @onready var lbl_enemy: Label = $UI/Root/VBox/EnemyLabel
@@ -13,6 +14,8 @@ const TurnEngine := preload("res://battle/TurnEngine.gd")
 @onready var btn_end: Button = $UI/Root/VBox/Buttons/BtnEndTurn
 @onready var lbl_queue: Label = $UI/Root/VBox/TurnOrder
 @onready var log_view: RichTextLabel = $UI/Root/VBox/Log
+@onready var hero_sprite: Sprite2D = $Stage/HeroSprite
+@onready var enemy_sprite: Sprite2D = $Stage/EnemySprite
 
 var hero: Unit
 var enemy: Unit
@@ -35,6 +38,15 @@ func _ready() -> void:
 
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
+
+	hero_sprite.texture = SpriteFactory.make_humanoid("adept", 6)
+	hero_sprite.centered = true
+	hero_sprite.position = Vector2(220, 370)
+	enemy_sprite.texture = SpriteFactory.make_monster("goblin", 6)
+	enemy_sprite.centered = true
+	enemy_sprite.position = Vector2(760, 320)
+	enemy_sprite.flip_h = true
+	_update_sprites()
 
 	btn_attack.pressed.connect(_on_attack)
 	btn_fire.pressed.connect(_on_fireball)
@@ -144,6 +156,7 @@ func _update_ui() -> void:
 		enemy.stats.get("HP", 0),
 		enemy.max_stats.get("HP", 0)
 	]
+	_update_sprites()
 
 func _log(msg: String) -> void:
 	log_view.append_text(msg + "\n")
@@ -223,3 +236,7 @@ func _build_unit(def: Dictionary) -> Unit:
 		"air": float(resist_dict.get("air", 1.0))
 	}
 	return unit
+
+func _update_sprites() -> void:
+	hero_sprite.modulate = Color.WHITE if hero.is_alive() else Color(0.5, 0.5, 0.5, 0.6)
+	enemy_sprite.modulate = Color.WHITE if enemy.is_alive() else Color(0.5, 0.5, 0.5, 0.6)
