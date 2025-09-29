@@ -1,4 +1,4 @@
-class_name Unit
+﻿class_name Unit
 extends RefCounted
 
 const Status := preload("res://battle/models/Status.gd")
