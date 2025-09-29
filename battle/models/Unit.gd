@@ -20,8 +20,8 @@ func is_alive() -> bool:
 	return int(stats.get("HP", 0)) > 0
 
 func get_stat(stat_name: String) -> float:
-	var base := float(stats.get(stat_name, 0))
-	var mult := float(buffs.get(stat_name, 1.0))
+	var base: float = float(stats.get(stat_name, 0))
+	var mult: float = float(buffs.get(stat_name, 1.0))
 	return base * mult
 
 func get_resist(element: String) -> float:

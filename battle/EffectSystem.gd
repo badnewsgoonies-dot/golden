@@ -4,7 +4,7 @@ extends RefCounted
 const Action := preload("res://battle/models/Action.gd")
 const Status := preload("res://battle/models/Status.gd")
 
-var rng := RandomNumberGenerator.new()
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _init() -> void:
 	rng.randomize()
@@ -16,10 +16,10 @@ func apply_on_hit(action: Action) -> Array[String]:
 		return logs
 	for eff_data in effects:
 		var eff: Dictionary = eff_data
-		var chance := float(eff.get("chance", 1.0))
+		var chance: float = float(eff.get("chance", 1.0))
 		if rng.randf() > chance:
 			continue
-		var status := Status.new({
+		var status: Status = Status.new({
 			"type": eff.get("apply", ""),
 			"duration": eff.get("duration", 0),
 			"value": eff.get("value", 0.0)
@@ -41,12 +41,12 @@ func tick_end_of_round(units: Array) -> Array[String]:
 		for st in unit.statuses:
 			match st.type:
 				"burn":
-					var dmg := int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.05))
-					var actual := unit.take_damage(dmg)
+					var dmg: int = int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.05))
+					var actual: int = int(unit.take_damage(dmg))
 					logs.append("%s suffers %d burn" % [unit.name, actual])
 				"poison":
-					var dmg2 := int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.07))
-					var actual2 := unit.take_damage(dmg2)
+					var dmg2: int = int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.07))
+					var actual2: int = int(unit.take_damage(dmg2))
 					logs.append("%s takes %d poison" % [unit.name, actual2])
 				"stun":
 					pass

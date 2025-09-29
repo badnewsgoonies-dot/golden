@@ -49,7 +49,7 @@ func _on_attack() -> void:
 	_queue_hero_action(skill_slash)
 
 func _on_fireball() -> void:
-	var cost := int(skill_fireball.get("mp_cost", 0))
+	var cost: int = int(skill_fireball.get("mp_cost", 0))
 	if int(hero.stats.get("MP", 0)) >= cost:
 		_queue_hero_action(skill_fireball)
 	else:
@@ -64,8 +64,8 @@ func _on_potion() -> void:
 	if current_hp >= max_hp:
 		_log("HP is already full!")
 		return
-	var heal_amount := int(ceil(max_hp * POTION_HEAL_PCT))
-	var restored := hero.heal(heal_amount)
+	var heal_amount: int = int(ceil(max_hp * POTION_HEAL_PCT))
+	var restored: int = hero.heal(heal_amount)
 	potion_used = true
 	btn_potion.disabled = true
 	_log("Hero uses Potion and heals %d HP." % restored)
@@ -73,7 +73,7 @@ func _on_potion() -> void:
 
 func _queue_hero_action(skill: Dictionary) -> void:
 	planned_actions.clear()
-	var skill_copy := skill.duplicate(true)
+	var skill_copy: Dictionary = skill.duplicate(true)
 	planned_actions.append(Action.new(hero, skill_copy, enemy))
 	_log("Planned: %s" % skill_copy.get("name", "Action"))
 
@@ -83,7 +83,7 @@ func _on_end_turn() -> void:
 	if planned_actions.is_empty():
 		planned_actions.append(Action.new(hero, skill_slash, enemy))
 
-	var enemy_action := Action.new(enemy, skill_slash.duplicate(true), hero)
+	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
 	actions.append(enemy_action)
 	actions = turn_engine.build_queue(actions)
@@ -91,15 +91,15 @@ func _on_end_turn() -> void:
 
 	for a in actions:
 		if a.actor == hero:
-			var mp_cost := int(a.skill.get("mp_cost", 0))
+		var mp_cost: int = int(a.skill.get("mp_cost", 0))
 			if mp_cost > 0:
 				hero.spend_mp(mp_cost)
 
 	for a in actions:
 		if !a.actor.is_alive() or !a.target.is_alive():
 			continue
-		var tag := Formula.element_tag(a.actor, a.target, a.skill)
-		var result := turn_engine.execute(a)
+		var tag: String = Formula.element_tag(a.actor, a.target, a.skill)
+		var result: Dictionary = turn_engine.execute(a)
 		if result.get("hit", false):
 			var crit_text := " CRIT!" if result.get("crit", false) else ""
 			_log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
@@ -108,7 +108,7 @@ func _on_end_turn() -> void:
 		else:
 			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
 
-	var tick_logs := turn_engine.end_of_round_tick([hero, enemy])
+	var tick_logs: Array[String] = turn_engine.end_of_round_tick([hero, enemy])
 	for line in tick_logs:
 		_log(line)
 
@@ -156,10 +156,10 @@ func _update_turn_order(actions: Array) -> void:
 		return
 	var parts: Array[String] = []
 	for item in actions:
-		var act := item as Action
+		var act: Action = item as Action
 		if act == null:
 			continue
-		var actor_name := act.actor.name if act.actor != null else "?"
+		var actor_name: String = act.actor.name if act.actor != null else "?"
 		var skill_name := String(act.skill.get("name", "Action"))
 		parts.append("%s (%s)" % [actor_name, skill_name])
 	lbl_queue.text = "Turn order: " + " -> ".join(parts)
@@ -204,8 +204,8 @@ func _build_unit(def: Dictionary) -> Unit:
 	var unit: Unit = Unit.new()
 	unit.name = String(def.get("name", "Unit"))
 	var stats_dict: Dictionary = def.get("stats", {})
-	var max_hp := int(stats_dict.get("max_hp", 80))
-	var max_mp := int(stats_dict.get("max_mp", 0))
+	var max_hp: int = int(stats_dict.get("max_hp", 80))
+	var max_mp: int = int(stats_dict.get("max_mp", 0))
 	unit.max_stats = {"HP": max_hp, "MP": max_mp}
 	unit.stats = {
 		"HP": max_hp,

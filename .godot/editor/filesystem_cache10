@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759118616
+::res://::1759118814
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759049274::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
@@ -10,7 +10,7 @@ GameManager.gd::GDScript::1729807557281203855::1759115142::0::1::::<>Node<><>0<>
 RunManager.gd::GDScript::9001988606965223525::1759031448::0::1::::<>Node<><>0<>0<><>::
 SaveService.gd::GDScript::2519183938991418370::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://battle/::1759103067
-EffectSystem.gd::GDScript::9015215051369088139::1759110643::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
+EffectSystem.gd::GDScript::9015215051369088139::1759118814::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
 Formula.gd::GDScript::1848258574000662490::1759110627::0::1::::Formula<>RefCounted<><>0<>0<><>::
 TurnEngine.gd::GDScript::1600127830131858564::1759118379::0::1::::TurnEngine<>Node<><>0<>0<><>::
 ::res://battle/models/::1759115760
