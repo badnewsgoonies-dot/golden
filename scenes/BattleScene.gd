@@ -8,30 +8,23 @@ const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const DAMAGE_POPUP := preload("res://ui/DamagePopup.tscn")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 
-const CHARACTER_ART := {
-	"Pyro Adept": "adept",
-	"Gale Rogue": "rogue",
-	"Sunlit Cleric": "cleric",
-	"Cleric": "cleric",
-	"Iron Guard": "guard",
-	"Guard": "guard",
-	"Goblin": "goblin",
-	"Slime": "slime"
-}
+const CHARACTER_ART := {"Pyro Adept": "hero","Gale Rogue": "rogue","Sunlit Cleric": "healer","Cleric": "healer","Iron Guard": "hero","Guard": "hero","Goblin": "goblin","Slime": "slime"}
 
 @export var keyboard_end_turn_enabled: bool = true
 
-@onready var lbl_hero: Label = $UI/HUD/VBox/HeroRow/HeroLabel
-@onready var hero_status_container: HBoxContainer = $UI/HUD/VBox/HeroRow/HeroStatus
-@onready var lbl_enemy: Label = $UI/HUD/VBox/EnemyRow/EnemyLabel
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/VBox/EnemyRow/EnemyStatus
-@onready var plan_label: Label = $UI/HUD/VBox/PlanLabel
-@onready var btn_attack: Button = $UI/HUD/VBox/Buttons/Attack
-@onready var btn_fire: Button = $UI/HUD/VBox/Buttons/Fireball
-@onready var btn_potion: Button = $UI/HUD/VBox/Buttons/Potion
-@onready var btn_end: Button = $UI/HUD/VBox/Buttons/EndTurn
-@onready var lbl_queue: Label = $UI/HUD/VBox/TurnOrderLabel
-@onready var log_view: RichTextLabel = $UI/HUD/VBox/Log
+@onready var lbl_hero: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroLabel
+@onready var hero_status_container: HBoxContainer = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroStatus
+@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyLabel
+@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyStatus
+@onready var hero_portrait_rect: TextureRect = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroPortraitFrame/HeroPortrait
+@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyPortrait
+@onready var plan_label: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/PlanBubble/PlanMargin/PlanVBox/PlanLabel
+@onready var btn_attack: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Attack
+@onready var btn_fire: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Fireball
+@onready var btn_potion: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Potion
+@onready var btn_end: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/EndTurn
+@onready var lbl_queue: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/PlanBubble/PlanMargin/PlanVBox/TurnOrderLabel
+@onready var log_view: RichTextLabel = $UI/HUD/CommandPanel/Panel/Margin/VBox/Log
 @onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
 @onready var enemy_sprite_placeholder: Sprite2D = $Stage/EnemySprite
 var hero_sprite: AnimatedFrames
@@ -61,6 +54,7 @@ var hero_shadow_base: Vector2 = Vector2.ONE
 var enemy_shadow_base: Vector2 = Vector2.ONE
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
+var portrait_alias: Dictionary = {}
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -97,14 +91,9 @@ func _ready() -> void:
 	enemy_origin = enemy_sprite.position if enemy_sprite != null else enemy_sprite_placeholder.position
 	hero_shadow_base = hero_shadow.scale
 	enemy_shadow_base = enemy_shadow.scale
+	_load_portrait_alias()
 
-	_set_portrait($UI/HUD/VBox/HeroRow, hero.name)
-	_set_portrait($UI/HUD/VBox/EnemyRow, enemy.name)
 
-	_update_sprites()
-	_refresh_plan_label()
-	_refresh_end_turn_button()
-	refresh_status_hud()
 	$Overlay.visible = false
 	overlay_fade.modulate.a = 0.0
 	log_view.bbcode_enabled = true
@@ -298,20 +287,24 @@ func _disable_inputs() -> void:
 	battle_finished = true
 
 func _update_ui() -> void:
-	lbl_hero.text = "Hero: %s  HP %d/%d  MP %d/%d" % [
-		hero.name,
-		hero.stats.get("HP", 0),
-		hero.max_stats.get("HP", 0),
-		hero.stats.get("MP", 0),
-		hero.max_stats.get("MP", 0)
-	]
-	lbl_enemy.text = "Enemy: %s  HP %d/%d" % [
-		enemy.name,
-		enemy.stats.get("HP", 0),
-		enemy.max_stats.get("HP", 0)
-	]
-	_set_portrait($UI/HUD/VBox/HeroRow, hero.name)
-	_set_portrait($UI/HUD/VBox/EnemyRow, enemy.name)
+	if lbl_hero != null and hero != null:
+		lbl_hero.text = "%s\nHP %d/%d   MP %d/%d" % [
+			hero.name,
+			hero.stats.get("HP", 0),
+			hero.max_stats.get("HP", 0),
+			hero.stats.get("MP", 0),
+			hero.max_stats.get("MP", 0)
+		]
+	if lbl_enemy != null and enemy != null:
+		lbl_enemy.text = "%s\nHP %d/%d" % [
+			enemy.name,
+			enemy.stats.get("HP", 0),
+			enemy.max_stats.get("HP", 0)
+		]
+	if hero_portrait_rect != null and hero != null:
+		hero_portrait_rect.texture = _get_portrait_texture(hero.name)
+	if enemy_portrait_rect != null and enemy != null:
+		enemy_portrait_rect.texture = _get_portrait_texture(enemy.name)
 	_update_sprites()
 	refresh_status_hud()
 	_refresh_plan_label()
@@ -436,26 +429,6 @@ func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_b
 			parent.move_child(animated, idx)
 	old_sprite.queue_free()
 	return animated
-
-func _set_portrait(row: HBoxContainer, unit_name: String) -> void:
-	if row == null:
-		return
-	var existing := row.get_node_or_null("Portrait")
-	if existing != null:
-		existing.queue_free()
-	var art_key: String = String(CHARACTER_ART.get(unit_name, unit_name.to_lower().replace(" ", "_")))
-	var path := "res://art/portraits/%s_portrait_96.png" % art_key
-	var tex: Texture2D = load(path)
-	if tex == null:
-		return
-	var portrait := TextureRect.new()
-	portrait.name = "Portrait"
-	portrait.texture = tex
-	portrait.custom_minimum_size = Vector2(48, 48)
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(portrait)
-	row.move_child(portrait, 0)
 
 func _sprite_for_unit(unit: Unit) -> AnimatedFrames:
 	if unit == hero:
@@ -648,6 +621,45 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 	sample.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	return sample
 
+func _load_portrait_alias() -> void:
+	portrait_alias.clear()
+	var path := "res://art/portrait_alias.json"
+	if not FileAccess.file_exists(path):
+		return
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	if typeof(parsed) == TYPE_DICTIONARY:
+		portrait_alias = parsed
+
+func _resolve_portrait_target(unit_name: String) -> String:
+	if unit_name == "":
+		return ""
+	var key := unit_name.to_lower().replace(" ", "_")
+	var alias_value = portrait_alias.get(key, null)
+	if alias_value is String:
+		return alias_value
+	return String(CHARACTER_ART.get(unit_name, key))
+
+func _get_portrait_texture(unit_name: String) -> Texture2D:
+	var target := _resolve_portrait_target(unit_name)
+	if target == "":
+		return null
+	var path := target
+	if not path.begins_with("res://"):
+		path = "res://art/portraits/%s_portrait_96.png" % path
+	var tex: Texture2D = load(path)
+	if tex is Texture2D:
+		return tex
+	if not target.begins_with("res://"):
+		var fallback_key := unit_name.to_lower().replace(" ", "_")
+		var fallback_path := "res://art/portraits/%s_portrait_96.png" % fallback_key
+		tex = load(fallback_path)
+		if tex is Texture2D:
+			return tex
+	return null
+
 func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) -> void:
 	if battle_finished:
 		return
@@ -671,3 +683,4 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 
 func _lock_input_after_battle() -> void:
 	keyboard_end_turn_enabled = false
+
