@@ -51,6 +51,7 @@ var SKILL_FIREBALL := {
 const POTION_HEAL_PCT := 0.30
 
 func _ready() -> void:
+	print("BattleScene _ready()")
 	hero = Unit.new()
 	hero.name = "Pyro Adept"
 	hero.stats = {"HP": 90, "MP": 40, "ATK": 10, "DEF": 8, "AGI": 12, "FOCUS": 16}
