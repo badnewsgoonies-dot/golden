@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759116477
+::res://::1759116684
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759049274::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
@@ -22,11 +22,13 @@ characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
 enemies.json::JSON::-1::1759111877::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1759111923::0::1::::<><><>0<>0<><>::
+::res://docs/::1759116499
+AI_Godot4_Guide.md::TextFile::-1::1759116499::0::1::::<><><>0<>0<><>::
 ::res://events/::1759030491
 ::res://fx/::1759050031
 SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnimator<>Node<><>0<>0<><>::
 ::res://save/::1759030491
-::res://scenes/::1759116257
+::res://scenes/::1759116642
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
 BattleScene.gd::GDScript::8322624433477628582::1759116257::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759115130::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
@@ -35,6 +37,8 @@ Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><
 Fork.tscn::PackedScene::-1::1759034594::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
 Main.gd::GDScript::8263083135195594883::1759110669::0::1::::<>Node<><>0<>0<><>::
 Main.tscn::PackedScene::-1::1759110718::0::1::::<><><>0<>0<><>::
+SanityTest.gd::GDScript::4183202894098008719::1759116545::0::1::::<>Node<><>0<>0<><>::
+SanityTest.tscn::PackedScene::-1::1759116558::0::1::::<><><>0<>0<><>::res://scenes/SanityTest.gd
 ::res://scripts/::1759064406
 AIController.gd::GDScript::70837940992478045::1759042586::0::1::::<>Node<><>0<>0<><>::
 Battle.gd::GDScript::4670700875644173182::1759081424::0::1::::<>Node2D<><>0<>0<><>::
