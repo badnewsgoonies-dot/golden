@@ -7,6 +7,7 @@ const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const DAMAGE_POPUP := preload("res://ui/DamagePopup.tscn")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
+const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
 const CHARACTER_ART := {"Pyro Adept": "hero","Gale Rogue": "rogue","Sunlit Cleric": "healer","Cleric": "healer","Iron Guard": "hero","Guard": "hero","Goblin": "goblin","Slime": "slime"}
 
@@ -54,7 +55,6 @@ var hero_shadow_base: Vector2 = Vector2.ONE
 var enemy_shadow_base: Vector2 = Vector2.ONE
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
-var portrait_alias: Dictionary = {}
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -91,7 +91,6 @@ func _ready() -> void:
 	enemy_origin = enemy_sprite.position if enemy_sprite != null else enemy_sprite_placeholder.position
 	hero_shadow_base = hero_shadow.scale
 	enemy_shadow_base = enemy_shadow.scale
-	_load_portrait_alias()
 
 
 	$Overlay.visible = false
@@ -302,9 +301,9 @@ func _update_ui() -> void:
 			enemy.max_stats.get("HP", 0)
 		]
 	if hero_portrait_rect != null and hero != null:
-		hero_portrait_rect.texture = _get_portrait_texture(hero.name)
+		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(hero.name)
 	if enemy_portrait_rect != null and enemy != null:
-		enemy_portrait_rect.texture = _get_portrait_texture(enemy.name)
+		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(enemy.name)
 	_update_sprites()
 	refresh_status_hud()
 	_refresh_plan_label()
@@ -683,3 +682,4 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 
 func _lock_input_after_battle() -> void:
 	keyboard_end_turn_enabled = false
+
