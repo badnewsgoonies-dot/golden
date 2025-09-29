@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759118814
+::res://::1759118995
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759049274::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
@@ -11,12 +11,12 @@ RunManager.gd::GDScript::9001988606965223525::1759031448::0::1::::<>Node<><>0<>0
 SaveService.gd::GDScript::2519183938991418370::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://battle/::1759103067
 EffectSystem.gd::GDScript::9015215051369088139::1759118814::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
-Formula.gd::GDScript::1848258574000662490::1759110627::0::1::::Formula<>RefCounted<><>0<>0<><>::
+Formula.gd::GDScript::1848258574000662490::1759118838::0::1::::Formula<>RefCounted<><>0<>0<><>::
 TurnEngine.gd::GDScript::1600127830131858564::1759118379::0::1::::TurnEngine<>Node<><>0<>0<><>::
 ::res://battle/models/::1759115760
 Action.gd::GDScript::2902208919305840334::1759110581::0::1::::Action<>RefCounted<><>0<>0<><>::
 Status.gd::GDScript::8460283941071225789::1759110591::0::1::::Status<>RefCounted<><>0<>0<><>::
-Unit.gd::GDScript::2311536089322643174::1759115760::0::1::::Unit<>RefCounted<><>0<>0<><>::
+Unit.gd::GDScript::2311536089322643174::1759118871::0::1::::Unit<>RefCounted<><>0<>0<><>::
 ::res://data/::1759028273
 characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
@@ -30,7 +30,7 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnim
 ::res://save/::1759030491
 ::res://scenes/::1759116642
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759116257::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759118916::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759115130::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
 Boot.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::

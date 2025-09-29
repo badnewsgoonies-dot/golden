@@ -1,3 +1,2 @@
-res://battle/Formula.gd
-res://battle/models/Unit.gd
+res://scenes/Boot.tscn
 res://scenes/BattleScene.gd
