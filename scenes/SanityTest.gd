@@ -117,4 +117,3 @@ func _report() -> void:
 	print("Sanity Test Report:")
 	for m in issues:
 		print(" - %s" % m)
-
