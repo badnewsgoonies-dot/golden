@@ -453,6 +453,8 @@ func _refresh_plan_label() -> void:
 	plan_label.text = "Planned: %s" % skill_name
 
 func _refresh_end_turn_button() -> void:
+	if btn_end == null:
+		return
 	btn_end.disabled = battle_finished or planned_actions.is_empty()
 
 func refresh_status_hud() -> void:
