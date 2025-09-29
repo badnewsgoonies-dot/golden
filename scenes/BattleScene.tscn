@@ -73,6 +73,13 @@ text = "Enemy: --"
 [node name="EnemyStatus" type="HBoxContainer" parent="UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo"]
 theme_override_constants/separation = 6
 
+[node name="EnemyHPBar" type="ProgressBar" parent="UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo"]
+custom_minimum_size = Vector2(180, 10)
+min_value = 0.0
+max_value = 70.0
+step = 1.0
+show_percentage = false
+
 [node name="CommandPanel" type="Control" parent="UI/HUD"]
 anchor_top = 1.0
 anchor_right = 1.0
@@ -121,6 +128,20 @@ text = "Hero: --"
 
 [node name="HeroStatus" type="HBoxContainer" parent="UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText"]
 theme_override_constants/separation = 6
+
+[node name="HeroHPBar" type="ProgressBar" parent="UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText"]
+custom_minimum_size = Vector2(220, 10)
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+show_percentage = false
+
+[node name="HeroMPBar" type="ProgressBar" parent="UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText"]
+custom_minimum_size = Vector2(220, 10)
+min_value = 0.0
+max_value = 40.0
+step = 1.0
+show_percentage = false
 
 [node name="PlanBubble" type="PanelContainer" parent="UI/HUD/CommandPanel/Panel/Margin/VBox"]
 

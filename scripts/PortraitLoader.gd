@@ -1,33 +1,37 @@
+﻿extends Node
+class_name PortraitLoader
 
-extends Node
-## PortraitLoader.gd — alias-aware portrait resolver for HUD
-## Usage:
-##   var tex := PortraitLoader.get_portrait_for("hero")  # or display name
-##   portrait_sprite.texture = tex
+static var _cache: Dictionary = {}
+static var _alias: Dictionary = {}
+static var _loaded := false
 
-static var _alias := {}
+static func _ensure_loaded() -> void:
+	if _loaded:
+		return
+	var path := "res://art/portrait_alias.json"
+	if FileAccess.file_exists(path):
+		var txt := FileAccess.get_file_as_string(path)
+		var parsed = JSON.parse_string(txt)
+		if typeof(parsed) == TYPE_DICTIONARY:
+			for k in parsed.keys():
+				_alias[String(k).to_lower()] = String(parsed[k])
+	_loaded = true
 
-static func _load_alias() -> void:
-	if _alias.size() > 0: return
-	var fa := FileAccess.open("res://art/portrait_alias.json", FileAccess.READ)
-	if fa:
-		var data = JSON.parse_string(fa.get_as_text())
-		if typeof(data) == TYPE_DICTIONARY:
-			_alias = data
+static func get_portrait_for(name: String) -> Texture2D:
+	_ensure_loaded()
+	if name == null or String(name).is_empty():
+		return null
+	var key := String(name).strip_edges().to_lower()
+	if _cache.has(key):
+		return _cache[key]
+	var tex: Texture2D = null
+	if _alias.has(key):
+		tex = _try_load_texture(_alias[key])
+	if tex == null:
+		var snake := key.replace(" ", "_")
+		tex = _try_load_texture("res://art/portraits/%s_portrait_96.png" % snake)
+	_cache[key] = tex
+	return tex
 
-static func get_portrait_for(name_or_key: String) -> Texture2D:
-	_load_alias()
-	var k := name_or_key.strip_edges().to_lower()
-	var candidates := PackedStringArray()
-	candidates.append("res://art/portraits/%s_portrait_96.png" % k)
-	if _alias.has(k):
-		candidates.append(String(_alias[k]))
-	# common fallbacks
-	candidates.append("res://assets/faces/%s_face.png" % k)
-	candidates.append("res://assets/faces/%s.png" % k)
-	for p in candidates:
-		var t: Texture2D = load(p)
-		if t:
-			return t
-	push_warning("Portrait not found for '%s'" % k)
-	return null
+static func _try_load_texture(path: String) -> Texture2D:
+	return load(path) as Texture2D if FileAccess.file_exists(path) else null
