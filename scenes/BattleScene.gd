@@ -73,10 +73,14 @@ func _ready() -> void:
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
 
-	var hero_folder := CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_"))
-	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true)
-	var enemy_folder := CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_"))
-	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, false)
+	var hero_folder: String = String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
+	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true) as AnimatedFrames
+	if hero_sprite_placeholder != null and is_instance_valid(hero_sprite_placeholder):
+		hero_sprite_placeholder.queue_free()
+	var enemy_folder: String = String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
+	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, false) as AnimatedFrames
+	if enemy_sprite_placeholder != null and is_instance_valid(enemy_sprite_placeholder):
+		enemy_sprite_placeholder.queue_free()
 	if enemy_sprite != null:
 		enemy_sprite.flip_h = true
 
