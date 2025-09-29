@@ -1,9 +1,9 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759166601
+::res://::1759168047
 ::res://art/::1759166475
 portrait_alias.json::JSON::-1::1759176462::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
-::res://art/background/::1759166475
+::res://art/background/::1759167057
 parallax_far.png::CompressedTexture2D::1119906802922616564::1759179988::1759167057::1::::<><><>0<>0<>dd50f32bff4bfff221c07765a43079d7<>res://.godot/imported/parallax_far.png-c2a73a3132678b6cd162c9279cd23a4e.ctex::
 parallax_mid.png::CompressedTexture2D::2193658007147279426::1759179988::1759167057::1::::<><><>0<>0<>83fe9141f779c7ae926c72b0f114f9d0<>res://.godot/imported/parallax_mid.png-31568b87944eb90e66da6919e6c19c9a.ctex::
 parallax_near.png::CompressedTexture2D::626925822434722790::1759179988::1759167057::1::::<><><>0<>0<>8cee3786a3d2afbb107895a438f20477<>res://.godot/imported/parallax_near.png-c3731418adf45090b19a639a75d5a00d.ctex::
@@ -175,7 +175,7 @@ healer_portrait_96.png::CompressedTexture2D::5778355447807482119::1759173404::17
 hero_portrait_96.png::CompressedTexture2D::5818966128248645670::1759173404::1759159533::1::::<><><>0<>0<>d766fb2eccecf11b53d7d8991e002281<>res://.godot/imported/hero_portrait_96.png-352ec87a859ee7e7d660a2d112399995.ctex::
 mage_portrait_96.png::CompressedTexture2D::8556147450852217501::1759173404::1759159533::1::::<><><>0<>0<>8237f5b9d8fb96020493bfb6dec67cea<>res://.godot/imported/mage_portrait_96.png-428f80d291fc2238f520c4f5ffb436a5.ctex::
 rogue_portrait_96.png::CompressedTexture2D::2497703807721057426::1759173404::1759159533::1::::<><><>0<>0<>95e6b2fc56d27fbac75d15a8918bd129<>res://.godot/imported/rogue_portrait_96.png-c9ea60f2b69d2d6c9388811523b57c1a.ctex::
-::res://art/ui/::1759166494
+::res://art/ui/::1759167057
 selector_arrow.png::CompressedTexture2D::6092581699365048728::1759179988::1759167057::1::::<><><>0<>0<>f365ed5bfe1c11c8af0ae1de8c45a8a1<>res://.godot/imported/selector_arrow.png-718aa0a5a14896f4eae8225597e4cd3b.ctex::
 target_arrow.png::CompressedTexture2D::8842930395228776704::1759168150::1759159534::1::::<><><>0<>0<>b32b3dcc51796a0ce2206276bb354c23<>res://.godot/imported/target_arrow.png-23e5b5dd15fe4aa20e1f6a2e70cf0e00.ctex::
 ::res://Art Info/::1759166265
@@ -678,7 +678,7 @@ example_units.gd::GDScript::866695634309438505::1759176462::0::1::::<>RefCounted
 AnimatedFrames.gd::GDScript::8846103685064761488::1759176462::0::1::::<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::5330476040809933415::1759176462::0::1::::<>EditorScript<><>0<>1<><>::
 PortraitLoader.gd::GDScript::580063668320622506::1759176462::0::1::::<>Node<><>0<>0<><>::
-::res://data/::1759166553
+::res://data/::1759167057
 characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
 config.gd::GDScript::2921269395567463457::1759179988::0::1::::BattleConfig<>Resource<><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
@@ -694,8 +694,8 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnim
 ::res://scenes/::1759166521
 background_meadow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759165984::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::-1::1759166966::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
+BattleScene.gd::GDScript::8322624433477628582::1759167746::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.tscn::PackedScene::-1::1759167068::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759119104::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759034594::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
@@ -716,15 +716,15 @@ BattleState.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759111548::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759042586::0::1::::<>Node<><>0<>0<><>::
 Formula.gd::GDScript::7123728041291322933::1759042586::0::1::::<>Node<><>0<>0<><>::
-FX.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
-FXDamageNumber.gd::GDScript::-1::1759179988::0::1::::<>Node2D<><>0<>0<><>::
+FX.gd::GDScript::2857231172079987558::1759167136::0::1::::<>Node<><>0<>0<><>::
+FXDamageNumber.gd::GDScript::5790063536421429034::1759167485::0::1::::<>Node2D<><>0<>0<><>::
 PortraitLoader.gd::GDScript::8626782880797348315::1759176462::0::1::::<>Node<><>0<>0<><>::
 SelectorArrow.gd::GDScript::-1::1759179988::0::1::::<>Sprite2D<><>0<>0<><>::
 TurnController.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://shop/::1759030491
 ::res://tests/::1759030491
-::res://tools/::1759166615
+::res://tools/::1759167057
 PortraitPacker.gd::GDScript::5548992340685240776::1759179988::0::1::::<>EditorScript<><>0<>1<><>::
 ::res://ui/::1759124783
 CommandMenu.gd::GDScript::6169794612215573323::1759121584::0::1::::CommandMenu<>Control<><>0<>0<><>::

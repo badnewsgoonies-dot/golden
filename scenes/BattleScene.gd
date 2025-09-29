@@ -623,5 +623,3 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 
 func _lock_input_after_battle() -> void:
 	keyboard_end_turn_enabled = false
-
-
