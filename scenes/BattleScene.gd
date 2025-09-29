@@ -78,44 +78,44 @@ func _queue_hero_action(skill: Dictionary) -> void:
 	_log("Planned: %s" % skill_copy.get("name", "Action"))
 
 func _on_end_turn() -> void:
-    if !hero.is_alive() or !enemy.is_alive():
-        return
-    if planned_actions.is_empty():
-        planned_actions.append(Action.new(hero, skill_slash, enemy))
+	if !hero.is_alive() or !enemy.is_alive():
+		return
+	if planned_actions.is_empty():
+		planned_actions.append(Action.new(hero, skill_slash, enemy))
 
-    var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
-    var actions: Array = planned_actions.duplicate()
-    actions.append(enemy_action)
-    actions = turn_engine.build_queue(actions)
-    _update_turn_order(actions)
+	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
+	var actions: Array = planned_actions.duplicate()
+	actions.append(enemy_action)
+	actions = turn_engine.build_queue(actions)
+	_update_turn_order(actions)
 
-    for a in actions:
-        if a.actor == hero:
-            var mp_cost: int = int(a.skill.get("mp_cost", 0))
-            if mp_cost > 0:
-                hero.spend_mp(mp_cost)
+	for a in actions:
+		if a.actor == hero:
+			var mp_cost: int = int(a.skill.get("mp_cost", 0))
+			if mp_cost > 0:
+				hero.spend_mp(mp_cost)
 
-    for a in actions:
-        if !a.actor.is_alive() or !a.target.is_alive():
-            continue
-        var tag: String = Formula.element_tag(a.actor, a.target, a.skill)
-        var result: Dictionary = turn_engine.execute(a)
-        if result.get("hit", false):
-            var crit_text := " CRIT!" if result.get("crit", false) else ""
-            _log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
-            for status_line in result.get("status_logs", []):
-                _log(status_line)
-        else:
-            _log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+	for a in actions:
+		if !a.actor.is_alive() or !a.target.is_alive():
+			continue
+		var tag: String = Formula.element_tag(a.actor, a.target, a.skill)
+		var result: Dictionary = turn_engine.execute(a)
+		if result.get("hit", false):
+			var crit_text := " CRIT!" if result.get("crit", false) else ""
+			_log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
+			for status_line in result.get("status_logs", []):
+				_log(status_line)
+		else:
+			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
 
-    var tick_logs: Array[String] = turn_engine.end_of_round_tick([hero, enemy])
-    for line in tick_logs:
-        _log(line)
+	var tick_logs: Array[String] = turn_engine.end_of_round_tick([hero, enemy])
+	for line in tick_logs:
+		_log(line)
 
-    planned_actions.clear()
-    _check_end()
-    _update_ui()
-    _update_turn_order([])
+	planned_actions.clear()
+	_check_end()
+	_update_ui()
+	_update_turn_order([])
 
 func _check_end() -> void:
 	if !enemy.is_alive():
