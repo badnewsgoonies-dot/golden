@@ -1,12 +1,24 @@
-{
-  "attack": {
-    "name": "Attack",
-    "type": "physical",
-    "power": 1.0
+﻿{
+  "slash": {
+    "name": "Slash",
+    "type": "damage",
+    "stat": "ATK",
+    "power": 1.2,
+    "acc": 0.95,
+    "crit": 0.05,
+    "element": "earth",
+    "mp_cost": 0,
+    "effects": []
   },
-  "defend": {
-    "name": "Defend",
-    "type": "state",
-    "effect": "def_up"
+  "fireball": {
+    "name": "Fireball",
+    "type": "damage",
+    "stat": "FOCUS",
+    "power": 2.0,
+    "acc": 0.95,
+    "crit": 0.05,
+    "element": "fire",
+    "mp_cost": 6,
+    "effects": [{"apply": "burn", "chance": 1.0, "duration": 3}]
   }
 }

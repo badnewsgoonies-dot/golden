@@ -20,49 +20,18 @@ var planned_actions: Array[Action] = []
 var turn_engine: TurnEngine
 var potion_used: bool = false
 
-var SKILL_SLASH := {
-	"id": "slash",
-	"name": "Slash",
-	"type": "damage",
-	"stat": "ATK",
-	"power": 1.2,
-	"acc": 0.95,
-	"crit": 0.05,
-	"element": "earth",
-	"mp_cost": 0,
-	"target": "enemy_one",
-	"effects": []
-}
-
-var SKILL_FIREBALL := {
-	"id": "fireball",
-	"name": "Fireball",
-	"type": "damage",
-	"stat": "FOCUS",
-	"power": 2.0,
-	"acc": 0.95,
-	"crit": 0.05,
-	"element": "fire",
-	"mp_cost": 6,
-	"target": "enemy_one",
-	"effects": [{"apply": "burn", "duration": 3, "chance": 1.0}]
-}
+var skill_slash: Dictionary = {}
+var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
 func _ready() -> void:
 	print("BattleScene _ready()")
-	hero = Unit.new()
-	hero.name = "Pyro Adept"
-	hero.stats = {"HP": 90, "MP": 40, "ATK": 10, "DEF": 8, "AGI": 12, "FOCUS": 16}
-	hero.max_stats = {"HP": 90, "MP": 40}
-	hero.resist = {"fire": 0.5, "water": 1.5, "earth": 1.0, "air": 1.0}
+	skill_slash = _fetch_skill("slash")
+	skill_fireball = _fetch_skill("fireball")
 
-	enemy = Unit.new()
-	enemy.name = "Goblin"
-	enemy.stats = {"HP": 70, "MP": 0, "ATK": 12, "DEF": 6, "AGI": 10, "FOCUS": 6}
-	enemy.max_stats = {"HP": 70, "MP": 0}
-	enemy.resist = {"fire": 1.0, "water": 1.0, "earth": 1.0, "air": 1.0}
+	hero = _build_unit_from_character("adept_pyro")
+	enemy = _build_unit_from_enemy("goblin")
 
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
@@ -77,12 +46,12 @@ func _ready() -> void:
 	_update_turn_order([])
 
 func _on_attack() -> void:
-	_queue_hero_action(SKILL_SLASH)
+	_queue_hero_action(skill_slash)
 
 func _on_fireball() -> void:
-	var cost := int(SKILL_FIREBALL.get("mp_cost", 0))
+	var cost := int(skill_fireball.get("mp_cost", 0))
 	if int(hero.stats.get("MP", 0)) >= cost:
-		_queue_hero_action(SKILL_FIREBALL)
+		_queue_hero_action(skill_fireball)
 	else:
 		_log("Not enough MP for Fireball!")
 
@@ -104,16 +73,17 @@ func _on_potion() -> void:
 
 func _queue_hero_action(skill: Dictionary) -> void:
 	planned_actions.clear()
-	planned_actions.append(Action.new(hero, skill, enemy))
-	_log("Planned: %s" % skill.get("name", "Action"))
+	var skill_copy := skill.duplicate(true)
+	planned_actions.append(Action.new(hero, skill_copy, enemy))
+	_log("Planned: %s" % skill_copy.get("name", "Action"))
 
 func _on_end_turn() -> void:
 	if !hero.is_alive() or !enemy.is_alive():
 		return
 	if planned_actions.is_empty():
-		planned_actions.append(Action.new(hero, SKILL_SLASH, enemy))
+	planned_actions.append(Action.new(hero, skill_slash, enemy))
 
-	var enemy_action := Action.new(enemy, SKILL_SLASH, hero)
+	var enemy_action := Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
 	actions.append(enemy_action)
 	actions = turn_engine.build_queue(actions)
@@ -193,3 +163,63 @@ func _update_turn_order(actions: Array) -> void:
 		var skill_name := String(act.skill.get("name", "Action"))
 		parts.append("%s (%s)" % [actor_name, skill_name])
 	lbl_queue.text = "Turn order: " + " → ".join(parts)
+
+func _fetch_skill(id: String) -> Dictionary:
+	if DataRegistry.skills.has(id):
+		return DataRegistry.skills[id].duplicate(true)
+	return {
+		"id": id,
+		"name": id.capitalize(),
+		"type": "damage",
+		"stat": "ATK",
+		"power": 1.0,
+		"acc": 0.95,
+		"crit": 0.05,
+		"element": "earth",
+		"mp_cost": 0,
+		"effects": []
+	}
+
+func _build_unit_from_character(id: String) -> Unit:
+	var def := DataRegistry.characters.get(id, {})
+	if def.is_empty():
+		def = {
+			"name": "Pyro Adept",
+			"stats": {"max_hp": 90, "max_mp": 40, "atk": 10, "def": 8, "agi": 12, "focus": 16},
+			"resist": {"fire": 0.5, "water": 1.5, "earth": 1.0, "air": 1.0}
+		}
+	return _build_unit(def)
+
+func _build_unit_from_enemy(id: String) -> Unit:
+	var def := DataRegistry.enemies.get(id, {})
+	if def.is_empty():
+		def = {
+			"name": "Goblin",
+			"stats": {"max_hp": 70, "max_mp": 0, "atk": 12, "def": 6, "agi": 10, "focus": 6},
+			"resist": {"fire": 1.0, "water": 1.0, "earth": 1.0, "air": 1.0}
+		}
+	return _build_unit(def)
+
+func _build_unit(def: Dictionary) -> Unit:
+	var unit := Unit.new()
+	unit.name = String(def.get("name", "Unit"))
+	var stats_dict: Dictionary = def.get("stats", {})
+	var max_hp := int(stats_dict.get("max_hp", 80))
+	var max_mp := int(stats_dict.get("max_mp", 0))
+	unit.max_stats = {"HP": max_hp, "MP": max_mp}
+	unit.stats = {
+		"HP": max_hp,
+		"MP": max_mp,
+		"ATK": int(stats_dict.get("atk", 10)),
+		"DEF": int(stats_dict.get("def", 8)),
+		"AGI": int(stats_dict.get("agi", 10)),
+		"FOCUS": int(stats_dict.get("focus", 8))
+	}
+	var resist_dict: Dictionary = def.get("resist", {})
+	unit.resist = {
+		"fire": float(resist_dict.get("fire", 1.0)),
+		"water": float(resist_dict.get("water", 1.0)),
+		"earth": float(resist_dict.get("earth", 1.0)),
+		"air": float(resist_dict.get("air", 1.0))
+	}
+	return unit
