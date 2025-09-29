@@ -5,8 +5,8 @@ const Action := preload("res://battle/models/Action.gd")
 const Formula := preload("res://battle/Formula.gd")
 const EffectSystem := preload("res://battle/EffectSystem.gd")
 
-var rng := RandomNumberGenerator.new()
-var effects := EffectSystem.new()
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var effects: EffectSystem = EffectSystem.new()
 
 func _ready() -> void:
 	rng.randomize()
@@ -14,9 +14,9 @@ func _ready() -> void:
 func build_queue(actions: Array) -> Array:
 	var order: Array = []
 	for a in actions:
-		var initiative := a.actor.get_stat("AGI")
-		var variance := int(round(initiative * 0.25))
-		var roll := rng.randi_range(0, max(1, variance))
+		var initiative: float = float(a.actor.get_stat("AGI"))
+		var variance: int = int(round(initiative * 0.25))
+		var roll: int = rng.randi_range(0, max(1, variance))
 		order.append({"action": a, "ini": initiative + roll})
 	order.sort_custom(func(lhs, rhs):
 		return lhs["ini"] > rhs["ini"]
@@ -27,7 +27,7 @@ func build_queue(actions: Array) -> Array:
 	return result
 
 func execute(action: Action) -> Dictionary:
-	var result := {
+	var result: Dictionary = {
 		"hit": false,
 		"damage": 0,
 		"crit": false,
@@ -40,16 +40,16 @@ func execute(action: Action) -> Dictionary:
 	if action.actor.stunned:
 		action.actor.stunned = false
 		return result
-	var chance := Formula.hit_chance(action.actor, action.target, action.skill)
-	var roll := rng.randf()
+	var chance: float = Formula.hit_chance(action.actor, action.target, action.skill)
+	var roll: float = rng.randf()
 	if roll > chance:
 		return result
 	result["hit"] = true
-	var crit := rng.randf() < Formula.crit_chance(action.skill)
+	var crit: bool = rng.randf() < Formula.crit_chance(action.skill)
 	result["crit"] = crit
-	var variance := rng.randf_range(0.9, 1.1)
-	var dmg := max(0, Formula.damage(action.actor, action.target, action.skill, crit, variance))
-	var dealt := action.target.take_damage(dmg)
+	var variance: float = rng.randf_range(0.9, 1.1)
+	var dmg: int = max(0, Formula.damage(action.actor, action.target, action.skill, crit, variance))
+	var dealt: int = action.target.take_damage(dmg)
 	result["damage"] = dealt
 	if dealt > 0:
 		result["status_logs"] = effects.apply_on_hit(action)
