@@ -32,8 +32,10 @@ const CHARACTER_ART := {
 @onready var btn_end: Button = $UI/HUD/VBox/Buttons/EndTurn
 @onready var lbl_queue: Label = $UI/HUD/VBox/TurnOrderLabel
 @onready var log_view: RichTextLabel = $UI/HUD/VBox/Log
-@onready var hero_sprite: Sprite2D = $Stage/HeroSprite
-@onready var enemy_sprite: Sprite2D = $Stage/EnemySprite
+@onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
+@onready var enemy_sprite_placeholder: Sprite2D = $Stage/EnemySprite
+var hero_sprite: AnimatedFrames
+var enemy_sprite: AnimatedFrames
 @onready var hero_shadow: Sprite2D = $Stage/HeroShadow
 @onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
 @onready var popups_container: Control = $FX/Popups
@@ -72,10 +74,11 @@ func _ready() -> void:
 	add_child(turn_engine)
 
 	var hero_folder := CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_"))
-	hero_sprite = _swap_for_animated_sprite(hero_sprite, hero_folder, true)
+	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true)
 	var enemy_folder := CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_"))
-	enemy_sprite = _swap_for_animated_sprite(enemy_sprite, enemy_folder, false)
-	enemy_sprite.flip_h = true
+	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, false)
+	if enemy_sprite != null:
+		enemy_sprite.flip_h = true
 
 	hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
 	hero_shadow.centered = true
@@ -86,8 +89,8 @@ func _ready() -> void:
 	enemy_shadow.z_index = 0
 	enemy_shadow.scale = Vector2(1.35, 0.9)
 
-	hero_origin = hero_sprite.position
-	enemy_origin = enemy_sprite.position
+	hero_origin = hero_sprite.position if hero_sprite != null else hero_sprite_placeholder.position
+	enemy_origin = enemy_sprite.position if enemy_sprite != null else enemy_sprite_placeholder.position
 	hero_shadow_base = hero_shadow.scale
 	enemy_shadow_base = enemy_shadow.scale
 
@@ -393,33 +396,40 @@ func _build_unit(def: Dictionary) -> Unit:
 	return unit
 
 func _update_sprites() -> void:
-	hero_sprite.modulate = _base_modulate_for(hero)
-	enemy_sprite.modulate = _base_modulate_for(enemy)
+	if hero_sprite != null:
+		hero_sprite.modulate = _base_modulate_for(hero)
+		hero_sprite.position = hero_origin
+		hero_sprite.z_index = 1
+		hero_sprite.set_facing_back(true)
+	if enemy_sprite != null:
+		enemy_sprite.modulate = _base_modulate_for(enemy)
+		enemy_sprite.position = enemy_origin
+		enemy_sprite.z_index = 1
+		enemy_sprite.set_facing_back(false)
 	hero_shadow.modulate = _shadow_color_for(hero)
 	enemy_shadow.modulate = _shadow_color_for(enemy)
 	hero_shadow.scale = hero_shadow_base
 	enemy_shadow.scale = enemy_shadow_base
-	hero_sprite.position = hero_origin
-	enemy_sprite.position = enemy_origin
 
-func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> Sprite2D:
+func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
 	if old_sprite == null:
-		return old_sprite
+		return null
 	var parent := old_sprite.get_parent()
-	var idx := parent.get_children().find(old_sprite) if parent != null else -1
+	var idx := -1
+	if parent != null:
+		idx = parent.get_children().find(old_sprite)
 	var animated := AnimatedFrames.new()
 	animated.centered = old_sprite.centered
+	animated.position = old_sprite.position
 	animated.scale = old_sprite.scale
 	animated.z_index = old_sprite.z_index
 	animated.flip_h = old_sprite.flip_h
 	animated.character = character
-	animated.facing_back = facing_back
+	animated.set_facing_back(facing_back)
 	if parent != null:
 		parent.add_child(animated)
 		if idx >= 0:
 			parent.move_child(animated, idx)
-	animated.position = old_sprite.position
-	animated.scale = old_sprite.scale
 	old_sprite.queue_free()
 	return animated
 
@@ -443,7 +453,7 @@ func _set_portrait(row: HBoxContainer, unit_name: String) -> void:
 	row.add_child(portrait)
 	row.move_child(portrait, 0)
 
-func _sprite_for_unit(unit: Unit) -> Sprite2D:
+func _sprite_for_unit(unit: Unit) -> AnimatedSprite2D:
 	if unit == hero:
 		return hero_sprite
 	if unit == enemy:
