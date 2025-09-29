@@ -1,7 +1,7 @@
 extends Node
 
 # LLM Sanity Test for Godot 4.x projects.
-# Scans all .gd files under res:// for common Godot 3→4 API leftovers,
+# Scans all .gd files under res:// for common Godot 3->4 API leftovers,
 # typed-assignments from Dictionary.get without casts, yield(...), and BOM.
 
 var issues: Array[String] = []
@@ -65,7 +65,7 @@ func _check_bom(path: String) -> void:
 		return
 	var txt := f.get_as_text()
 	if not txt.is_empty() and int(txt.unicode_at(0)) == 0xFEFF:
-		issues.append("BOM detected at start of: %s (save as UTF‑8 without BOM)" % path)
+		issues.append("BOM detected at start of: %s (save as UTF-8 without BOM)" % path)
 	f.close()
 
 func _scan_script(path: String) -> void:
@@ -74,15 +74,15 @@ func _scan_script(path: String) -> void:
 		return
 	var txt := f.get_as_text()
 	if not txt.is_empty() and int(txt.unicode_at(0)) == 0xFEFF:
-		issues.append("BOM detected in %s (save as UTF‑8 no BOM)" % path)
+		issues.append("BOM detected in %s (save as UTF-8 no BOM)" % path)
 	var lines := txt.split("\n")
 	for i in lines.size():
 		var ln := lines[i]
 		var ln_no := i + 1
-		# Godot 3→4 API patterns
+		# Godot 3->4 API patterns
 		if ln.find("KinematicBody2D") != -1:
 			issues.append("%s:%d: Use CharacterBody2D instead of KinematicBody2D." % [path, ln_no])
-		if ln.match("*move_and_slide(*,*)*"):
+		if ln.find("move_and_slide(") != -1 and ln.find(",") != -1:
 			issues.append("%s:%d: move_and_slide() called with arguments; in G4 set velocity and call without args." % [path, ln_no])
 		if ln.find("get_position(") != -1 or ln.find("get_global_position(") != -1:
 			issues.append("%s:%d: Use position/global_position properties (Godot 4)." % [path, ln_no])
@@ -96,22 +96,20 @@ func _scan_script(path: String) -> void:
 	f.close()
 
 func _typed_get_without_cast(line: String) -> bool:
-	# Rough heuristic:  
-	#   var x: int = something.get("...")  
-	# and does not already contain int( or float( or bool(
-	if not line.match("*:* =*get(*")):
+	# Heuristic: line declares a typed var using ':' and '=' and calls get(
+	if line.find(":") == -1 or line.find("=") == -1 or line.find("get(") == -1:
 		return false
-	var has_cast := line.find("int(") != -1 or line.find("float(") != -1 or line.find("bool(") != -1
+	var has_cast := line.find("int(") != -1 or line.find("float(") != -1 or line.find("bool(") != -1 or line.find("String(") != -1
 	return not has_cast
 
 func _report() -> void:
 	if issues.is_empty():
-		label.text = "All clear. No obvious 3→4 API leftovers or typing hazards found."
+		label.text = "All clear. No obvious 3->4 API leftovers or typing hazards found."
 		print(label.text)
 		return
 	var out := "[b]Sanity findings:[/b]\n\n"
 	for m in issues:
-		out += "• %s\n" % m
+		out += "- %s\n" % m
 	label.bbcode_enabled = true
 	label.text = out
 	print("Sanity Test Report:")

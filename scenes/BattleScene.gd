@@ -89,11 +89,11 @@ func _on_end_turn() -> void:
 	actions = turn_engine.build_queue(actions)
 	_update_turn_order(actions)
 
-	for a in actions:
-		if a.actor == hero:
-		var mp_cost: int = int(a.skill.get("mp_cost", 0))
-			if mp_cost > 0:
-				hero.spend_mp(mp_cost)
+		for a in actions:
+			if a.actor == hero:
+				var mp_cost: int = int(a.skill.get("mp_cost", 0))
+				if mp_cost > 0:
+					hero.spend_mp(mp_cost)
 
 	for a in actions:
 		if !a.actor.is_alive() or !a.target.is_alive():
