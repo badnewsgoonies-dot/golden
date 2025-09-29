@@ -5,7 +5,6 @@ const Unit := preload("res://battle/models/Unit.gd")
 const Formula := preload("res://battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
-const DAMAGE_POPUP := preload("res://ui/DamagePopup.tscn")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
