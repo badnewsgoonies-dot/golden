@@ -122,7 +122,7 @@ func _check_end() -> void:
 		_log("Victory! Goblin is defeated.")
 		_disable_inputs()
 	elif !hero.is_alive():
-		_log("Defeatâ€¦ The hero falls.")
+		_log("Defeat... The hero falls.")
 		_disable_inputs()
 
 func _disable_inputs() -> void:
