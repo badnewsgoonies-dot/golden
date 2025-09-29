@@ -194,7 +194,7 @@ func _on_end_turn() -> void:
 		if result.get("hit", false):
 			var damage: int = int(result.get("damage", 0))
 			var crit := bool(result.get("crit", false))
-			play_sfx(crit ? "crit" : "hit")
+			play_sfx("crit" if crit else "hit")
 			spawn_damage_popup(target_sprite, damage, crit, false)
 		else:
 			play_sfx("miss")
@@ -492,8 +492,8 @@ func spawn_damage_popup(node: Node2D, amount: int, crit: bool = false, miss: boo
 		return
 	var world_pos := node.get_global_transform_with_canvas().origin
 	var local_pos := popups_container.get_global_transform_with_canvas().affine_inverse().xform(world_pos)
-	var text := miss ? "Miss" : (crit ? "%d!" % amount : str(amount))
-	var color := miss ? Color(0.7, 0.7, 0.7) : (crit ? Color(1.0, 0.85, 0.2) : Color(1, 1, 1))
+	var text := "Miss" if miss else ("%d!" % amount if crit else str(amount))
+	var color := Color(0.7, 0.7, 0.7) if miss else (Color(1.0, 0.85, 0.2) if crit else Color(1, 1, 1))
 	popups_container.add_child(popup_label)
 	popup_label.popup(local_pos + Vector2(-8, -16), text, color)
 
@@ -536,12 +536,12 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 	refresh_status_hud()
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
-	overlay_title.text = victory ? "Victory!" : "Defeat"
+	overlay_title.text = "Victory!" if victory else "Defeat"
 	var loot_names: PackedStringArray = PackedStringArray()
 	for entry in loot:
 		loot_names.append(str(entry))
-	var loot_text := loot_names.is_empty() ? "—" : ", ".join(loot_names)
-	overlay_subtitle.text = victory ? "XP +%d\nLoot: %s" % [xp, loot_text] : "You fall in battle…"
+	var loot_text := "—" if loot_names.is_empty() else ", ".join(loot_names)
+	overlay_subtitle.text = "XP +%d\nLoot: %s" % [xp, loot_text] if victory else "You fall in battle…"
 	var tween := create_tween()
 	tween.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
 	tween.tween_interval(0.1)

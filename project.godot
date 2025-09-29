@@ -26,19 +26,39 @@ AudioService="*res://autoload/AudioService.gd"
 
 ui_action_1={
 "deadzone": 0.5,
-"events": [ { "device": 0, "keycode": 49, "physical_keycode": 49, "type": "InputEventKey" } ]
+"events": [{
+"device": 0,
+"keycode": 49,
+"physical_keycode": 49,
+"type": "InputEventKey"
+}]
 }
 ui_action_2={
 "deadzone": 0.5,
-"events": [ { "device": 0, "keycode": 50, "physical_keycode": 50, "type": "InputEventKey" } ]
+"events": [{
+"device": 0,
+"keycode": 50,
+"physical_keycode": 50,
+"type": "InputEventKey"
+}]
 }
 ui_action_3={
 "deadzone": 0.5,
-"events": [ { "device": 0, "keycode": 51, "physical_keycode": 51, "type": "InputEventKey" } ]
+"events": [{
+"device": 0,
+"keycode": 51,
+"physical_keycode": 51,
+"type": "InputEventKey"
+}]
 }
 ui_action_4={
 "deadzone": 0.5,
-"events": [ { "device": 0, "keycode": 52, "physical_keycode": 52, "type": "InputEventKey" } ]
+"events": [{
+"device": 0,
+"keycode": 52,
+"physical_keycode": 52,
+"type": "InputEventKey"
+}]
 }
 
 [rendering]
