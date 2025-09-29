@@ -24,10 +24,7 @@ AudioService="*res://autoload/AudioService.gd"
 
 [debug]
 
-gdscript/warnings/inference_on_variant=1
-gdscript/warnings/native_method_override=1
-gdscript/warnings/get_node_default_without_onready=1
-gdscript/warnings/onready_with_export=1
+shader_language/warnings/treat_warnings_as_errors=true
 
 [rendering]
 
