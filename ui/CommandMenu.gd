@@ -1,4 +1,4 @@
-﻿# Godot 4.x
+# Godot 4.x
 class_name CommandMenu
 extends Control
 
@@ -296,4 +296,3 @@ func _grab_focus(idx: int) -> void:
 	var btns: Array = [_btn_attack, _btn_spells, _btn_items, _btn_defend]
 	(btns[_focused_idx] as Button).grab_focus()
 	_move_cursor_to(btns[_focused_idx] as Button)
-

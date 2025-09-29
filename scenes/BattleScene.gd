@@ -102,10 +102,19 @@ func _ready() -> void:
 	enemy_shadow.z_index = 0
 	enemy_shadow.scale = Vector2(1.35, 0.9)
 
-	hero_origin = hero_sprite.position if hero_sprite != null else hero_sprite_placeholder.position
-	enemy_origin = enemy_sprite.position if enemy_sprite != null else enemy_sprite_placeholder.position
-	hero_shadow_base = hero_shadow.scale
-	enemy_shadow_base = enemy_shadow.scale
+	var _hero_origin_tmp := Vector2.ZERO
+	if hero_sprite != null:
+	_hero_origin_tmp = hero_sprite.position
+	elif is_instance_valid(hero_sprite_placeholder):
+	_hero_origin_tmp = hero_sprite_placeholder.position
+	hero_origin = _hero_origin_tmp
+	var _enemy_origin_tmp := Vector2.ZERO
+	if enemy_sprite != null:
+	_enemy_origin_tmp = enemy_sprite.position
+	elif is_instance_valid(enemy_sprite_placeholder):
+	_enemy_origin_tmp = enemy_sprite_placeholder.position
+	enemy_origin = _enemy_origin_tmp
+
 
 
 	$Overlay.visible = false
@@ -638,3 +647,4 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 
 func _lock_input_after_battle() -> void:
 	keyboard_end_turn_enabled = false
+
