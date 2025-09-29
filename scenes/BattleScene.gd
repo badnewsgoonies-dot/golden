@@ -46,6 +46,7 @@ var enemy_origin: Vector2 = Vector2.ZERO
 var hero_shadow_base: Vector2 = Vector2.ONE
 var enemy_shadow_base: Vector2 = Vector2.ONE
 var status_icon_cache: Dictionary = {}
+var sfx_streams: Dictionary = {}
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -87,6 +88,12 @@ func _ready() -> void:
 	$Overlay.visible = false
 	overlay_fade.modulate.a = 0.0
 
+	sfx_streams = {
+		"hit": _make_tone(420.0, 0.14, 0.35),
+		"crit": _make_tone(660.0, 0.2, 0.4),
+		"miss": _make_tone(240.0, 0.16, 0.3)
+	}
+
 	btn_attack.hint_tooltip = "Basic attack. No MP."
 	btn_fire.hint_tooltip = "Spell attack. Costs MP."
 	btn_potion.hint_tooltip = "Consume a potion to restore HP."
@@ -103,9 +110,13 @@ func _ready() -> void:
 	_update_turn_order([])
 
 func _on_attack() -> void:
+	if battle_finished:
+		return
 	_queue_hero_action(skill_slash)
 
 func _on_fireball() -> void:
+	if battle_finished:
+		return
 	var cost: int = int(skill_fireball.get("mp_cost", 0))
 	if int(hero.stats.get("MP", 0)) >= cost:
 		_queue_hero_action(skill_fireball)
@@ -113,6 +124,8 @@ func _on_fireball() -> void:
 		_log("Not enough MP for Fireball!")
 
 func _on_potion() -> void:
+	if battle_finished:
+		return
 	if potion_used:
 		_log("The potion bottle is empty.")
 		return
@@ -127,18 +140,26 @@ func _on_potion() -> void:
 	btn_potion.disabled = true
 	_log("Hero uses Potion and heals %d HP." % restored)
 	_update_ui()
+	_refresh_end_turn_button()
 
 func _queue_hero_action(skill: Dictionary) -> void:
 	planned_actions.clear()
 	var skill_copy: Dictionary = skill.duplicate(true)
 	planned_actions.append(Action.new(hero, skill_copy, enemy))
 	_log("Planned: %s" % skill_copy.get("name", "Action"))
+	_refresh_plan_label()
+	_refresh_end_turn_button()
 
 func _on_end_turn() -> void:
+	if battle_finished:
+		return
 	if !hero.is_alive() or !enemy.is_alive():
 		return
 	if planned_actions.is_empty():
+		_log("No action planned; defaulting to Slash.")
 		planned_actions.append(Action.new(hero, skill_slash, enemy))
+	_refresh_plan_label()
+	_refresh_end_turn_button()
 
 	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
@@ -153,7 +174,14 @@ func _on_end_turn() -> void:
 				hero.spend_mp(mp_cost)
 
 	for a in actions:
-		if !a.actor.is_alive() or !a.target.is_alive():
+		if a.actor == null or a.target == null:
+			_log("Skipped action: missing actor/target")
+			continue
+		if !a.actor.is_alive():
+			_log("%s is down and can't act." % a.actor.name)
+			continue
+		if !a.target.is_alive():
+			_log("%s has no valid target." % a.actor.name)
 			continue
 		var tag: String = Formula.element_tag(a.actor, a.target, a.skill)
 		var result: Dictionary = turn_engine.execute(a)
@@ -162,6 +190,15 @@ func _on_end_turn() -> void:
 			_log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
 		else:
 			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+		var target_sprite := _sprite_for_unit(a.target)
+		if result.get("hit", false):
+			var damage: int = int(result.get("damage", 0))
+			var crit := bool(result.get("crit", false))
+			play_sfx(crit ? "crit" : "hit")
+			spawn_damage_popup(target_sprite, damage, crit, false)
+		else:
+			play_sfx("miss")
+			spawn_damage_popup(target_sprite, 0, false, true)
 		await _play_attack_animation(a, result)
 		if result.get("hit", false):
 			for status_line in result.get("status_logs", []):
@@ -176,20 +213,37 @@ func _on_end_turn() -> void:
 	_check_end()
 	_update_ui()
 	_update_turn_order([])
+	_refresh_plan_label()
+	_refresh_end_turn_button()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if battle_finished:
+		return
+	if event.is_action_pressed("ui_action_1"):
+		_on_attack()
+	elif event.is_action_pressed("ui_action_2"):
+		_on_fireball()
+	elif event.is_action_pressed("ui_action_3"):
+		_on_potion()
+	elif event.is_action_pressed("ui_action_4") and keyboard_end_turn_enabled:
+		_on_end_turn()
 
 func _check_end() -> void:
+	if battle_finished:
+		return
 	if !enemy.is_alive():
 		_log("Victory! Goblin is defeated.")
-		_disable_inputs()
+		show_battle_result(true, 0, [])
 	elif !hero.is_alive():
 		_log("Defeat... The hero falls.")
-		_disable_inputs()
+		show_battle_result(false)
 
 func _disable_inputs() -> void:
 	btn_attack.disabled = true
 	btn_fire.disabled = true
 	btn_potion.disabled = true
 	btn_end.disabled = true
+	battle_finished = true
 
 func _update_ui() -> void:
 	lbl_hero.text = "Hero: %s  HP %d/%d  MP %d/%d" % [
@@ -205,6 +259,9 @@ func _update_ui() -> void:
 		enemy.max_stats.get("HP", 0)
 	]
 	_update_sprites()
+	refresh_status_hud()
+	_refresh_plan_label()
+	_refresh_end_turn_button()
 
 func _log(msg: String) -> void:
 	log_view.append_text(msg + "\n")
@@ -384,3 +441,111 @@ func _shake_sprite(unit: Unit) -> void:
 	tween.tween_property(sprite, "position", origin - offset * 0.6, 0.07)
 	tween.tween_property(sprite, "position", origin, 0.08)
 	await tween.finished
+
+func _refresh_plan_label() -> void:
+	if plan_label == null:
+		return
+	if battle_finished or planned_actions.is_empty():
+		plan_label.text = "Planned: --"
+		return
+	var next_action: Action = planned_actions[0]
+	var skill_name := str(next_action.skill.get("name", "Action"))
+	plan_label.text = "Planned: %s" % skill_name
+
+func _refresh_end_turn_button() -> void:
+	btn_end.disabled = battle_finished or planned_actions.is_empty()
+
+func refresh_status_hud() -> void:
+	_populate_status_container(hero_status_container, hero)
+	_populate_status_container(enemy_status_container, enemy)
+
+func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
+	if container == null:
+		return
+	for child in container.get_children():
+		child.queue_free()
+	if unit == null:
+		return
+	var seen: Dictionary = {}
+	for status_name in unit.get_status_types():
+		var key := String(status_name).to_lower()
+		if seen.has(key):
+			continue
+		seen[key] = true
+		var icon := TextureRect.new()
+		icon.texture = _get_status_icon(key)
+		icon.custom_min_size = Vector2(18, 18)
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		container.add_child(icon)
+
+func _get_status_icon(status_name: String) -> Texture2D:
+	var key := status_name.to_lower()
+	if not status_icon_cache.has(key):
+		status_icon_cache[key] = SpriteFactory.make_status_icon(key)
+	return status_icon_cache[key]
+
+func spawn_damage_popup(node: Node2D, amount: int, crit: bool = false, miss: bool = false) -> void:
+	if node == null or popups_container == null:
+		return
+	var popup_label := DAMAGE_POPUP.instantiate()
+	if popup_label == null:
+		return
+	var world_pos := node.get_global_transform_with_canvas().origin
+	var local_pos := popups_container.get_global_transform_with_canvas().affine_inverse().xform(world_pos)
+	var text := miss ? "Miss" : (crit ? "%d!" % amount : str(amount))
+	var color := miss ? Color(0.7, 0.7, 0.7) : (crit ? Color(1.0, 0.85, 0.2) : Color(1, 1, 1))
+	popups_container.add_child(popup_label)
+	popup_label.popup(local_pos + Vector2(-8, -16), text, color)
+
+func play_sfx(kind: String) -> void:
+	var stream: AudioStream = sfx_streams.get(kind, sfx_streams.get("hit", null))
+	if stream == null:
+		return
+	var player: AudioStreamPlayer = $SFX
+	player.stream = stream
+	player.play()
+
+func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStreamSample:
+	var sample := AudioStreamSample.new()
+	sample.format = AudioStreamSample.FORMAT_16_BITS
+	sample.mix_rate = 44100
+	sample.stereo = false
+	var frame_count: int = max(1, int(duration * sample.mix_rate))
+	var data := PackedByteArray()
+	data.resize(frame_count * 2)
+	for i in range(frame_count):
+		var t := float(i) / sample.mix_rate
+		var fade_in := min(1.0, t / 0.02)
+		var fade_out := min(1.0, (duration - t) / 0.06)
+		var env := min(fade_in, fade_out)
+		var value := int(sin(TAU * freq * t) * volume * env * 32767.0)
+		value = clamp(value, -32768, 32767)
+		data[i * 2] = value & 0xFF
+		data[i * 2 + 1] = (value >> 8) & 0xFF
+	sample.data = data
+	sample.loop_mode = AudioStreamSample.LOOP_DISABLED
+	return sample
+
+func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) -> void:
+	if battle_finished:
+		return
+	_disable_inputs()
+	planned_actions.clear()
+	_refresh_plan_label()
+	_refresh_end_turn_button()
+	refresh_status_hud()
+	$Overlay.visible = true
+	overlay_fade.modulate.a = 0.0
+	overlay_title.text = victory ? "Victory!" : "Defeat"
+	var loot_names: PackedStringArray = PackedStringArray()
+	for entry in loot:
+		loot_names.append(str(entry))
+	var loot_text := loot_names.is_empty() ? "—" : ", ".join(loot_names)
+	overlay_subtitle.text = victory ? "XP +%d\nLoot: %s" % [xp, loot_text] : "You fall in battle…"
+	var tween := create_tween()
+	tween.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
+	tween.tween_interval(0.1)
+	tween.finished.connect(_lock_input_after_battle)
+
+func _lock_input_after_battle() -> void:
+	keyboard_end_turn_enabled = false
