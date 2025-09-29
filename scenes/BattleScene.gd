@@ -78,17 +78,21 @@ func _ready() -> void:
 	if enemy_sprite != null:
 		enemy_sprite.flip_h = true
 
-\tvar stage := get_node_or_null('Stage')
-\tif hero_shadow == null:
-\t\thero_shadow = Sprite2D.new()
-\t\thero_shadow.name = 'HeroShadow'
-\t\tif stage != null:
-\t\t\tstage.add_child(hero_shadow)
-\tif enemy_shadow == null:
-\t\tenemy_shadow = Sprite2D.new()
-\t\tenemy_shadow.name = 'EnemyShadow'
-\t\tif stage != null:
-\t\t\tstage.add_child(enemy_shadow)
+	var stage := get_node_or_null("Stage")
+	if hero_shadow == null:
+		hero_shadow = Sprite2D.new()
+		hero_shadow.name = "HeroShadow"
+		if stage != null:
+			stage.add_child(hero_shadow)
+		if hero_sprite_placeholder != null:
+			hero_shadow.position = hero_sprite_placeholder.position + Vector2(0, 44)
+	if enemy_shadow == null:
+		enemy_shadow = Sprite2D.new()
+		enemy_shadow.name = "EnemyShadow"
+		if stage != null:
+			stage.add_child(enemy_shadow)
+		if enemy_sprite_placeholder != null:
+			enemy_shadow.position = enemy_sprite_placeholder.position + Vector2(0, 48)
 	hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
 	hero_shadow.centered = true
 	hero_shadow.z_index = 0

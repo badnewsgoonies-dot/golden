@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759168501
+::res://::1759168724
 ::res://art/::1759166475
 portrait_alias.json::JSON::-1::1759176462::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
@@ -694,7 +694,7 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnim
 ::res://scenes/::1759168058
 background_meadow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759168431::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759168602::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759167068::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759119104::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::
