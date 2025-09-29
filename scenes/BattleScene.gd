@@ -1,4 +1,4 @@
-﻿extends Node2D
+extends Node2D
 
 const Action := preload("res://battle/models/Action.gd")
 const Unit := preload("res://battle/models/Unit.gd")
@@ -223,4 +223,3 @@ func _build_unit(def: Dictionary) -> Unit:
 		"air": float(resist_dict.get("air", 1.0))
 	}
 	return unit
-
