@@ -1,10 +1,10 @@
 extends Node
 
 var rng := RandomNumberGenerator.new()
-var seed: int = 0
+var rng_seed: int = 0
 
 func set_seed(new_seed: int) -> void:
-	seed = new_seed
+	rng_seed = new_seed
 	rng.seed = new_seed
 
 func randf() -> float:
