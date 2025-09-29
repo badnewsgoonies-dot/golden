@@ -80,7 +80,7 @@ func _queue_hero_action(skill: Dictionary) -> void:
 func _on_end_turn() -> void:
 	if !hero.is_alive() or !enemy.is_alive():
 		return
-    if planned_actions.is_empty():
+	if planned_actions.is_empty():
 		planned_actions.append(Action.new(hero, skill_slash, enemy))
 
 	var enemy_action := Action.new(enemy, skill_slash.duplicate(true), hero)
@@ -106,7 +106,7 @@ func _on_end_turn() -> void:
 			for status_line in result.get("status_logs", []):
 				_log(status_line)
 		else:
-			_log("%s uses %s — Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
 
 	var tick_logs := turn_engine.end_of_round_tick([hero, enemy])
 	for line in tick_logs:
@@ -122,7 +122,7 @@ func _check_end() -> void:
 		_log("Victory! Goblin is defeated.")
 		_disable_inputs()
 	elif !hero.is_alive():
-		_log("Defeat… The hero falls.")
+		_log("Defeatâ€¦ The hero falls.")
 		_disable_inputs()
 
 func _disable_inputs() -> void:
@@ -162,7 +162,7 @@ func _update_turn_order(actions: Array) -> void:
 		var actor_name := act.actor.name if act.actor != null else "?"
 		var skill_name := String(act.skill.get("name", "Action"))
 		parts.append("%s (%s)" % [actor_name, skill_name])
-	lbl_queue.text = "Turn order: " + " → ".join(parts)
+	lbl_queue.text = "Turn order: " + " -> ".join(parts)
 
 func _fetch_skill(id: String) -> Dictionary:
 	if DataRegistry.skills.has(id):
@@ -181,7 +181,7 @@ func _fetch_skill(id: String) -> Dictionary:
 	}
 
 func _build_unit_from_character(id: String) -> Unit:
-	var def := DataRegistry.characters.get(id, {})
+	var def: Dictionary = DataRegistry.characters.get(id, {})
 	if def.is_empty():
 		def = {
 			"name": "Pyro Adept",
@@ -191,7 +191,7 @@ func _build_unit_from_character(id: String) -> Unit:
 	return _build_unit(def)
 
 func _build_unit_from_enemy(id: String) -> Unit:
-	var def := DataRegistry.enemies.get(id, {})
+	var def: Dictionary = DataRegistry.enemies.get(id, {})
 	if def.is_empty():
 		def = {
 			"name": "Goblin",
@@ -201,7 +201,7 @@ func _build_unit_from_enemy(id: String) -> Unit:
 	return _build_unit(def)
 
 func _build_unit(def: Dictionary) -> Unit:
-	var unit := Unit.new()
+	var unit: Unit = Unit.new()
 	unit.name = String(def.get("name", "Unit"))
 	var stats_dict: Dictionary = def.get("stats", {})
 	var max_hp := int(stats_dict.get("max_hp", 80))
@@ -223,3 +223,4 @@ func _build_unit(def: Dictionary) -> Unit:
 		"air": float(resist_dict.get("air", 1.0))
 	}
 	return unit
+
