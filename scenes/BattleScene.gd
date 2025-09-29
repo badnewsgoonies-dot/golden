@@ -87,6 +87,7 @@ func _ready() -> void:
 	refresh_status_hud()
 	$Overlay.visible = false
 	overlay_fade.modulate.a = 0.0
+	log_view.bbcode_enabled = true
 
 	sfx_streams = {
 		"hit": _make_tone(420.0, 0.14, 0.35),
@@ -187,9 +188,33 @@ func _on_end_turn() -> void:
 		var result: Dictionary = turn_engine.execute(a)
 		if result.get("hit", false):
 			var crit_text := " CRIT!" if result.get("crit", false) else ""
-			_log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
+			var damage: int = int(result.get("damage", 0))
+			var damage_color: Color = Color(1, 1, 1)
+			if result.get("crit", false):
+				damage_color = Color(1.0, 0.85, 0.2)
+			if tag == "[WEAK]":
+				damage_color = Color(1.0, 0.5, 0.25)
+			elif tag == "[RESIST]":
+				damage_color = Color(0.55, 0.75, 1.0)
+			var damage_bbcode := "[color=%s]%d[/color]" % [damage_color.to_html(false), damage]
+			var tag_bbcode := ""
+			if not tag.is_empty():
+				var tag_clean := tag.replace("[", "").replace("]", "")
+				var tag_color := damage_color
+				tag_bbcode = " [color=%s][%s][/color]" % [tag_color.to_html(false), tag_clean]
+			var crit_bbcode := ""
+			if result.get("crit", false):
+				crit_bbcode = " [color=%s]CRIT![/color]" % Color(1.0, 0.85, 0.2).to_html(false)
+			var skill_name := String(a.skill.get("name", "Skill"))
+			var msg := "%s uses %s for %s%s%s" % [a.actor.name, skill_name, damage_bbcode, tag_bbcode, crit_bbcode]
+			_log(msg, Color.WHITE, true)
 		else:
-			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+			var miss_msg := "%s uses %s - [color=%s]Miss![/color]" % [
+				a.actor.name,
+				String(a.skill.get("name", "Skill")),
+				Color(0.7, 0.7, 0.7).to_html(false)
+			]
+			_log(miss_msg, Color.WHITE, true)
 		var target_sprite := _sprite_for_unit(a.target)
 		if result.get("hit", false):
 			var damage: int = int(result.get("damage", 0))
@@ -202,12 +227,17 @@ func _on_end_turn() -> void:
 		await _play_attack_animation(a, result)
 		if result.get("hit", false):
 			for status_line in result.get("status_logs", []):
-				_log(status_line)
+				_log(status_line, Color(0.55, 0.8, 1.0))
 		_update_ui()
 
 	var tick_logs: Array[String] = turn_engine.end_of_round_tick([hero, enemy])
 	for line in tick_logs:
-		_log(line)
+		var tick_color: Color = Color(0.8, 0.8, 0.8)
+		if line.find("burn") != -1:
+			tick_color = Color(1.0, 0.5, 0.25)
+		elif line.find("poison") != -1:
+			tick_color = Color(0.6, 0.9, 0.4)
+		_log(line, tick_color)
 
 	planned_actions.clear()
 	_check_end()
@@ -263,8 +293,11 @@ func _update_ui() -> void:
 	_refresh_plan_label()
 	_refresh_end_turn_button()
 
-func _log(msg: String) -> void:
-	log_view.append_text(msg + "\n")
+func _log(msg: String, color: Color = Color(1, 1, 1), rich: bool = false) -> void:
+	var line := msg
+	if not rich and color != Color(1, 1, 1):
+		line = "[color=%s]%s[/color]" % [color.to_html(false), msg]
+	log_view.append_text(line + "\n")
 	log_view.scroll_following = true
 	print(msg)
 
