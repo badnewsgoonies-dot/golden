@@ -1,4 +1,4 @@
-﻿class_name Unit
+class_name Unit
 extends RefCounted
 
 const Status := preload("res://battle/models/Status.gd")
@@ -28,17 +28,17 @@ func get_resist(element: String) -> float:
 	return float(resist.get(element, 1.0))
 
 func take_damage(amount: int) -> int:
-    var hp: int = int(stats.get("HP", 0))
-    var dmg: int = int(clamp(amount, 0, hp))
-    stats["HP"] = max(0, hp - dmg)
-    return dmg
+	var hp: int = int(stats.get("HP", 0))
+	var dmg: int = int(clamp(amount, 0, hp))
+	stats["HP"] = max(0, hp - dmg)
+	return dmg
 
 func heal(amount: int) -> int:
-    var hp: int = int(stats.get("HP", 0))
-    var max_hp: int = int(max_stats.get("HP", hp))
-    var healed: int = int(clamp(amount, 0, max_hp - hp))
-    stats["HP"] = min(max_hp, hp + healed)
-    return healed
+	var hp: int = int(stats.get("HP", 0))
+	var max_hp: int = int(max_stats.get("HP", hp))
+	var healed: int = int(clamp(amount, 0, max_hp - hp))
+	stats["HP"] = min(max_hp, hp + healed)
+	return healed
 
 func spend_mp(amount: int) -> bool:
 	var mp: int = int(stats.get("MP", 0))
@@ -48,11 +48,11 @@ func spend_mp(amount: int) -> bool:
 	return true
 
 func restore_mp(amount: int) -> int:
-    var mp: int = int(stats.get("MP", 0))
-    var max_mp: int = int(max_stats.get("MP", mp))
-    var restored: int = int(clamp(amount, 0, max_mp - mp))
-    stats["MP"] = min(max_mp, mp + restored)
-    return restored
+	var mp: int = int(stats.get("MP", 0))
+	var max_mp: int = int(max_stats.get("MP", mp))
+	var restored: int = int(clamp(amount, 0, max_mp - mp))
+	stats["MP"] = min(max_mp, mp + restored)
+	return restored
 
 func add_status(status: Status) -> void:
 	statuses.append(status)
