@@ -35,6 +35,9 @@ text = "Potion"
 [node name="BtnEndTurn" type="Button" parent="UI/Root/VBox/Buttons"]
 text = "End Turn"
 
+[node name="TurnOrder" type="Label" parent="UI/Root/VBox"]
+text = "Turn order:"
+
 [node name="Log" type="RichTextLabel" parent="UI/Root/VBox"]
 size_flags_vertical = 3
 autowrap_mode = 2

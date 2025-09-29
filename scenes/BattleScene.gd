@@ -11,6 +11,7 @@ const TurnEngine := preload("res://battle/TurnEngine.gd")
 @onready var btn_fire: Button = $UI/Root/VBox/Buttons/BtnFireball
 @onready var btn_potion: Button = $UI/Root/VBox/Buttons/BtnPotion
 @onready var btn_end: Button = $UI/Root/VBox/Buttons/BtnEndTurn
+@onready var lbl_queue: Label = $UI/Root/VBox/TurnOrder
 @onready var log_view: RichTextLabel = $UI/Root/VBox/Log
 
 var hero: Unit
@@ -72,6 +73,7 @@ func _ready() -> void:
 
 	_log("Battle starts! Pyro Adept vs Goblin")
 	_update_ui()
+	_update_turn_order([])
 
 func _on_attack() -> void:
 	_queue_hero_action(SKILL_SLASH)
@@ -114,6 +116,7 @@ func _on_end_turn() -> void:
 	var actions: Array = planned_actions.duplicate()
 	actions.append(enemy_action)
 	actions = turn_engine.build_queue(actions)
+	_update_turn_order(actions)
 
 	for a in actions:
 		if a.actor == hero:
@@ -141,6 +144,7 @@ func _on_end_turn() -> void:
 	planned_actions.clear()
 	_check_end()
 	_update_ui()
+	_update_turn_order([])
 
 func _check_end() -> void:
 	if !enemy.is_alive():
@@ -174,3 +178,17 @@ func _log(msg: String) -> void:
 	log_view.append_text(msg + "\n")
 	log_view.scroll_following = true
 	print(msg)
+
+func _update_turn_order(actions: Array) -> void:
+	if actions.is_empty():
+		lbl_queue.text = "Turn order: --"
+		return
+	var parts: Array[String] = []
+	for item in actions:
+		var act := item as Action
+		if act == null:
+			continue
+		var actor_name := act.actor.name if act.actor != null else "?"
+		var skill_name := String(act.skill.get("name", "Action"))
+		parts.append("%s (%s)" % [actor_name, skill_name])
+	lbl_queue.text = "Turn order: " + " → ".join(parts)
