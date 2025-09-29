@@ -17,7 +17,7 @@ var _sub_mode := ""
 
 func _ready() -> void:
 	name = "CommandMenu"
-	mouse_filter = MOUSE_FILTER_PASS
+	mouse_filter = Control.MOUSE_FILTER_PASS
 	anchor_left = 0.5
 	anchor_top = 1.0
 	anchor_right = 0.5
@@ -118,7 +118,7 @@ func _open_submenu(kind: String) -> void:
 		var label := entry.get("name", entry.get("id", "?"))
 		var mp := entry.get("mp_cost", null)
 		var btn := Button.new()
-		btn.text = mp == null ? label : "%s  (%d MP)" % [label, int(mp)]
+		var _t := label\n\t\tif mp != null:\n\t\t\t_t = "%s  (%d MP)" % [label, int(mp)]\n\t\tbtn.text = _t
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(func():
 			var eid := String(entry.get("id", label)).to_lower()
@@ -131,3 +131,5 @@ func _open_submenu(kind: String) -> void:
 func _close_submenu() -> void:
 	_sub_mode = ""
 	_sub_panel.visible = false
+
+

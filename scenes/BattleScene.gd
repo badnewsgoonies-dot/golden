@@ -197,7 +197,7 @@ func _on_end_turn() -> void:
 		var res := turn_engine.execute(a)
 		if res.get("hit", false):
 			var dmg := int(res.get("damage",0)); var crit := bool(res.get("crit",false))
-			play_sfx(crit?"crit":"hit"); spawn_damage_popup(_sprite_for_unit(a.target), dmg, crit, false)
+			play_sfx("crit" if crit else "hit"); spawn_damage_popup(_sprite_for_unit(a.target), dmg, crit, false)
 			if _sprite_for_unit(a.target) is AnimatedFrames: (_sprite_for_unit(a.target) as AnimatedFrames).play_hit()
 		else:
 			play_sfx("miss"); spawn_damage_popup(_sprite_for_unit(a.target), 0, false, true)
@@ -399,10 +399,10 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	if battle_finished: return
 	_disable_inputs(); planned_actions.clear(); _refresh_plan_label(); _refresh_end_turn_button(); refresh_status_hud()
 	$Overlay.visible = true; overlay_fade.modulate.a = 0.0
-	overlay_title.text = victory?"Victory!":"Defeat"
+	overlay_title.text = "Victory!" if victory else "Defeat"
 	var names := PackedStringArray(); for e in loot: names.append(str(e))
 	var loot_text := "—" if names.is_empty() else ", ".join(names)
-	overlay_subtitle.text = victory?"XP +%d\nLoot: %s"%[xp,loot_text]:"You fall in battle…"
+	overlay_subtitle.text = ("XP +%d\nLoot: %s" % [xp, loot_text]) if victory else "You fall in battle."
 	var t := create_tween(); t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4); t.tween_interval(0.1); t.finished.connect(_lock_input_after_battle)
 
 func _lock_input_after_battle() -> void:
