@@ -443,7 +443,7 @@ func _set_portrait(row: HBoxContainer, unit_name: String) -> void:
 	var existing := row.get_node_or_null("Portrait")
 	if existing != null:
 		existing.queue_free()
-	var art_key := CHARACTER_ART.get(unit_name, unit_name.to_lower().replace(" ", "_"))
+	var art_key: String = String(CHARACTER_ART.get(unit_name, unit_name.to_lower().replace(" ", "_")))
 	var path := "res://art/portraits/%s_portrait_96.png" % art_key
 	var tex: Texture2D = load(path)
 	if tex == null:
@@ -457,7 +457,7 @@ func _set_portrait(row: HBoxContainer, unit_name: String) -> void:
 	row.add_child(portrait)
 	row.move_child(portrait, 0)
 
-func _sprite_for_unit(unit: Unit) -> AnimatedSprite2D:
+func _sprite_for_unit(unit: Unit) -> AnimatedFrames:
 	if unit == hero:
 		return hero_sprite
 	if unit == enemy:
