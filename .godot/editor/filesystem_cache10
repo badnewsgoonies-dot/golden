@@ -1,7 +1,7 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759176167
+::res://::1759178374
 ::res://art/::1759166475
-portrait_alias.json::JSON::-1::1759176462::0::1::::<><><>0<>0<><>::
+portrait_alias.json::JSON::-1::1759176866::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://art/background/::1759167057
 parallax_far.png::CompressedTexture2D::1119906802922616564::1759179988::1759167057::1::::<><><>0<>0<>dd50f32bff4bfff221c07765a43079d7<>res://.godot/imported/parallax_far.png-c2a73a3132678b6cd162c9279cd23a4e.ctex::
@@ -694,8 +694,8 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnim
 ::res://scenes/::1759176017
 background_meadow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759176017::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::-1::1759167068::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
+BattleScene.gd::GDScript::8322624433477628582::1759177471::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.tscn::PackedScene::-1::1759177552::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759119104::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759034594::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
@@ -718,7 +718,7 @@ EffectSystem.gd::GDScript::4297200307181946211::1759042586::0::1::::<>Node<><>0<
 Formula.gd::GDScript::7123728041291322933::1759042586::0::1::::<>Node<><>0<>0<><>::
 FX.gd::GDScript::2857231172079987558::1759167136::0::1::::<>Node<><>0<>0<><>::
 FXDamageNumber.gd::GDScript::5790063536421429034::1759167485::0::1::::<>Node2D<><>0<>0<><>::
-PortraitLoader.gd::GDScript::8626782880797348315::1759168070::0::1::::<>Node<><>0<>0<><>::
+PortraitLoader.gd::GDScript::8626782880797348315::1759176841::0::1::::PortraitLoader<>Node<><>0<>0<><>::
 SelectorArrow.gd::GDScript::-1::1759179988::0::1::::<>Sprite2D<><>0<>0<><>::
 TurnController.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0<><>::
@@ -727,6 +727,6 @@ TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0
 ::res://tools/::1759168099
 PortraitPacker.gd::GDScript::5548992340685240776::1759168099::0::1::::<>EditorScript<><>0<>1<><>::
 ::res://ui/::1759169462
-CommandMenu.gd::GDScript::6169794612215573323::1759169462::0::1::::CommandMenu<>Control<><>0<>0<><>::
+CommandMenu.gd::GDScript::6169794612215573323::1759177639::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759123853::0::1::::<>Label<><>0<>0<><>::
 DamagePopup.tscn::PackedScene::-1::1759124650::0::1::::<><><>0<>0<><>::res://ui/DamagePopup.gd
