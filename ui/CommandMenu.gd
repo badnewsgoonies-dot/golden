@@ -76,8 +76,9 @@ func _build_if_needed() -> void:
 	_header_name = Label.new()
 	_header_name.add_theme_font_size_override("font_size", 20)
 	_header_name.add_theme_color_override("font_color", Color(1.0, 0.82, 0.25, 1))
-	_header.add_child(_header_name)
-	_header.add_spacer(16)
+		_header.add_child(_header_name)
+		# Godot 4: add_spacer expects a bool (begin), not a size.
+		_header.add_spacer(false)
 
 	_grid = VBoxContainer.new()
 	_grid.add_theme_constant_override("separation", 8)
@@ -160,8 +161,9 @@ func _make_list_row(left: String, right: String) -> Dictionary:
 	cost.text = right
 	cost.add_theme_font_size_override("font_size", 14)
 	cost.add_theme_color_override("font_color", Color(0.82, 0.86, 0.90, 0.95))
-	row.add_child(cost)
-	row.add_spacer(8)
+		row.add_child(cost)
+		# Godot 4: add_spacer expects a bool flag.
+		row.add_spacer(false)
 
 	return {"row": row, "btn": btn}
 
