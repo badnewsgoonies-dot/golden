@@ -95,10 +95,10 @@ func _ready() -> void:
 		"miss": _make_tone(240.0, 0.16, 0.3)
 	}
 
-	btn_attack.hint_tooltip = "Basic attack. No MP."
-	btn_fire.hint_tooltip = "Spell attack. Costs MP."
-	btn_potion.hint_tooltip = "Consume a potion to restore HP."
-	btn_end.hint_tooltip = "Resolve the queued actions."
+	btn_attack.tooltip_text = "Basic attack. No MP."
+	btn_fire.tooltip_text = "Spell attack. Costs MP."
+	btn_potion.tooltip_text = "Consume a potion to restore HP."
+	btn_end.tooltip_text = "Resolve the queued actions."
 	btn_end.disabled = true
 
 	btn_attack.pressed.connect(_on_attack)
