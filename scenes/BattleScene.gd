@@ -45,8 +45,8 @@ var hero_origin: Vector2 = Vector2.ZERO
 var enemy_origin: Vector2 = Vector2.ZERO
 var hero_shadow_base: Vector2 = Vector2.ONE
 var enemy_shadow_base: Vector2 = Vector2.ONE
-var status_icon_cache: Dictionary = {}
-var sfx_streams: Dictionary = {}
+var status_icon_cache: Dictionary[String, Texture2D] = {}
+var sfx_streams: Dictionary[String, AudioStream] = {}
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -487,43 +487,57 @@ func _get_status_icon(status_name: String) -> Texture2D:
 func spawn_damage_popup(node: Node2D, amount: int, crit: bool = false, miss: bool = false) -> void:
 	if node == null or popups_container == null:
 		return
-	var popup_label := DAMAGE_POPUP.instantiate()
+	var popup_label: Label = DAMAGE_POPUP.instantiate() as Label
 	if popup_label == null:
 		return
-	var world_pos := node.get_global_transform_with_canvas().origin
-	var local_pos := popups_container.get_global_transform_with_canvas().affine_inverse().xform(world_pos)
-	var text := "Miss" if miss else ("%d!" % amount if crit else str(amount))
-	var color := Color(0.7, 0.7, 0.7) if miss else (Color(1.0, 0.85, 0.2) if crit else Color(1, 1, 1))
+	var world_pos: Vector2 = node.get_global_transform_with_canvas().origin
+	var local_pos: Vector2 = popups_container.to_local(world_pos)
+	var text: String
+	if miss:
+		text = "Miss"
+	elif crit:
+		text = "%d!" % amount
+	else:
+		text = str(amount)
+	var color: Color
+	if miss:
+		color = Color(0.7, 0.7, 0.7)
+	elif crit:
+		color = Color(1.0, 0.85, 0.2)
+	else:
+		color = Color(1, 1, 1)
 	popups_container.add_child(popup_label)
 	popup_label.popup(local_pos + Vector2(-8, -16), text, color)
 
 func play_sfx(kind: String) -> void:
-	var stream: AudioStream = sfx_streams.get(kind, sfx_streams.get("hit", null))
+	var stream: AudioStream = sfx_streams.get(kind, null) as AudioStream
+	if stream == null:
+		stream = sfx_streams.get("hit", null) as AudioStream
 	if stream == null:
 		return
 	var player: AudioStreamPlayer = $SFX
 	player.stream = stream
 	player.play()
 
-func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStreamSample:
-	var sample := AudioStreamSample.new()
-	sample.format = AudioStreamSample.FORMAT_16_BITS
+func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStreamWAV:
+	var sample := AudioStreamWAV.new()
+	sample.format = AudioStreamWAV.FORMAT_16_BITS
 	sample.mix_rate = 44100
 	sample.stereo = false
 	var frame_count: int = max(1, int(duration * sample.mix_rate))
 	var data := PackedByteArray()
 	data.resize(frame_count * 2)
 	for i in range(frame_count):
-		var t := float(i) / sample.mix_rate
-		var fade_in := min(1.0, t / 0.02)
-		var fade_out := min(1.0, (duration - t) / 0.06)
-		var env := min(fade_in, fade_out)
+		var t: float = float(i) / sample.mix_rate
+		var fade_in: float = min(1.0, t / 0.02)
+		var fade_out: float = min(1.0, (duration - t) / 0.06)
+		var env: float = min(fade_in, fade_out)
 		var value := int(sin(TAU * freq * t) * volume * env * 32767.0)
 		value = clamp(value, -32768, 32767)
 		data[i * 2] = value & 0xFF
 		data[i * 2 + 1] = (value >> 8) & 0xFF
 	sample.data = data
-	sample.loop_mode = AudioStreamSample.LOOP_DISABLED
+	sample.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	return sample
 
 func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) -> void:
