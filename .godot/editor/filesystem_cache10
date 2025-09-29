@@ -1,12 +1,12 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759114916
+::res://::1759115184
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759049274::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
 ::res://autoload/::1759033140
 AudioService.gd::GDScript::6139316943950983922::1759042586::0::1::::<>Node<><>0<>0<><>::
 DataRegistry.gd::GDScript::1869354952928479482::1759045746::0::1::::<>Node<><>0<>0<><>::
-GameManager.gd::GDScript::1729807557281203855::1759033140::0::1::::<>Node<><>0<>0<><>::
+GameManager.gd::GDScript::1729807557281203855::1759115142::0::1::::<>Node<><>0<>0<><>::
 RunManager.gd::GDScript::9001988606965223525::1759031448::0::1::::<>Node<><>0<>0<><>::
 SaveService.gd::GDScript::2519183938991418370::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://battle/::1759103067
@@ -26,10 +26,10 @@ skills.json::JSON::-1::1759111923::0::1::::<><><>0<>0<><>::
 ::res://fx/::1759050031
 SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnimator<>Node<><>0<>0<><>::
 ::res://save/::1759030491
-::res://scenes/::1759103067
+::res://scenes/::1759115130
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
 BattleScene.gd::GDScript::8322624433477628582::1759112065::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::-1::1759111222::0::1::::<><><>0<>0<><>::
+BattleScene.tscn::PackedScene::-1::1759115130::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
 Boot.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759034594::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
