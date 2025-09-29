@@ -16,6 +16,8 @@ const SpriteFactory := preload("res://art/SpriteFactory.gd")
 @onready var log_view: RichTextLabel = $UI/Root/VBox/Log
 @onready var hero_sprite: Sprite2D = $Stage/HeroSprite
 @onready var enemy_sprite: Sprite2D = $Stage/EnemySprite
+@onready var hero_shadow: Sprite2D = $Stage/HeroShadow
+@onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
 
 var hero: Unit
 var enemy: Unit
@@ -27,6 +29,11 @@ var skill_slash: Dictionary = {}
 var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
+
+var hero_origin: Vector2 = Vector2.ZERO
+var enemy_origin: Vector2 = Vector2.ZERO
+var hero_shadow_base: Vector2 = Vector2.ONE
+var enemy_shadow_base: Vector2 = Vector2.ONE
 
 func _ready() -> void:
 	print("BattleScene _ready()")
@@ -41,11 +48,26 @@ func _ready() -> void:
 
 	hero_sprite.texture = SpriteFactory.make_humanoid("adept", 6)
 	hero_sprite.centered = true
-	hero_sprite.position = Vector2(220, 370)
+	hero_sprite.z_index = 1
 	enemy_sprite.texture = SpriteFactory.make_monster("goblin", 6)
 	enemy_sprite.centered = true
-	enemy_sprite.position = Vector2(760, 320)
 	enemy_sprite.flip_h = true
+	enemy_sprite.z_index = 1
+
+	hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
+	hero_shadow.centered = true
+	hero_shadow.z_index = 0
+	hero_shadow.scale = Vector2(1.25, 0.85)
+	enemy_shadow.texture = SpriteFactory.make_shadow(64, 18)
+	enemy_shadow.centered = true
+	enemy_shadow.z_index = 0
+	enemy_shadow.scale = Vector2(1.35, 0.9)
+
+	hero_origin = hero_sprite.position
+	enemy_origin = enemy_sprite.position
+	hero_shadow_base = hero_shadow.scale
+	enemy_shadow_base = enemy_shadow.scale
+
 	_update_sprites()
 
 	btn_attack.pressed.connect(_on_attack)
@@ -115,10 +137,13 @@ func _on_end_turn() -> void:
 		if result.get("hit", false):
 			var crit_text := " CRIT!" if result.get("crit", false) else ""
 			_log("%s uses %s for %d %s%s" % [a.actor.name, a.skill.get("name", "Skill"), result.get("damage", 0), tag, crit_text])
-			for status_line in result.get("status_logs", []):
-				_log(status_line)
 		else:
 			_log("%s uses %s - Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+		await _play_attack_animation(a, result)
+		if result.get("hit", false):
+			for status_line in result.get("status_logs", []):
+				_log(status_line)
+		_update_ui()
 
 	var tick_logs: Array[String] = turn_engine.end_of_round_tick([hero, enemy])
 	for line in tick_logs:
@@ -238,5 +263,101 @@ func _build_unit(def: Dictionary) -> Unit:
 	return unit
 
 func _update_sprites() -> void:
-	hero_sprite.modulate = Color.WHITE if hero.is_alive() else Color(0.5, 0.5, 0.5, 0.6)
-	enemy_sprite.modulate = Color.WHITE if enemy.is_alive() else Color(0.5, 0.5, 0.5, 0.6)
+	hero_sprite.modulate = _base_modulate_for(hero)
+	enemy_sprite.modulate = _base_modulate_for(enemy)
+	hero_shadow.modulate = _shadow_color_for(hero)
+	enemy_shadow.modulate = _shadow_color_for(enemy)
+	hero_shadow.scale = hero_shadow_base
+	enemy_shadow.scale = enemy_shadow_base
+	hero_sprite.position = hero_origin
+	enemy_sprite.position = enemy_origin
+
+func _sprite_for_unit(unit: Unit) -> Sprite2D:
+	if unit == hero:
+		return hero_sprite
+	if unit == enemy:
+		return enemy_sprite
+	return null
+
+func _shadow_for_unit(unit: Unit) -> Sprite2D:
+	if unit == hero:
+		return hero_shadow
+	if unit == enemy:
+		return enemy_shadow
+	return null
+
+func _origin_for_unit(unit: Unit) -> Vector2:
+	if unit == hero:
+		return hero_origin
+	if unit == enemy:
+		return enemy_origin
+	return Vector2.ZERO
+
+func _shadow_base_scale(unit: Unit) -> Vector2:
+	if unit == hero:
+		return hero_shadow_base
+	if unit == enemy:
+		return enemy_shadow_base
+	return Vector2.ONE
+
+func _attack_offset(unit: Unit) -> Vector2:
+	if unit == hero:
+		return Vector2(90, -18)
+	if unit == enemy:
+		return Vector2(-90, -12)
+	return Vector2.ZERO
+
+func _base_modulate_for(unit: Unit) -> Color:
+	if unit == null:
+		return Color.WHITE
+	return Color.WHITE if unit.is_alive() else Color(0.5, 0.5, 0.5, 0.6)
+
+func _shadow_color_for(unit: Unit) -> Color:
+	if unit == null:
+		return Color(0, 0, 0, 0.2)
+	return Color(0, 0, 0, 0.45) if unit.is_alive() else Color(0, 0, 0, 0.2)
+
+func _play_attack_animation(action: Action, result: Dictionary) -> void:
+	var actor_sprite := _sprite_for_unit(action.actor)
+	if actor_sprite == null:
+		return
+	var actor_shadow := _shadow_for_unit(action.actor)
+	var actor_origin := _origin_for_unit(action.actor)
+	var shadow_base := _shadow_base_scale(action.actor)
+	var dash_target := actor_origin + _attack_offset(action.actor)
+	var tween := create_tween()
+	tween.tween_property(actor_sprite, "position", dash_target, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	if actor_shadow != null:
+		tween.parallel().tween_property(actor_shadow, "scale", shadow_base * Vector2(1.2, 0.75), 0.12)
+	tween.tween_property(actor_sprite, "position", actor_origin, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	if actor_shadow != null:
+		tween.parallel().tween_property(actor_shadow, "scale", shadow_base, 0.16)
+	await tween.finished
+	if result.get("hit", false) and result.get("damage", 0) > 0:
+		await _shake_sprite(action.target)
+	if result.get("hit", false):
+		await _flash_sprite(action.target)
+
+func _flash_sprite(unit: Unit) -> void:
+	var sprite := _sprite_for_unit(unit)
+	if sprite == null:
+		return
+	var base := _base_modulate_for(unit)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color(1.0, 0.6, 0.6, 1.0), 0.08)
+	tween.tween_property(sprite, "modulate", base, 0.12)
+	await tween.finished
+
+func _shake_sprite(unit: Unit) -> void:
+	var sprite := _sprite_for_unit(unit)
+	if sprite == null:
+		return
+	var origin := _origin_for_unit(unit)
+	var offset := Vector2(12, 0)
+	if unit == enemy:
+		offset.x = -offset.x
+	var tween := create_tween()
+	tween.tween_property(sprite, "position", origin + offset, 0.05)
+	tween.tween_property(sprite, "position", origin - offset * 0.6, 0.07)
+	tween.tween_property(sprite, "position", origin, 0.08)
+	await tween.finished

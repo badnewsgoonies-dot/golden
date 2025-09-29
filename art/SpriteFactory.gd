@@ -21,6 +21,26 @@ static func make_monster(kind: String, scale: int = 3) -> Texture2D:
         _:
             return _build_slime(scale)
 
+# Soft oval shadow used beneath battler sprites.
+static func make_shadow(width: int = 48, height: int = 16, alpha: float = 0.45) -> Texture2D:
+    var w: int = max(4, width)
+    var h: int = max(4, height)
+    var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+    img.fill(Color(0, 0, 0, 0))
+    var cx: float = float(w - 1) / 2.0
+    var cy: float = float(h - 1) / 2.0
+    var rx: float = max(1.0, cx)
+    var ry: float = max(1.0, cy)
+    for y in range(h):
+        for x in range(w):
+            var dx: float = (x - cx) / rx
+            var dy: float = (y - cy) / ry
+            var dist: float = dx * dx + dy * dy
+            if dist <= 1.0:
+                var falloff: float = clamp(1.0 - dist, 0.0, 1.0)
+                img.set_pixel(x, y, Color(0, 0, 0, alpha * falloff))
+    return ImageTexture.create_from_image(img)
+
 # Palettes
 static func _role_palette(role: String) -> Dictionary:
     match role.to_lower():
