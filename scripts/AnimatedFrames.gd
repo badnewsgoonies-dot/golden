@@ -1,4 +1,4 @@
-﻿extends AnimatedSprite2D
+extends AnimatedSprite2D
 
 class_name AnimatedFrames
 
@@ -77,7 +77,7 @@ func _apply_orientation() -> void:
 	_play_idle()
 
 func _play_idle() -> void:
-	var anim = facing_back ? IDLE_BACK : IDLE_FRONT
+	var anim = IDLE_BACK if facing_back else IDLE_FRONT
 	if sprite_frames.has_animation(anim) and sprite_frames.get_frame_count(anim) > 0:
 		play(anim)
 	else:
@@ -98,7 +98,7 @@ func play_idle() -> void:
 	_play_idle()
 
 func play_hit() -> void:
-	var candidates = facing_back ? ["hit_b", "hit_f"] : ["hit_f", "hit_b"]
+	var candidates = ["hit_b", "hit_f"] if facing_back else ["hit_f", "hit_b"]
 	_play_and_return_to_idle(candidates)
 
 func play_attack() -> void:
