@@ -1,18 +1,24 @@
-extends AnimatedSprite2D
+﻿extends AnimatedSprite2D
 
 class_name AnimatedFrames
 
 @export var character: String = "adept"
 @export var facing_back: bool = true
 
-const ANIMS := {
-	"idle_f": 3,
-	"idle_b": 3,
-	"hit_f": 3,
-	"hit_b": 3,
+const ANIM_DEF := {
+	"idle_f": {"frames": 3, "fps": 8.0, "loop": true},
+	"idle_b": {"frames": 3, "fps": 8.0, "loop": true},
+	"hit_f": {"frames": 3, "fps": 12.0, "loop": false},
+	"hit_b": {"frames": 3, "fps": 12.0, "loop": false},
+	"attack_f": {"frames": 6, "fps": 12.0, "loop": false},
+	"cast_f": {"frames": 6, "fps": 10.0, "loop": false},
+	"guard_f": {"frames": 2, "fps": 8.0, "loop": true},
+	"ko_f": {"frames": 5, "fps": 10.0, "loop": false},
 }
 
 const PLACEHOLDER_ANIM := "placeholder"
+const IDLE_FRONT := "idle_f"
+const IDLE_BACK := "idle_b"
 var _has_frames := false
 
 func _ready() -> void:
@@ -22,8 +28,11 @@ func _ready() -> void:
 func _build_frames() -> void:
 	var frames := SpriteFrames.new()
 	var total_frames := 0
-	for anim_name in ANIMS.keys():
-		var frame_count := int(ANIMS[anim_name])
+	for anim_name in ANIM_DEF.keys():
+		var meta: Dictionary = ANIM_DEF[anim_name]
+		var frame_count := int(meta.get("frames", 0))
+		if frame_count <= 0:
+			continue
 		var textures: Array[Texture2D] = []
 		for i in range(frame_count):
 			var path := "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
@@ -33,10 +42,8 @@ func _build_frames() -> void:
 		if textures.is_empty():
 			continue
 		frames.add_animation(anim_name)
-		var loop: bool = String(anim_name).begins_with("idle")
-		frames.set_animation_loop(anim_name, loop)
-		var speed := 8.0 if loop else 12.0
-		frames.set_animation_speed(anim_name, speed)
+		frames.set_animation_speed(anim_name, float(meta.get("fps", 12.0)))
+		frames.set_animation_loop(anim_name, bool(meta.get("loop", false)))
 		for tex in textures:
 			frames.add_frame(anim_name, tex)
 			total_frames += 1
@@ -67,7 +74,10 @@ func _apply_orientation() -> void:
 	if not has_frames():
 		play(PLACEHOLDER_ANIM)
 		return
-	var anim := "idle_b" if facing_back else "idle_f"
+	_play_idle()
+
+func _play_idle() -> void:
+	var anim := facing_back ? IDLE_BACK : IDLE_FRONT
 	if sprite_frames.has_animation(anim) and sprite_frames.get_frame_count(anim) > 0:
 		play(anim)
 	else:
@@ -82,14 +92,53 @@ func set_facing_back(value: bool) -> void:
 	facing_back = value
 	_apply_orientation()
 
-func play_hit() -> void:
+func play_idle() -> void:
 	if not has_frames():
 		return
-	var anim := "hit_b" if facing_back else "hit_f"
-	if sprite_frames.has_animation(anim) and sprite_frames.get_frame_count(anim) > 0:
-		play(anim)
-		var idle_anim := "idle_b" if facing_back else "idle_f"
-		var tree := get_tree()
-		if tree != null:
-			await tree.create_timer(0.18).timeout
-			play(idle_anim)
+	_play_idle()
+
+func play_hit() -> void:
+	var front := "hit_f"
+	var back := "hit_b"
+	var candidates := facing_back ? [back, front] : [front, back]
+	_play_and_return_to_idle(candidates)
+
+func play_attack() -> void:
+	_play_and_return_to_idle(["attack_f"])
+
+func play_cast() -> void:
+	_play_and_return_to_idle(["cast_f"])
+
+func play_guard() -> void:
+	_play_and_return_to_idle(["guard_f"], false)
+
+func stop_guard() -> void:
+	if not has_frames():
+		return
+	_play_idle()
+
+func play_ko() -> void:
+	_play_and_return_to_idle(["ko_f"], false)
+
+func _play_and_return_to_idle(names: Array, auto_return := true) -> void:
+	if not has_frames():
+		return
+	var target := ""
+	for name in names:
+		if sprite_frames.has_animation(name) and sprite_frames.get_frame_count(name) > 0:
+			target = name
+			break
+	if target == "":
+		return
+	play(target)
+	if not auto_return:
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+	var frame_count := sprite_frames.get_frame_count(target)
+	var speed := sprite_frames.get_animation_speed(target)
+	if frame_count <= 0 or speed <= 0.0:
+		return
+	await tree.create_timer(frame_count / speed).timeout
+	_play_idle()

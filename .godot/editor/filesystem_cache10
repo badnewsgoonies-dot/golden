@@ -1,9 +1,83 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759158805
-::res://art/::1759154811
+::res://::1759159547
+::res://art/::1759159492
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
-::res://art/battlers/::1759154811
-::res://art/portraits/::1759154811
+::res://art/battlers/::1759159492
+::res://art/battlers/healer/::1759159492
+::res://art/battlers/healer/hit_b/::1759159535
+healer_hit_b_0.png::CompressedTexture2D::6736214501113785607::1759168150::1759159534::1::::<><><>0<>0<>aeb79a95eacc4e32a0b361b11f4c8bd9<>res://.godot/imported/healer_hit_b_0.png-46e6c189c14c0e4281548df974679725.ctex::
+healer_hit_b_1.png::CompressedTexture2D::8011125191249359602::1759168150::1759159535::1::::<><><>0<>0<>d481cad7f3b64aff57848e52b987f08a<>res://.godot/imported/healer_hit_b_1.png-0dcf485e35b0925faa4efe7aa2b73e39.ctex::
+healer_hit_b_2.png::CompressedTexture2D::2010709201727821753::1759168150::1759159535::1::::<><><>0<>0<>90c5546b76df9c271669adf57e872ebb<>res://.godot/imported/healer_hit_b_2.png-eae395c1e332fe22b7328276c6b0919e.ctex::
+::res://art/battlers/healer/hit_f/::1759159535
+healer_hit_f_0.png::CompressedTexture2D::919637768232143672::1759168150::1759159535::1::::<><><>0<>0<>b708127618714b4139318230b8598fa2<>res://.godot/imported/healer_hit_f_0.png-a8a82bb524be76c81c826a505e94a6ec.ctex::
+healer_hit_f_1.png::CompressedTexture2D::6122840564372143373::1759168150::1759159535::1::::<><><>0<>0<>9678333d2b8ae10ec5b96721f2846235<>res://.godot/imported/healer_hit_f_1.png-40baf8117a5487cf4e9bbe1becb28351.ctex::
+healer_hit_f_2.png::CompressedTexture2D::8168898079760428792::1759168150::1759159535::1::::<><><>0<>0<>617b05b91a5b9885dc99be7f5892d72a<>res://.godot/imported/healer_hit_f_2.png-726fa774d7c3b5fed213b2d1fb6cf457.ctex::
+::res://art/battlers/healer/idle_b/::1759159535
+healer_idle_b_0.png::CompressedTexture2D::897066263168802727::1759168150::1759159535::1::::<><><>0<>0<>bddb5c7ab80d788f5957872dfe076a34<>res://.godot/imported/healer_idle_b_0.png-28a38ecd5951c035f812a75e62392ddf.ctex::
+healer_idle_b_1.png::CompressedTexture2D::4572771348125067761::1759168150::1759159535::1::::<><><>0<>0<>7c3255b4dc76d00f7472ede9a88f553b<>res://.godot/imported/healer_idle_b_1.png-8517e036171043264c806f04b97c3f55.ctex::
+healer_idle_b_2.png::CompressedTexture2D::3162526976017938890::1759168150::1759159535::1::::<><><>0<>0<>3ff136c05369a48e8f124bb1ce01a1b2<>res://.godot/imported/healer_idle_b_2.png-1280f9a4f5736b8ec644a100a284a8cb.ctex::
+::res://art/battlers/healer/idle_f/::1759159535
+healer_idle_f_0.png::CompressedTexture2D::9066083148203861668::1759168150::1759159535::1::::<><><>0<>0<>a2985676a7adb447fee063d04579fd34<>res://.godot/imported/healer_idle_f_0.png-b306d49bf9a86a701045fe7e7eff60e0.ctex::
+healer_idle_f_1.png::CompressedTexture2D::8765069161634278811::1759168150::1759159535::1::::<><><>0<>0<>36bb3f7e5f07cfdea36347615fe57522<>res://.godot/imported/healer_idle_f_1.png-9d521a32ee866d50fff7815bf30cc3bb.ctex::
+healer_idle_f_2.png::CompressedTexture2D::3027517049991806217::1759168150::1759159535::1::::<><><>0<>0<>1e3e1007a6ecfa6804c2192e834edea5<>res://.godot/imported/healer_idle_f_2.png-fa322f41861a68474acac867e13927c5.ctex::
+::res://art/battlers/hero/::1759159492
+::res://art/battlers/hero/hit_b/::1759159535
+hero_hit_b_0.png::CompressedTexture2D::555244617743051444::1759168150::1759159535::1::::<><><>0<>0<>668a9a8632a06114754d51f82f887687<>res://.godot/imported/hero_hit_b_0.png-4a9c844299a4ca0961bf69ccb58d60d5.ctex::
+hero_hit_b_1.png::CompressedTexture2D::4303858488506641541::1759168150::1759159535::1::::<><><>0<>0<>de240389d763f91e8377bea6c6267fc9<>res://.godot/imported/hero_hit_b_1.png-68d5a9ec5d68362475d938598d1401db.ctex::
+hero_hit_b_2.png::CompressedTexture2D::4638191997710898666::1759168150::1759159535::1::::<><><>0<>0<>f19bf8990b8d93b09a5b7fcb377b694b<>res://.godot/imported/hero_hit_b_2.png-4a470487279a8f099b312b258def8a95.ctex::
+::res://art/battlers/hero/hit_f/::1759159535
+hero_hit_f_0.png::CompressedTexture2D::3895748601715338513::1759168150::1759159535::1::::<><><>0<>0<>2a260e142103a844d0cd59aaf92e50f6<>res://.godot/imported/hero_hit_f_0.png-a114074b86e59c64b5eba71b66c9aef1.ctex::
+hero_hit_f_1.png::CompressedTexture2D::4540863372017406492::1759168150::1759159535::1::::<><><>0<>0<>7d7639bbb5ee54246fa1c749a6e47c26<>res://.godot/imported/hero_hit_f_1.png-dc9b4e3d0ca220e15006872ff6d653bf.ctex::
+hero_hit_f_2.png::CompressedTexture2D::1435640731950544880::1759168150::1759159535::1::::<><><>0<>0<>3d3b2fcd0e1a08d10ebb9773d85e3d48<>res://.godot/imported/hero_hit_f_2.png-a288144367c31558ab1d1dfbe87e15eb.ctex::
+::res://art/battlers/hero/idle_b/::1759159535
+hero_idle_b_0.png::CompressedTexture2D::7191990744700532232::1759168150::1759159535::1::::<><><>0<>0<>4835ed882594ca24933683e123fa532e<>res://.godot/imported/hero_idle_b_0.png-fd5d4240ee292edb9436d1dac6894c1f.ctex::
+hero_idle_b_1.png::CompressedTexture2D::7907244481983283110::1759168150::1759159533::1::::<><><>0<>0<>612d768e061efa683e8fb85284f19061<>res://.godot/imported/hero_idle_b_1.png-bd5a0ef99c1241f12043a2902c676a1f.ctex::
+hero_idle_b_2.png::CompressedTexture2D::3488487756286774674::1759168150::1759159533::1::::<><><>0<>0<>22c59842dd9fca7f439cd1393a9aef86<>res://.godot/imported/hero_idle_b_2.png-931568203260baa60744029c0f72bb54.ctex::
+::res://art/battlers/hero/idle_f/::1759159533
+hero_idle_f_0.png::CompressedTexture2D::8450259714862736014::1759168150::1759159533::1::::<><><>0<>0<>a15918e17b894bcfcc9365bea5201178<>res://.godot/imported/hero_idle_f_0.png-586e7e4509a5a3e47b012e3bff9b6ada.ctex::
+hero_idle_f_1.png::CompressedTexture2D::2989137492604283604::1759168150::1759159533::1::::<><><>0<>0<>01cc8c2e830a8f76ca687f72a506a04f<>res://.godot/imported/hero_idle_f_1.png-9be4eee7ee3aa9b67714a728ff830e9a.ctex::
+hero_idle_f_2.png::CompressedTexture2D::3976903167647388507::1759168150::1759159533::1::::<><><>0<>0<>11f8a58a9676d2eaad3d6f10de75b0d5<>res://.godot/imported/hero_idle_f_2.png-e5bffa41e361253cd6fa6f2ebd367ebf.ctex::
+::res://art/battlers/mage/::1759159492
+::res://art/battlers/mage/hit_b/::1759159533
+mage_hit_b_0.png::CompressedTexture2D::1943443264156986550::1759168150::1759159533::1::::<><><>0<>0<>6292786c30c1085fc3002b625e1b5808<>res://.godot/imported/mage_hit_b_0.png-7e9b4ebdc47b1398e7f8cfe75a8ee943.ctex::
+mage_hit_b_1.png::CompressedTexture2D::4558359131989275658::1759168150::1759159533::1::::<><><>0<>0<>8f67aaa528ec37258ac2f1703c83e356<>res://.godot/imported/mage_hit_b_1.png-5efaf359de8a7a41fd86edf6b58d9508.ctex::
+mage_hit_b_2.png::CompressedTexture2D::8948980757406676226::1759168150::1759159533::1::::<><><>0<>0<>5fcdb22b6fab19cecdf7ba1fe5593420<>res://.godot/imported/mage_hit_b_2.png-afb65f741a9b9379874e6a3ee18860e8.ctex::
+::res://art/battlers/mage/hit_f/::1759159533
+mage_hit_f_0.png::CompressedTexture2D::4866531230448038889::1759168150::1759159533::1::::<><><>0<>0<>20cd4dfc93c3878a8f2477ecf63fac17<>res://.godot/imported/mage_hit_f_0.png-9a9e7a23953876d7a0a2aba7e20739f0.ctex::
+mage_hit_f_1.png::CompressedTexture2D::952617124489297810::1759168150::1759159533::1::::<><><>0<>0<>38ed211ded4dbfb73fdbafef02e7da63<>res://.godot/imported/mage_hit_f_1.png-951989ee29c35aafd3bbd293a094c5b7.ctex::
+mage_hit_f_2.png::CompressedTexture2D::8480507491421264693::1759168150::1759159533::1::::<><><>0<>0<>6f9d9f3f8a11e1756cb41592483ce527<>res://.godot/imported/mage_hit_f_2.png-2f06ac8d3b2f6631691292064180a47e.ctex::
+::res://art/battlers/mage/idle_b/::1759159533
+mage_idle_b_0.png::CompressedTexture2D::271747576205004885::1759168150::1759159533::1::::<><><>0<>0<>f4d483f7c87bedaa45530c097aa13e74<>res://.godot/imported/mage_idle_b_0.png-fb24f557825422cd4c8ab23ec2543020.ctex::
+mage_idle_b_1.png::CompressedTexture2D::4377600879091863814::1759168150::1759159533::1::::<><><>0<>0<>bba27fdffb6a6a2dc9db89af2edb58ed<>res://.godot/imported/mage_idle_b_1.png-0dd2cf952169bc7e21e27b30f8b42389.ctex::
+mage_idle_b_2.png::CompressedTexture2D::5053941873319901851::1759168150::1759159533::1::::<><><>0<>0<>f63b57f43a05ff81652b7039ad3e4d83<>res://.godot/imported/mage_idle_b_2.png-fb08df3a08f08a670b47efd6eff6fb2f.ctex::
+::res://art/battlers/mage/idle_f/::1759159533
+mage_idle_f_0.png::CompressedTexture2D::6020592862194891206::1759168150::1759159533::1::::<><><>0<>0<>353321bed2fa38ea398a97bcc54c5fe3<>res://.godot/imported/mage_idle_f_0.png-19adf672c1ccea796c8f2442c6996b33.ctex::
+mage_idle_f_1.png::CompressedTexture2D::6973769623156616819::1759168150::1759159533::1::::<><><>0<>0<>2e5ab0f6fb9884a842d1cbab6060f109<>res://.godot/imported/mage_idle_f_1.png-3a2f306e430ab978953dba6abca7a553.ctex::
+mage_idle_f_2.png::CompressedTexture2D::2372259700003087369::1759168150::1759159533::1::::<><><>0<>0<>8cd1f73d2b46393efb9357177a6fae8a<>res://.godot/imported/mage_idle_f_2.png-638f3bdbc2d3b89a0dc6e757ca363855.ctex::
+::res://art/battlers/rogue/::1759159492
+::res://art/battlers/rogue/hit_b/::1759159533
+rogue_hit_b_0.png::CompressedTexture2D::6487004924692568761::1759168150::1759159533::1::::<><><>0<>0<>3889f9510df0c14f27f2db44a6afac88<>res://.godot/imported/rogue_hit_b_0.png-d790a071564bc5db909c9ff33c7feced.ctex::
+rogue_hit_b_1.png::CompressedTexture2D::7606272434992799523::1759168150::1759159533::1::::<><><>0<>0<>bf6601dc0cc53e210abeb31bd0d04c96<>res://.godot/imported/rogue_hit_b_1.png-1baf43baded53e9746a122dd217de104.ctex::
+rogue_hit_b_2.png::CompressedTexture2D::3793035984188382428::1759168150::1759159533::1::::<><><>0<>0<>45b88564c05ab4861ba8b96527029bed<>res://.godot/imported/rogue_hit_b_2.png-c391fc07cae01d02661e8bdf67826508.ctex::
+::res://art/battlers/rogue/hit_f/::1759159533
+rogue_hit_f_0.png::CompressedTexture2D::1281102029635652673::1759168150::1759159533::1::::<><><>0<>0<>570f6829107f6def00c023b531d195f9<>res://.godot/imported/rogue_hit_f_0.png-8cbf9598fd10175bb4ce936dde76d101.ctex::
+rogue_hit_f_1.png::CompressedTexture2D::5817908727161263402::1759168150::1759159533::1::::<><><>0<>0<>e67099564dcbdf4828d55ddac236c98a<>res://.godot/imported/rogue_hit_f_1.png-cab1afc3502bf51c97f2c3e80c48f4e6.ctex::
+rogue_hit_f_2.png::CompressedTexture2D::2110817069910910434::1759168150::1759159533::1::::<><><>0<>0<>2b83cd10240c0f6631d918f96f681150<>res://.godot/imported/rogue_hit_f_2.png-f22ffd0d75a9f32ad3342e0f15bcdae7.ctex::
+::res://art/battlers/rogue/idle_b/::1759159533
+rogue_idle_b_0.png::CompressedTexture2D::1096314637038985780::1759168150::1759159533::1::::<><><>0<>0<>c55549c12851a9cabc0e6859d4b2d18e<>res://.godot/imported/rogue_idle_b_0.png-ef992c4243592be0cb88fa98a48c1860.ctex::
+rogue_idle_b_1.png::CompressedTexture2D::5579121878390643918::1759168150::1759159533::1::::<><><>0<>0<>d166a9d83eb744aeacc7e21a32708c3b<>res://.godot/imported/rogue_idle_b_1.png-5011606323bda7f5e25268d7f0dad915.ctex::
+rogue_idle_b_2.png::CompressedTexture2D::7719931639342058183::1759168150::1759159533::1::::<><><>0<>0<>1a608be251b07c67f15f2c1c9ef8dea3<>res://.godot/imported/rogue_idle_b_2.png-5d32bf054be29d7b854afa9878ba866e.ctex::
+::res://art/battlers/rogue/idle_f/::1759159533
+rogue_idle_f_0.png::CompressedTexture2D::7210089315597846889::1759168150::1759159533::1::::<><><>0<>0<>e3801c0ca4bc134afb642ae21b2825f0<>res://.godot/imported/rogue_idle_f_0.png-72034ce454f32e58e66b68a33580f320.ctex::
+rogue_idle_f_1.png::CompressedTexture2D::7824703864340750633::1759168150::1759159533::1::::<><><>0<>0<>9cf6c35996b66d661b57019759da38d3<>res://.godot/imported/rogue_idle_f_1.png-91c25de4501ff05631cacb6415fe2fe6.ctex::
+rogue_idle_f_2.png::CompressedTexture2D::7090332084241211102::1759168150::1759159533::1::::<><><>0<>0<>162b6efbb39baab04c363637c9629231<>res://.godot/imported/rogue_idle_f_2.png-c3ef390d85636931885b0ac07fb4149f.ctex::
+::res://art/portraits/::1759159533
+healer_portrait_96.png::CompressedTexture2D::5778355447807482119::1759168150::1759159533::1::::<><><>0<>0<>eb9e015d3cc452ab00b54c56cecde43d<>res://.godot/imported/healer_portrait_96.png-732f0a79aa9bc13548c92b16e701c858.ctex::
+hero_portrait_96.png::CompressedTexture2D::5818966128248645670::1759168150::1759159533::1::::<><><>0<>0<>d766fb2eccecf11b53d7d8991e002281<>res://.godot/imported/hero_portrait_96.png-352ec87a859ee7e7d660a2d112399995.ctex::
+mage_portrait_96.png::CompressedTexture2D::8556147450852217501::1759168150::1759159533::1::::<><><>0<>0<>8237f5b9d8fb96020493bfb6dec67cea<>res://.godot/imported/mage_portrait_96.png-428f80d291fc2238f520c4f5ffb436a5.ctex::
+rogue_portrait_96.png::CompressedTexture2D::2497703807721057426::1759168150::1759159533::1::::<><><>0<>0<>95e6b2fc56d27fbac75d15a8918bd129<>res://.godot/imported/rogue_portrait_96.png-c9ea60f2b69d2d6c9388811523b57c1a.ctex::
+::res://art/ui/::1759159534
+target_arrow.png::CompressedTexture2D::8842930395228776704::1759168150::1759159534::1::::<><><>0<>0<>b32b3dcc51796a0ce2206276bb354c23<>res://.godot/imported/target_arrow.png-23e5b5dd15fe4aa20e1f6a2e70cf0e00.ctex::
 ::res://audio/::1759030491
 ::res://autoload/::1759033140
 AudioService.gd::GDScript::6139316943950983922::1759042586::0::1::::<>Node<><>0<>0<><>::
@@ -19,6 +93,290 @@ TurnEngine.gd::GDScript::1600127830131858564::1759118379::0::1::::TurnEngine<>No
 Action.gd::GDScript::2902208919305840334::1759110581::0::1::::Action<>RefCounted<><>0<>0<><>::
 Status.gd::GDScript::8460283941071225789::1759110591::0::1::::Status<>RefCounted<><>0<>0<><>::
 Unit.gd::GDScript::2311536089322643174::1759123879::0::1::::Unit<>RefCounted<><>0<>0<><>::
+::res://CHECK HERE/::1759159535
+5B8854E0-4965-4D20-80C3-F4C0BA15C37A.jpeg::CompressedTexture2D::7713759818859843293::1759150856::1759159534::1::::<><><>0<>0<>8a066b27effa6017155700d2e9c50105<>res://.godot/imported/5B8854E0-4965-4D20-80C3-F4C0BA15C37A.jpeg-b21a449f3c3d243ee1fd0315833216e9.ctex::
+8078c11f-21de-4e7d-852d-5766d9234731.png::CompressedTexture2D::7542907768083605469::1759150870::1759159535::1::::<><><>0<>0<>b656670071d601bc39a3e57f0fb9f372<>res://.godot/imported/8078c11f-21de-4e7d-852d-5766d9234731.png-1bd4ff470239bcfef2b09926d8c6ebd6.ctex::
+b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3236864610668937559::1759151388::1759159535::1::::<><><>0<>0<>902a0abad7ac9de8d0baa9778185081d<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-19fa469cbd3b7ace01593270d5fd40e3.ctex::
+::res://CHECK HERE/art/::1759159309
+::res://CHECK HERE/art/battlers/::1759159309
+::res://CHECK HERE/art/battlers/healer/::1759159309
+::res://CHECK HERE/art/battlers/healer/hit_b/::1759159535
+healer_hit_b_0.png::CompressedTexture2D::5498364317780390328::1759168150::1759159535::1::::<><><>0<>0<>a9c65d880121bbf65f7c3b9a9e6a1a61<>res://.godot/imported/healer_hit_b_0.png-6b813a4260808dfd60c314c32fac200f.ctex::
+healer_hit_b_1.png::CompressedTexture2D::7423644651175720471::1759168150::1759159535::1::::<><><>0<>0<>56da2b270aaaa1ab33fcfe2a49a602dd<>res://.godot/imported/healer_hit_b_1.png-28551a8b8e57f8783083b5ef8d287caf.ctex::
+healer_hit_b_2.png::CompressedTexture2D::5992332665668909455::1759168150::1759159535::1::::<><><>0<>0<>b33344002a1e3effe3862129785fbece<>res://.godot/imported/healer_hit_b_2.png-9d6e5f219a55b4276e2856589176eeee.ctex::
+::res://CHECK HERE/art/battlers/healer/hit_f/::1759159535
+healer_hit_f_0.png::CompressedTexture2D::5944221854591474614::1759168150::1759159535::1::::<><><>0<>0<>fd301dbba6ed2ac602fdb27ecd710173<>res://.godot/imported/healer_hit_f_0.png-09654cf19b42cba8777a465969bf4e8c.ctex::
+healer_hit_f_1.png::CompressedTexture2D::3011814292060068150::1759168150::1759159535::1::::<><><>0<>0<>2ce17434927f64a5a7183d9a22b0df93<>res://.godot/imported/healer_hit_f_1.png-b7aa1325558c908b3066e58292a53123.ctex::
+healer_hit_f_2.png::CompressedTexture2D::2631611579026172701::1759168150::1759159535::1::::<><><>0<>0<>89d72c2a93c113e7fc0b5df48d61a596<>res://.godot/imported/healer_hit_f_2.png-a3febc59a1367ef37980f74336d6fc7c.ctex::
+::res://CHECK HERE/art/battlers/healer/idle_b/::1759159535
+healer_idle_b_0.png::CompressedTexture2D::4040264710190677616::1759168150::1759159535::1::::<><><>0<>0<>15569607eb7a95f77fd1a131c8b69cc5<>res://.godot/imported/healer_idle_b_0.png-ae381d1ffca6e7167b2675285518145a.ctex::
+healer_idle_b_1.png::CompressedTexture2D::4699973907913422056::1759168150::1759159535::1::::<><><>0<>0<>d9f1e1786d92e1a4316c61e1b3c516ed<>res://.godot/imported/healer_idle_b_1.png-dafa90de11b207005f51a80f95118990.ctex::
+healer_idle_b_2.png::CompressedTexture2D::5998127244261550023::1759168150::1759159535::1::::<><><>0<>0<>8160a2ccbe08a17b8c35dd22ca1dacc9<>res://.godot/imported/healer_idle_b_2.png-2e2ecbd22d2f93e619416f13644c473d.ctex::
+::res://CHECK HERE/art/battlers/healer/idle_f/::1759159535
+healer_idle_f_0.png::CompressedTexture2D::8397070202215628806::1759168150::1759159535::1::::<><><>0<>0<>dcbc21958883132cea01952d489b7ab6<>res://.godot/imported/healer_idle_f_0.png-dff9013e86e997971696553e3c0d54e1.ctex::
+healer_idle_f_1.png::CompressedTexture2D::1278800024065405717::1759168150::1759159535::1::::<><><>0<>0<>f8f8ebb958df50f10ae9bf073321e83c<>res://.godot/imported/healer_idle_f_1.png-40129e64d34c2526caf790852d3334e2.ctex::
+healer_idle_f_2.png::CompressedTexture2D::9084784173712210330::1759168150::1759159535::1::::<><><>0<>0<>8b167321afcad0b456164284540b8152<>res://.godot/imported/healer_idle_f_2.png-44ce22f225faad215509fea6fa9c752b.ctex::
+::res://CHECK HERE/art/battlers/hero/::1759159309
+::res://CHECK HERE/art/battlers/hero/hit_b/::1759159535
+hero_hit_b_0.png::CompressedTexture2D::1350572415836925636::1759168150::1759159535::1::::<><><>0<>0<>0a3e4cb233572818ee84cea19afcc605<>res://.godot/imported/hero_hit_b_0.png-9dee21b0f2aa1a30355500a94b77f05e.ctex::
+hero_hit_b_1.png::CompressedTexture2D::2463288483260654538::1759168150::1759159535::1::::<><><>0<>0<>896460ca4d9d508a34fe3e5d13088c23<>res://.godot/imported/hero_hit_b_1.png-e57e94255e012ebfd60f1525bd5ad23c.ctex::
+hero_hit_b_2.png::CompressedTexture2D::5599283712647316059::1759168150::1759159535::1::::<><><>0<>0<>91d7dd727a0bf101095e9a1dfb02340c<>res://.godot/imported/hero_hit_b_2.png-a704b36cb1d2c6504d9ba64c345414d7.ctex::
+::res://CHECK HERE/art/battlers/hero/hit_f/::1759159535
+hero_hit_f_0.png::CompressedTexture2D::5446461321901347137::1759168150::1759159535::1::::<><><>0<>0<>262138ce2cdafb138fdae2ebf4c603ee<>res://.godot/imported/hero_hit_f_0.png-8ad8c9245f5b721192fe75299b4a138e.ctex::
+hero_hit_f_1.png::CompressedTexture2D::2407693146621000687::1759168150::1759159535::1::::<><><>0<>0<>7086f287edcb0aa9d42972799245b37d<>res://.godot/imported/hero_hit_f_1.png-e77338833f01cc3a8d09eeea332719ba.ctex::
+hero_hit_f_2.png::CompressedTexture2D::4925838879338031594::1759168150::1759159535::1::::<><><>0<>0<>08584aa210d8a139ae12856c496c3f01<>res://.godot/imported/hero_hit_f_2.png-5aa0992ed4751db9635a6cc5cacfb16b.ctex::
+::res://CHECK HERE/art/battlers/hero/idle_b/::1759159535
+hero_idle_b_0.png::CompressedTexture2D::7509894316122144958::1759168150::1759159535::1::::<><><>0<>0<>0db85c5f5e7ce2c3d05d1eecc3b0cde2<>res://.godot/imported/hero_idle_b_0.png-aadc5861381c6839ea9c7bf5cec9fc28.ctex::
+hero_idle_b_1.png::CompressedTexture2D::1322679978998912490::1759168150::1759159535::1::::<><><>0<>0<>1b022bcb2d04eccba36a1db19f2efcc0<>res://.godot/imported/hero_idle_b_1.png-663b77492c93b385e5b587c5efb6e773.ctex::
+hero_idle_b_2.png::CompressedTexture2D::90486344016505869::1759168150::1759159535::1::::<><><>0<>0<>b3036581b0236fcaedb55416423d3208<>res://.godot/imported/hero_idle_b_2.png-1605bf52249ba21f1c3b3f76dfe15e8d.ctex::
+::res://CHECK HERE/art/battlers/hero/idle_f/::1759159535
+hero_idle_f_0.png::CompressedTexture2D::1321596017105142271::1759168150::1759159535::1::::<><><>0<>0<>06470be894d7a0d3291f94987d4ff1dc<>res://.godot/imported/hero_idle_f_0.png-d268a6c280008621047d09e60f42acde.ctex::
+hero_idle_f_1.png::CompressedTexture2D::313582665257999201::1759168150::1759159535::1::::<><><>0<>0<>8144988cc4bfff74e7098a2440328ce8<>res://.godot/imported/hero_idle_f_1.png-42e5bd89b1f9062ca76851351e52fcb6.ctex::
+hero_idle_f_2.png::CompressedTexture2D::3124924093048730181::1759168150::1759159535::1::::<><><>0<>0<>1419e5268cbd77e16cd47fd55e4a6131<>res://.godot/imported/hero_idle_f_2.png-b968fd188c52f49c7c76b09382ce5aa1.ctex::
+::res://CHECK HERE/art/battlers/mage/::1759159309
+::res://CHECK HERE/art/battlers/mage/hit_b/::1759159535
+mage_hit_b_0.png::CompressedTexture2D::5800141849210234554::1759168150::1759159535::1::::<><><>0<>0<>8358ab045c2c351c98df5417cacb8674<>res://.godot/imported/mage_hit_b_0.png-d85d4c96bfa7d17123c0e548f1c80a42.ctex::
+mage_hit_b_1.png::CompressedTexture2D::8496096333654731144::1759168150::1759159535::1::::<><><>0<>0<>39608565348fbfe4bf35a02e0ad4bb87<>res://.godot/imported/mage_hit_b_1.png-911a6bfc6824cc293bc1e4ac2a43ef5b.ctex::
+mage_hit_b_2.png::CompressedTexture2D::4671984818365246128::1759168150::1759159535::1::::<><><>0<>0<>27ee7c25db93d88bc893a43cd08bdff5<>res://.godot/imported/mage_hit_b_2.png-686b0b54aedf154cc12377cc0b35dae4.ctex::
+::res://CHECK HERE/art/battlers/mage/hit_f/::1759159535
+mage_hit_f_0.png::CompressedTexture2D::6844327212963177746::1759168150::1759159535::1::::<><><>0<>0<>276495c4e7a922fc6597816a6e3b93a6<>res://.godot/imported/mage_hit_f_0.png-f225a4533fb74b0bb992fa6d1bc0d89d.ctex::
+mage_hit_f_1.png::CompressedTexture2D::6866649241414585927::1759168150::1759159535::1::::<><><>0<>0<>4c6bac20d0a0e37f46002f7a3a539381<>res://.godot/imported/mage_hit_f_1.png-08e9ae4d03808f685772694eb4a71e7d.ctex::
+mage_hit_f_2.png::CompressedTexture2D::8075296136020745827::1759168150::1759159535::1::::<><><>0<>0<>1e20da4da986ab060d63218fc3437d7d<>res://.godot/imported/mage_hit_f_2.png-f09ec53dba233d27a43292fabb064730.ctex::
+::res://CHECK HERE/art/battlers/mage/idle_b/::1759159535
+mage_idle_b_0.png::CompressedTexture2D::6369268406622125715::1759168150::1759159535::1::::<><><>0<>0<>b3026550f3e33b71537c0edccc57a13a<>res://.godot/imported/mage_idle_b_0.png-a55df606a3827956a6b8ebc62da91986.ctex::
+mage_idle_b_1.png::CompressedTexture2D::8925916078010314602::1759168150::1759159535::1::::<><><>0<>0<>a2bd67e0ac42acb917a0ffa1c1aa80d8<>res://.godot/imported/mage_idle_b_1.png-c50227cc31e8fdd4744319e72e611a38.ctex::
+mage_idle_b_2.png::CompressedTexture2D::478427565527336309::1759168150::1759159535::1::::<><><>0<>0<>430ae29eff8b068ba730c00222f91bba<>res://.godot/imported/mage_idle_b_2.png-e807da147e481574c93a33b28a80c764.ctex::
+::res://CHECK HERE/art/battlers/mage/idle_f/::1759159535
+mage_idle_f_0.png::CompressedTexture2D::4342080959115753307::1759168150::1759159535::1::::<><><>0<>0<>45f8b0379433bb4dda381790bc627710<>res://.godot/imported/mage_idle_f_0.png-1303346a47740dd49bc66c328333fd90.ctex::
+mage_idle_f_1.png::CompressedTexture2D::3134512304086881238::1759168150::1759159535::1::::<><><>0<>0<>b13f38cb337b084f9252559462f1ceaa<>res://.godot/imported/mage_idle_f_1.png-397cf9c8db1dbd8e4a7806fed04b70a9.ctex::
+mage_idle_f_2.png::CompressedTexture2D::3867340967123672260::1759168150::1759159535::1::::<><><>0<>0<>a6f5502634beb300c1928fe925d1167b<>res://.godot/imported/mage_idle_f_2.png-ec65325221ad8d2ec1302af934422f4d.ctex::
+::res://CHECK HERE/art/battlers/rogue/::1759159309
+::res://CHECK HERE/art/battlers/rogue/hit_b/::1759159535
+rogue_hit_b_0.png::CompressedTexture2D::8478440339524715644::1759168150::1759159535::1::::<><><>0<>0<>7eb34c686e901476c2dd435990bf01e5<>res://.godot/imported/rogue_hit_b_0.png-c5d1ca32d0e2c87d976aabbf1b74180b.ctex::
+rogue_hit_b_1.png::CompressedTexture2D::4613436452996386176::1759168150::1759159535::1::::<><><>0<>0<>58425e0eac1b8223df8eb462e11138b9<>res://.godot/imported/rogue_hit_b_1.png-fe8d852d13fa64be5e107fe593de173a.ctex::
+rogue_hit_b_2.png::CompressedTexture2D::4093817285329956950::1759168150::1759159535::1::::<><><>0<>0<>8457326fd2399002a083e1aa6cf4fa49<>res://.godot/imported/rogue_hit_b_2.png-eba4e070264aaf277013b2ec0da70c8f.ctex::
+::res://CHECK HERE/art/battlers/rogue/hit_f/::1759159535
+rogue_hit_f_0.png::CompressedTexture2D::7126194489836475328::1759168150::1759159535::1::::<><><>0<>0<>3fc6c4bb4f809a349e36cf87115c7b9f<>res://.godot/imported/rogue_hit_f_0.png-95dfc47069bf3062969454c83a8b65b5.ctex::
+rogue_hit_f_1.png::CompressedTexture2D::2561695054374206321::1759168150::1759159535::1::::<><><>0<>0<>7b86a097e05515ec4f49019d5bdd603f<>res://.godot/imported/rogue_hit_f_1.png-860bc3ba54f61593bdfe5393239b081c.ctex::
+rogue_hit_f_2.png::CompressedTexture2D::7350243345938963801::1759168150::1759159535::1::::<><><>0<>0<>cbe5ce63a324f2a73e9d41e0c67fa086<>res://.godot/imported/rogue_hit_f_2.png-a5ed0595d990dbc6597e4ec14e800cc3.ctex::
+::res://CHECK HERE/art/battlers/rogue/idle_b/::1759159535
+rogue_idle_b_0.png::CompressedTexture2D::286211518705661041::1759168150::1759159535::1::::<><><>0<>0<>d5b21a66814e7dde4f34a72ab20fc51e<>res://.godot/imported/rogue_idle_b_0.png-68a9931a50a4cd6980bc04ce8043eae6.ctex::
+rogue_idle_b_1.png::CompressedTexture2D::2345902416752426284::1759168150::1759159535::1::::<><><>0<>0<>ae8a07cf988a85ef072a0ec44fb4583b<>res://.godot/imported/rogue_idle_b_1.png-50e5b1def328819e09897bb0beaf1212.ctex::
+rogue_idle_b_2.png::CompressedTexture2D::9101377573427317021::1759168150::1759159535::1::::<><><>0<>0<>80634373d98589e74a3b007820a613f2<>res://.godot/imported/rogue_idle_b_2.png-c6a325a488bfe389dec3fb2925bb2944.ctex::
+::res://CHECK HERE/art/battlers/rogue/idle_f/::1759159535
+rogue_idle_f_0.png::CompressedTexture2D::6078177316530858305::1759168150::1759159535::1::::<><><>0<>0<>3ef63ea3f22ae1f53bcacd635e5c2fc5<>res://.godot/imported/rogue_idle_f_0.png-baeeffbc6ca2d3b1cb5ecfd26d7d4ad7.ctex::
+rogue_idle_f_1.png::CompressedTexture2D::5628038403121931575::1759168150::1759159535::1::::<><><>0<>0<>9be64e4651f4c8ce583d3e6f8aafa341<>res://.godot/imported/rogue_idle_f_1.png-18213427d2f128cacb804cd2bab7ee13.ctex::
+rogue_idle_f_2.png::CompressedTexture2D::6897604597110480751::1759168150::1759159535::1::::<><><>0<>0<>1b982cf2e60b2815998a1fb942c5faab<>res://.godot/imported/rogue_idle_f_2.png-1299fc33d2f6ba257dedab3e81c70b16.ctex::
+::res://CHECK HERE/art/portraits/::1759159535
+healer_portrait_96.png::CompressedTexture2D::4050232704891391077::1759168150::1759159535::1::::<><><>0<>0<>f67206f7a2b4e67597ba8a3279e9a402<>res://.godot/imported/healer_portrait_96.png-06e0d5a2e30a0a1fd08b375b7c12df92.ctex::
+hero_portrait_96.png::CompressedTexture2D::3607516252271805001::1759168150::1759159535::1::::<><><>0<>0<>bc6ddcad9b3cc9570cbad232154d023f<>res://.godot/imported/hero_portrait_96.png-289e63fb3e52318e850acc3b160763a4.ctex::
+mage_portrait_96.png::CompressedTexture2D::8768839963723321512::1759168150::1759159535::1::::<><><>0<>0<>201a9619e742922e5e87968600591a14<>res://.godot/imported/mage_portrait_96.png-2a07a9d090ba33e743bc1fce031cbb99.ctex::
+rogue_portrait_96.png::CompressedTexture2D::2401279876090836284::1759168150::1759159535::1::::<><><>0<>0<>66263b52156d8665556b6e9dcfce3a38<>res://.godot/imported/rogue_portrait_96.png-898df4635925c5d5fa7e5052575deb3c.ctex::
+::res://CHECK HERE/art/ui/::1759159535
+target_arrow.png::CompressedTexture2D::8384835209481268819::1759168150::1759159535::1::::<><><>0<>0<>6ddffeadc414dbb81c45ead4d23f4d38<>res://.godot/imported/target_arrow.png-d3cc91aaad3a9455a47ea5776701252c.ctex::
+::res://CHECK HERE/artgame/::1759159532
+AnimatedFrames.gd::GDScript::4092176600343188213::1759173404::0::1::::<>AnimatedSprite2D<><>0<>0<><>::
+manifest.json::JSON::-1::1759173404::0::1::::<><><>0<>0<><>::
+portrait_alias.json::JSON::-1::1759173404::0::1::::<><><>0<>0<><>::
+SUMMARY.txt::TextFile::-1::1759173404::0::1::::<><><>0<>0<><>::
+::res://CHECK HERE/artgame/battlers/::1759159209
+::res://CHECK HERE/artgame/battlers/healer/::1759159209
+::res://CHECK HERE/artgame/battlers/healer/attack_f/::1759159535
+healer_attack_f_0.png::CompressedTexture2D::5389595128996083971::1759173404::1759159535::1::::<><><>0<>0<>a7e2ff27b8f2f0407392f76396424940<>res://.godot/imported/healer_attack_f_0.png-19088d30490ea53eb6335b37c02dc7bd.ctex::
+healer_attack_f_1.png::CompressedTexture2D::4177512514275479812::1759173404::1759159535::1::::<><><>0<>0<>9bbcf4f85e4fbc44a86551c71e5cbb0e<>res://.godot/imported/healer_attack_f_1.png-d2c2fdf7685fadcd8f5985f79314ecdc.ctex::
+healer_attack_f_2.png::CompressedTexture2D::6314562467037507934::1759173404::1759159535::1::::<><><>0<>0<>b23ce84658762a59d0c5b44a42c77f6a<>res://.godot/imported/healer_attack_f_2.png-42f9e541e2daa870c58927b358fcdc88.ctex::
+healer_attack_f_3.png::CompressedTexture2D::6824904446039330463::1759173404::1759159535::1::::<><><>0<>0<>754060858b8ec4a40694becbcc9f1a21<>res://.godot/imported/healer_attack_f_3.png-00d3d3d79afa87e41e70b7f0a3c02088.ctex::
+healer_attack_f_4.png::CompressedTexture2D::1701853251773326832::1759173404::1759159535::1::::<><><>0<>0<>8d3556a26f129eadc5d0f78664fa49a8<>res://.godot/imported/healer_attack_f_4.png-c30282b49a81da1cbf2db70b99955e44.ctex::
+healer_attack_f_5.png::CompressedTexture2D::289699447635078416::1759173404::1759159535::1::::<><><>0<>0<>dd62620d3dae3993629124253a26e190<>res://.godot/imported/healer_attack_f_5.png-6a913268bf6d9d73545ab32fb46f8d74.ctex::
+::res://CHECK HERE/artgame/battlers/healer/cast_f/::1759159535
+healer_cast_f_0.png::CompressedTexture2D::1193799272759888861::1759173404::1759159535::1::::<><><>0<>0<>9c01fa5455731f309b4a7e1839b8deeb<>res://.godot/imported/healer_cast_f_0.png-de81367a10891154cc50b70478365e35.ctex::
+healer_cast_f_1.png::CompressedTexture2D::1335443692712151823::1759173404::1759159535::1::::<><><>0<>0<>76bea4d141c3c2524f123b2a8f799570<>res://.godot/imported/healer_cast_f_1.png-9e1cda9edcc61ffcbb4861a4737915f2.ctex::
+healer_cast_f_2.png::CompressedTexture2D::3759082173024689081::1759173404::1759159535::1::::<><><>0<>0<>8dab8d75e31fa14835c75245b6d19e5f<>res://.godot/imported/healer_cast_f_2.png-b8ea95a9deb1fa1e7932f469558ba070.ctex::
+healer_cast_f_3.png::CompressedTexture2D::8884416718278580385::1759173404::1759159535::1::::<><><>0<>0<>6dd99f3934b0ffebdee71322fd29de47<>res://.godot/imported/healer_cast_f_3.png-9c31a3997fa2a69a89953b63ab08d4dc.ctex::
+healer_cast_f_4.png::CompressedTexture2D::921008925938365563::1759173404::1759159535::1::::<><><>0<>0<>694375d6c3e572496c6185d8fe11026f<>res://.godot/imported/healer_cast_f_4.png-3f49173a9b9f58fd28fd8ae891556e87.ctex::
+healer_cast_f_5.png::CompressedTexture2D::4011304178254307162::1759173404::1759159535::1::::<><><>0<>0<>9d0ed5b47db3c26d6c06ef037dcf1244<>res://.godot/imported/healer_cast_f_5.png-fa96dbe789b0803317dc9aaf0819ec27.ctex::
+::res://CHECK HERE/artgame/battlers/healer/guard_f/::1759159535
+healer_guard_f_0.png::CompressedTexture2D::3653511804540038069::1759173404::1759159535::1::::<><><>0<>0<>1d0ffec420fd1c6071afed82e1564597<>res://.godot/imported/healer_guard_f_0.png-130d533a29de180e27ebd68c4f1aa24e.ctex::
+healer_guard_f_1.png::CompressedTexture2D::7680524348848309372::1759173404::1759159535::1::::<><><>0<>0<>6e38015dbdc83b723b1f545804250f59<>res://.godot/imported/healer_guard_f_1.png-22ddd13506b87fc315f91a8804d0faed.ctex::
+::res://CHECK HERE/artgame/battlers/healer/hit_b/::1759159536
+healer_hit_b_0.png::CompressedTexture2D::3980387604106630568::1759173404::1759159535::1::::<><><>0<>0<>7746a2005aa60886c66b50f14fd5c2ef<>res://.godot/imported/healer_hit_b_0.png-7a1ff3b3345bdf0d4cf950db48e62821.ctex::
+healer_hit_b_1.png::CompressedTexture2D::7551316278163595007::1759173404::1759159536::1::::<><><>0<>0<>1900e191e2b8be05099162ad2024bee2<>res://.godot/imported/healer_hit_b_1.png-66ad9325bd5992405fbb09a1c36050de.ctex::
+healer_hit_b_2.png::CompressedTexture2D::698526393032629269::1759173404::1759159536::1::::<><><>0<>0<>1077cfd672d598d1d8dda64b81745acf<>res://.godot/imported/healer_hit_b_2.png-32f5df0b6c36567daf3e35aa7bd1844d.ctex::
+::res://CHECK HERE/artgame/battlers/healer/hit_f/::1759159536
+healer_hit_f_0.png::CompressedTexture2D::4778833567021537286::1759173404::1759159536::1::::<><><>0<>0<>ccd3896e819e4fb86f0dbd2aa11ac79e<>res://.godot/imported/healer_hit_f_0.png-e8b1b4c579f69f41e0e2a9b2d7af0a61.ctex::
+healer_hit_f_1.png::CompressedTexture2D::4519126250128069628::1759173404::1759159536::1::::<><><>0<>0<>a106cf9beb6df1716b11e7da83a7ddc1<>res://.godot/imported/healer_hit_f_1.png-1ea2fcc5baa60d32d1f3cb3114a085e9.ctex::
+healer_hit_f_2.png::CompressedTexture2D::6522325044982940559::1759173404::1759159536::1::::<><><>0<>0<>50cee43db5e8f97352449830ebf51357<>res://.godot/imported/healer_hit_f_2.png-56dec43fb9b6101cba887393f40673a4.ctex::
+::res://CHECK HERE/artgame/battlers/healer/idle_b/::1759159536
+healer_idle_b_0.png::CompressedTexture2D::1935273425518894552::1759173404::1759159536::1::::<><><>0<>0<>8abea7fa40db46d87448776b2bd00a2a<>res://.godot/imported/healer_idle_b_0.png-d3c0363be510cd72be144a19718117f2.ctex::
+healer_idle_b_1.png::CompressedTexture2D::7745092890706538353::1759173404::1759159536::1::::<><><>0<>0<>983ca237ce03db222376ee5ed2a16595<>res://.godot/imported/healer_idle_b_1.png-c936072540ccc604b43047eb5e6ced00.ctex::
+healer_idle_b_2.png::CompressedTexture2D::1143317401002489185::1759173404::1759159536::1::::<><><>0<>0<>031964546fc68043028070767a068212<>res://.godot/imported/healer_idle_b_2.png-9e36d57c7e7d88f0c9d96fab58ac6283.ctex::
+::res://CHECK HERE/artgame/battlers/healer/idle_f/::1759159536
+healer_idle_f_0.png::CompressedTexture2D::1172964771261543030::1759173404::1759159536::1::::<><><>0<>0<>7f860dc60fde91f94df8125fcf17c52e<>res://.godot/imported/healer_idle_f_0.png-f5480fe21be2e11230bc0b5600483f6a.ctex::
+healer_idle_f_1.png::CompressedTexture2D::7593656356184969181::1759173404::1759159536::1::::<><><>0<>0<>94690d58628228c598d2ee3d5d6b2373<>res://.godot/imported/healer_idle_f_1.png-99acddeb4b10df36714c168da313d19a.ctex::
+healer_idle_f_2.png::CompressedTexture2D::8261685587251360639::1759173404::1759159536::1::::<><><>0<>0<>c515f6a13ec56a4f52fc5bdfb3e008ba<>res://.godot/imported/healer_idle_f_2.png-024f5577e78eb4d8924a65377d9a3a44.ctex::
+::res://CHECK HERE/artgame/battlers/healer/ko_f/::1759159536
+healer_ko_f_0.png::CompressedTexture2D::5797386686257068581::1759173404::1759159536::1::::<><><>0<>0<>3d64861957017d55e5af6ef9de7f5609<>res://.godot/imported/healer_ko_f_0.png-b8cc20e7741f1401bf928febe0dcbbb3.ctex::
+healer_ko_f_1.png::CompressedTexture2D::4638536175810289108::1759173404::1759159536::1::::<><><>0<>0<>3bea17402357faf17286e84a8ba8715d<>res://.godot/imported/healer_ko_f_1.png-0822cfe721cf4dad1082379fb20bb79e.ctex::
+healer_ko_f_2.png::CompressedTexture2D::1965004000748949324::1759173404::1759159536::1::::<><><>0<>0<>9f344090d779eaf1107669bd37f9a01c<>res://.godot/imported/healer_ko_f_2.png-2f6b529a013f50cffc8a378c7f675bca.ctex::
+healer_ko_f_3.png::CompressedTexture2D::40451801879371727::1759173404::1759159536::1::::<><><>0<>0<>c71ef09b7352e92ec45895c84e383c04<>res://.godot/imported/healer_ko_f_3.png-51d8cc31e698df922d1338cb2f28ce73.ctex::
+healer_ko_f_4.png::CompressedTexture2D::7704965973063149061::1759173404::1759159536::1::::<><><>0<>0<>c5d0b85e12b55bf1bb010e1fea22875f<>res://.godot/imported/healer_ko_f_4.png-b3c2f853f5759ba93d1d7c4fc8c1ff9b.ctex::
+::res://CHECK HERE/artgame/battlers/hero/::1759159209
+::res://CHECK HERE/artgame/battlers/hero/attack_f/::1759159536
+hero_attack_f_0.png::CompressedTexture2D::2234931915775248435::1759173404::1759159536::1::::<><><>0<>0<>def55857aee5c3a4214df7b09f5cef5a<>res://.godot/imported/hero_attack_f_0.png-18e0207bc97da40d4c2085b19f5ea8c3.ctex::
+hero_attack_f_1.png::CompressedTexture2D::2192463365995547960::1759173404::1759159536::1::::<><><>0<>0<>a7149e605f8075600f3c5fb79c6d5749<>res://.godot/imported/hero_attack_f_1.png-ffb057bbf56de86383cb53d3afe633e7.ctex::
+hero_attack_f_2.png::CompressedTexture2D::6025634322733483697::1759173404::1759159536::1::::<><><>0<>0<>f067ab6ca62738f875f6692e401cd28f<>res://.godot/imported/hero_attack_f_2.png-37edbd407d10e7982e30caf3d8a188cf.ctex::
+hero_attack_f_3.png::CompressedTexture2D::2728968610933836658::1759173404::1759159536::1::::<><><>0<>0<>c42dddede6625adf61f69d57e02e2208<>res://.godot/imported/hero_attack_f_3.png-694927e978b83615c4a48a5bd3a0ff9c.ctex::
+hero_attack_f_4.png::CompressedTexture2D::5776842419530263795::1759173404::1759159536::1::::<><><>0<>0<>dee0f6c8d0345ecf2d6320064a8d441c<>res://.godot/imported/hero_attack_f_4.png-063f69bad5c47ed914ce592233e3e659.ctex::
+hero_attack_f_5.png::CompressedTexture2D::6137301688419493215::1759173404::1759159536::1::::<><><>0<>0<>4d29192a8d534f99d4e00755acfc6a8d<>res://.godot/imported/hero_attack_f_5.png-674bbedfc90f63a9af99b24c6ee012b3.ctex::
+::res://CHECK HERE/artgame/battlers/hero/cast_f/::1759159536
+hero_cast_f_0.png::CompressedTexture2D::8157976547290902453::1759173404::1759159536::1::::<><><>0<>0<>699bcced33e7a5247caec81cddd0edb7<>res://.godot/imported/hero_cast_f_0.png-2aab50444a35fb7a2ea92f27a3be5947.ctex::
+hero_cast_f_1.png::CompressedTexture2D::5448197927964494545::1759173404::1759159536::1::::<><><>0<>0<>56eb2cf4363a5757ef756f613f990f42<>res://.godot/imported/hero_cast_f_1.png-9d90201f4c8ba1e687ebc42fa62454cb.ctex::
+hero_cast_f_2.png::CompressedTexture2D::7711002417678440223::1759173404::1759159536::1::::<><><>0<>0<>0b2c44bd674539f8bb9952b73d523385<>res://.godot/imported/hero_cast_f_2.png-525562c3182eebc61f6d7152941a1eaa.ctex::
+hero_cast_f_3.png::CompressedTexture2D::5525530417933553690::1759173404::1759159536::1::::<><><>0<>0<>6892155f2854f2aeec346faeac8563b3<>res://.godot/imported/hero_cast_f_3.png-03f13273dded9d0474881a39143b5c1d.ctex::
+hero_cast_f_4.png::CompressedTexture2D::3879227843783917990::1759173404::1759159536::1::::<><><>0<>0<>923fdda52b4f8ac159e8ade7a5a21d7d<>res://.godot/imported/hero_cast_f_4.png-f743e26de2e6ef159d2e23b59b134e04.ctex::
+hero_cast_f_5.png::CompressedTexture2D::9038943708931035223::1759173404::1759159536::1::::<><><>0<>0<>f75842636b38ab5959ca9170d8e1b381<>res://.godot/imported/hero_cast_f_5.png-4a2f739214d2f69a70218b4fcaf26004.ctex::
+::res://CHECK HERE/artgame/battlers/hero/guard_f/::1759159536
+hero_guard_f_0.png::CompressedTexture2D::6136948235529174760::1759173404::1759159536::1::::<><><>0<>0<>738d51fb2198504d43fc0192f6e7156e<>res://.godot/imported/hero_guard_f_0.png-4739bc6c262046280519862a6a600c44.ctex::
+hero_guard_f_1.png::CompressedTexture2D::7462604402319449895::1759173404::1759159536::1::::<><><>0<>0<>9f6300ba88777c0183407c9bebef1d70<>res://.godot/imported/hero_guard_f_1.png-c9389b4ea62635cd517a6782657c0036.ctex::
+::res://CHECK HERE/artgame/battlers/hero/hit_b/::1759159536
+hero_hit_b_0.png::CompressedTexture2D::575335484583339340::1759173404::1759159536::1::::<><><>0<>0<>cb2458f52f010b9f2dc1e7cbf6f8c1f6<>res://.godot/imported/hero_hit_b_0.png-0aabbe3386a2107a0bfb1d68de7969d1.ctex::
+hero_hit_b_1.png::CompressedTexture2D::258531956267010177::1759173404::1759159535::1::::<><><>0<>0<>285dff5abbbc47b9363ba967d5f5ec95<>res://.godot/imported/hero_hit_b_1.png-d6649bdf426fe9ed8331330c0069face.ctex::
+hero_hit_b_2.png::CompressedTexture2D::3013777035709571322::1759173404::1759159535::1::::<><><>0<>0<>6e1f308db850afac59a82433a84e1a71<>res://.godot/imported/hero_hit_b_2.png-6094678e783018efd216b15917f87a89.ctex::
+::res://CHECK HERE/artgame/battlers/hero/hit_f/::1759159535
+hero_hit_f_0.png::CompressedTexture2D::828399420124687141::1759173404::1759159535::1::::<><><>0<>0<>99ec07e4e663f7a1736ca10c2bd8c4a5<>res://.godot/imported/hero_hit_f_0.png-5e120c6a41e0d272d8c746d8695d8a4b.ctex::
+hero_hit_f_1.png::CompressedTexture2D::3378271110283141080::1759173404::1759159535::1::::<><><>0<>0<>7b9f719c80f741c0e96ae01011c48488<>res://.godot/imported/hero_hit_f_1.png-5ea9fe306c40b80f4055b069b90e3402.ctex::
+hero_hit_f_2.png::CompressedTexture2D::3900630506747114142::1759173404::1759159535::1::::<><><>0<>0<>33a9f53633a8ba75a1d2d86ccc12ab58<>res://.godot/imported/hero_hit_f_2.png-98432ad3e3a26f6667790cdabd45c14a.ctex::
+::res://CHECK HERE/artgame/battlers/hero/idle_b/::1759159535
+hero_idle_b_0.png::CompressedTexture2D::2938619631480017946::1759173404::1759159535::1::::<><><>0<>0<>a735628fa0323f0006bbd36d04a7185c<>res://.godot/imported/hero_idle_b_0.png-17abb1f69e7474379179d51eb22497fd.ctex::
+hero_idle_b_1.png::CompressedTexture2D::4721782099039531747::1759173404::1759159535::1::::<><><>0<>0<>adfc82a1976f574067c9ce6b2c4aeabd<>res://.godot/imported/hero_idle_b_1.png-beb09ad9b569d797fc5c7faeafd94ac0.ctex::
+hero_idle_b_2.png::CompressedTexture2D::7585804601755126349::1759173404::1759159535::1::::<><><>0<>0<>110b2574fc0e33abbf4a34489f711d10<>res://.godot/imported/hero_idle_b_2.png-4578d9a8f33ae1af07e09fa4a4f48e02.ctex::
+::res://CHECK HERE/artgame/battlers/hero/idle_f/::1759159535
+hero_idle_f_0.png::CompressedTexture2D::2957400929392264537::1759173404::1759159535::1::::<><><>0<>0<>c6d956fe172d258e828a488a9ded60bf<>res://.godot/imported/hero_idle_f_0.png-f16dde7e9bf79e9f39a033a2ce03b3f5.ctex::
+hero_idle_f_1.png::CompressedTexture2D::4263561991844744793::1759173404::1759159535::1::::<><><>0<>0<>1541093025fa115c96ed7dacc789b2ab<>res://.godot/imported/hero_idle_f_1.png-e145a8fa563a909e9d32c542014ad913.ctex::
+hero_idle_f_2.png::CompressedTexture2D::3695951805375952594::1759173404::1759159535::1::::<><><>0<>0<>38d7fed65e164227881730e9937991f0<>res://.godot/imported/hero_idle_f_2.png-4a3e46cee45df3df772d3e786c515322.ctex::
+::res://CHECK HERE/artgame/battlers/hero/ko_f/::1759159535
+hero_ko_f_0.png::CompressedTexture2D::8864892304273562855::1759173404::1759159535::1::::<><><>0<>0<>7fcbf35af70b300580d5ac6b8d2be353<>res://.godot/imported/hero_ko_f_0.png-e2c0cb18e7f439e37311ed4171e7b856.ctex::
+hero_ko_f_1.png::CompressedTexture2D::4455407013387677389::1759173404::1759159535::1::::<><><>0<>0<>c085a76f9e823f1c6aca15a682ce9bf5<>res://.godot/imported/hero_ko_f_1.png-492867b05154479a5e9f006e8047b6c1.ctex::
+hero_ko_f_2.png::CompressedTexture2D::421582765362952311::1759173404::1759159535::1::::<><><>0<>0<>93524fce1922155c80b36949f8017471<>res://.godot/imported/hero_ko_f_2.png-48d09645d66d7c7bcc537f4701631194.ctex::
+hero_ko_f_3.png::CompressedTexture2D::5838004688444438722::1759173404::1759159535::1::::<><><>0<>0<>124157ee8fe731c45d44b6998e51d77a<>res://.godot/imported/hero_ko_f_3.png-32806c865a605994e89a5b7cbb7c919a.ctex::
+hero_ko_f_4.png::CompressedTexture2D::3193178674777543591::1759173404::1759159535::1::::<><><>0<>0<>0288f48220a5efbd019266f3c31a0810<>res://.godot/imported/hero_ko_f_4.png-6f15ecb17dc0bc13d5d792fb6d580463.ctex::
+::res://CHECK HERE/artgame/battlers/mage/::1759159209
+::res://CHECK HERE/artgame/battlers/mage/attack_f/::1759159535
+mage_attack_f_0.png::CompressedTexture2D::4008284364136327210::1759173404::1759159535::1::::<><><>0<>0<>487a292b103861ee5c3e3024a31cac0c<>res://.godot/imported/mage_attack_f_0.png-3281d206b154f78f24a3fd6c0597702a.ctex::
+mage_attack_f_1.png::CompressedTexture2D::8479865044299343955::1759173404::1759159535::1::::<><><>0<>0<>b4e3ef185012790f90da190621135ff6<>res://.godot/imported/mage_attack_f_1.png-8f11fb8647ba37d127b5dd4daa1051e1.ctex::
+mage_attack_f_2.png::CompressedTexture2D::1922562969904152893::1759173404::1759159535::1::::<><><>0<>0<>7b23547ec4706d8403be90c65c02a003<>res://.godot/imported/mage_attack_f_2.png-f3579e4cb6f0a52005ea13d929841b8f.ctex::
+mage_attack_f_3.png::CompressedTexture2D::186625161399903019::1759173404::1759159535::1::::<><><>0<>0<>5018472c837e9b8c987a658ec3535658<>res://.godot/imported/mage_attack_f_3.png-d1cf9098f883d33fc9afeca7f2df7c6d.ctex::
+mage_attack_f_4.png::CompressedTexture2D::125499867634026788::1759173404::1759159535::1::::<><><>0<>0<>45ae63cb1be65a7f880a5f9842fb96a2<>res://.godot/imported/mage_attack_f_4.png-780f1682c69763e82fb5c8eeb04b32c9.ctex::
+mage_attack_f_5.png::CompressedTexture2D::7285012959473372802::1759173404::1759159535::1::::<><><>0<>0<>dff6980d292bc6d1d272bd4e940997ca<>res://.godot/imported/mage_attack_f_5.png-7d292b72b20dc1198dd9d1d407680c43.ctex::
+::res://CHECK HERE/artgame/battlers/mage/cast_f/::1759159535
+mage_cast_f_0.png::CompressedTexture2D::4501090838533168246::1759173404::1759159535::1::::<><><>0<>0<>3d232ee7725a94e13e8683d91cc4d2a6<>res://.godot/imported/mage_cast_f_0.png-4879bd1f51f4bb7b3172f46c1f91c8f6.ctex::
+mage_cast_f_1.png::CompressedTexture2D::7711739237462286813::1759173404::1759159535::1::::<><><>0<>0<>d26449ccce75c57c36e8c1dcbc82b464<>res://.godot/imported/mage_cast_f_1.png-db2b2558a26583764fb050ae85dc680c.ctex::
+mage_cast_f_2.png::CompressedTexture2D::449104281214691913::1759173404::1759159535::1::::<><><>0<>0<>a9d6f64f7dd5d9acdf236a706816ae4a<>res://.godot/imported/mage_cast_f_2.png-9deddcaa4935666cf8dc95eb5146ebf9.ctex::
+mage_cast_f_3.png::CompressedTexture2D::6160951502070731769::1759173404::1759159535::1::::<><><>0<>0<>61899186793051c8959772812b282b57<>res://.godot/imported/mage_cast_f_3.png-e8565cdfdbea56ad6b7226974dcd98f8.ctex::
+mage_cast_f_4.png::CompressedTexture2D::8259497269947990305::1759173404::1759159535::1::::<><><>0<>0<>d7d263aa0a3c2ff48b298d14b949c052<>res://.godot/imported/mage_cast_f_4.png-a11e789a68ffc43840250f73853d69d3.ctex::
+mage_cast_f_5.png::CompressedTexture2D::7977067793525233781::1759173404::1759159535::1::::<><><>0<>0<>611bf99562b83db7a3b9c7e1f8145107<>res://.godot/imported/mage_cast_f_5.png-87c1f036d5ecc6976682e281bc834ffa.ctex::
+::res://CHECK HERE/artgame/battlers/mage/guard_f/::1759159535
+mage_guard_f_0.png::CompressedTexture2D::5143986209205943595::1759173404::1759159535::1::::<><><>0<>0<>cd14ffdf8133503146fa61c021e5706f<>res://.godot/imported/mage_guard_f_0.png-5e8d01796f3ebd9b23d0b64b2d8a7ec2.ctex::
+mage_guard_f_1.png::CompressedTexture2D::7938507639963876741::1759173404::1759159535::1::::<><><>0<>0<>2d2ff0d3c020871d4e899bce739e30ec<>res://.godot/imported/mage_guard_f_1.png-5c6a93ea4794b4a6468dd7d1ad7f60ac.ctex::
+::res://CHECK HERE/artgame/battlers/mage/hit_b/::1759159535
+mage_hit_b_0.png::CompressedTexture2D::458803316681510911::1759173404::1759159535::1::::<><><>0<>0<>98df1246f248d9d43d70da5f8eb115ca<>res://.godot/imported/mage_hit_b_0.png-668dcf54f2f7b3fdb369292ec6d43ea7.ctex::
+mage_hit_b_1.png::CompressedTexture2D::2427986358696966725::1759173404::1759159535::1::::<><><>0<>0<>e2e82b216761878df03842aac2c4ac72<>res://.godot/imported/mage_hit_b_1.png-b4c80dfd67b4311ad0af09c5eac5e758.ctex::
+mage_hit_b_2.png::CompressedTexture2D::4185516849634907672::1759173404::1759159535::1::::<><><>0<>0<>d6d98e9fa469559fa312e40963cccc9f<>res://.godot/imported/mage_hit_b_2.png-b54ad1f83120b0ab3276dc29389ad959.ctex::
+::res://CHECK HERE/artgame/battlers/mage/hit_f/::1759159533
+mage_hit_f_0.png::CompressedTexture2D::7527232467659457687::1759173404::1759159533::1::::<><><>0<>0<>d904c6b10b5d70ad97450e08cc07f8db<>res://.godot/imported/mage_hit_f_0.png-3bff1f751f9ff7b4141c1a5dadb79742.ctex::
+mage_hit_f_1.png::CompressedTexture2D::2747705772717679338::1759173404::1759159533::1::::<><><>0<>0<>c01c3904e11d7e06b9e401bd8407d3bb<>res://.godot/imported/mage_hit_f_1.png-ec965bf9aa005f6762f0b409406307ef.ctex::
+mage_hit_f_2.png::CompressedTexture2D::374925930563074829::1759173404::1759159533::1::::<><><>0<>0<>89dd92488e361c5670b50f988511ecf4<>res://.godot/imported/mage_hit_f_2.png-532355a851175c367f560f12892e52bd.ctex::
+::res://CHECK HERE/artgame/battlers/mage/idle_b/::1759159533
+mage_idle_b_0.png::CompressedTexture2D::4983285333970027123::1759173404::1759159533::1::::<><><>0<>0<>8a7e206234677101c154215ca7545084<>res://.godot/imported/mage_idle_b_0.png-c8190030a2df1133fbb068e053d28eb2.ctex::
+mage_idle_b_1.png::CompressedTexture2D::4362918781833726959::1759173404::1759159533::1::::<><><>0<>0<>9feb173cd487dcbfdbce2a825ec4379f<>res://.godot/imported/mage_idle_b_1.png-fe8426ec13ae5a5119abbaf9045e0a62.ctex::
+mage_idle_b_2.png::CompressedTexture2D::1791858282753721662::1759173404::1759159533::1::::<><><>0<>0<>e946411a5b961c4fe3fd5f5a169a8c0e<>res://.godot/imported/mage_idle_b_2.png-a862b945b1cd586c02b06950f675d219.ctex::
+::res://CHECK HERE/artgame/battlers/mage/idle_f/::1759159533
+mage_idle_f_0.png::CompressedTexture2D::2852702467656750414::1759173404::1759159533::1::::<><><>0<>0<>abfda0e2fb8fd520426c33d0b7ce6b0a<>res://.godot/imported/mage_idle_f_0.png-9e1aa6c2f2b5fa6510d5b81c5aa38681.ctex::
+mage_idle_f_1.png::CompressedTexture2D::3073591139323006876::1759173404::1759159533::1::::<><><>0<>0<>fb12870dd8196c1fad4f56c2d7067e0b<>res://.godot/imported/mage_idle_f_1.png-ffbce7483c861db737faeaa2e85e6b4d.ctex::
+mage_idle_f_2.png::CompressedTexture2D::8951511308283596910::1759173404::1759159533::1::::<><><>0<>0<>512976d11c3fcbece124f63f7e08f4de<>res://.godot/imported/mage_idle_f_2.png-bede22a6d366ac5bbfd44c5e1c19d56f.ctex::
+::res://CHECK HERE/artgame/battlers/mage/ko_f/::1759159533
+mage_ko_f_0.png::CompressedTexture2D::3446523540764399864::1759173404::1759159533::1::::<><><>0<>0<>feaf0b34ea8a83dd02461ac1ba21c454<>res://.godot/imported/mage_ko_f_0.png-b52582211d18009b55aef6bbd25234c9.ctex::
+mage_ko_f_1.png::CompressedTexture2D::5478446679958682732::1759173404::1759159533::1::::<><><>0<>0<>0f5e4278e6092c631df8c5e25e84ecb2<>res://.godot/imported/mage_ko_f_1.png-b966cb5ecc99582059898c8105b43191.ctex::
+mage_ko_f_2.png::CompressedTexture2D::4670867775399610780::1759173404::1759159533::1::::<><><>0<>0<>ecb2f16bc598e756a17f4880a070a64d<>res://.godot/imported/mage_ko_f_2.png-2b4a3b04ac507c41ccf99e20baecc3d0.ctex::
+mage_ko_f_3.png::CompressedTexture2D::8101143538585724691::1759173404::1759159533::1::::<><><>0<>0<>41934ee52cf625285bd214baf67284d0<>res://.godot/imported/mage_ko_f_3.png-b062383023986deddad857ba8872183a.ctex::
+mage_ko_f_4.png::CompressedTexture2D::508831844626749432::1759173404::1759159533::1::::<><><>0<>0<>70a87c3f290c30968d3a25f1aa4e4a72<>res://.godot/imported/mage_ko_f_4.png-a3f85106db11c62bd57acfe0b1436fb0.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/::1759159209
+::res://CHECK HERE/artgame/battlers/rogue/attack_f/::1759159533
+rogue_attack_f_0.png::CompressedTexture2D::7685453427802956055::1759173404::1759159533::1::::<><><>0<>0<>f6ef3cf8cf400b01b64aa4abdffde13f<>res://.godot/imported/rogue_attack_f_0.png-4f6446e038a7f04526ae1995a48d6b94.ctex::
+rogue_attack_f_1.png::CompressedTexture2D::6833361745867745134::1759173404::1759159533::1::::<><><>0<>0<>ba6558156abd5080dbc201cbc4057783<>res://.godot/imported/rogue_attack_f_1.png-c03703e4818fb3d93a8aeaab012eff28.ctex::
+rogue_attack_f_2.png::CompressedTexture2D::1260717397649582272::1759173404::1759159533::1::::<><><>0<>0<>4d9283f982b4312b3b33f75c4edc6296<>res://.godot/imported/rogue_attack_f_2.png-e5063c7f905970d2ce2c4c6961a7da01.ctex::
+rogue_attack_f_3.png::CompressedTexture2D::2467006997829119799::1759173404::1759159533::1::::<><><>0<>0<>d50bc7b3e7b6a43bfcfa78a087f3a5b7<>res://.godot/imported/rogue_attack_f_3.png-adb97ae3d76debdad9ad199c6be25687.ctex::
+rogue_attack_f_4.png::CompressedTexture2D::750732555612050035::1759173404::1759159533::1::::<><><>0<>0<>a00f130f312226f12bd2b7c11ba5967c<>res://.godot/imported/rogue_attack_f_4.png-7410059abdc22cb96dd5344411d5fd19.ctex::
+rogue_attack_f_5.png::CompressedTexture2D::4122262883185781698::1759173404::1759159533::1::::<><><>0<>0<>b8a3c704d8bfb810b15b53424a716b36<>res://.godot/imported/rogue_attack_f_5.png-d39c43c00f3bd490d2bd1b9466abf844.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/cast_f/::1759159533
+rogue_cast_f_0.png::CompressedTexture2D::890967820795278731::1759173404::1759159533::1::::<><><>0<>0<>2b8638f786311a8cd84bd50dbd272023<>res://.godot/imported/rogue_cast_f_0.png-73b96a002e59e0d69311e96e85b7d0b0.ctex::
+rogue_cast_f_1.png::CompressedTexture2D::2199578547070665239::1759173404::1759159533::1::::<><><>0<>0<>450e1231ceebc564133bd67db58db5ae<>res://.godot/imported/rogue_cast_f_1.png-2be8809e21e882ef1bc1fa855c2110cf.ctex::
+rogue_cast_f_2.png::CompressedTexture2D::2445213502401256114::1759173404::1759159533::1::::<><><>0<>0<>28a075f373c08cb64c1c44d86f20e120<>res://.godot/imported/rogue_cast_f_2.png-bc28c52d807ab496d45f184d64745570.ctex::
+rogue_cast_f_3.png::CompressedTexture2D::8420226525243449300::1759173404::1759159533::1::::<><><>0<>0<>67bb4756c48f0b00c2c16dd5e4230812<>res://.godot/imported/rogue_cast_f_3.png-450257309d16209823352152545c17e5.ctex::
+rogue_cast_f_4.png::CompressedTexture2D::7403850957903129617::1759173404::1759159533::1::::<><><>0<>0<>026a429a786be8fcd368c79d27199cfe<>res://.godot/imported/rogue_cast_f_4.png-714e75d62550dbcb500f9b6d36df7649.ctex::
+rogue_cast_f_5.png::CompressedTexture2D::1888407938127407188::1759173404::1759159533::1::::<><><>0<>0<>bd8eb1ee490a7f2e9c1ca815ef411988<>res://.godot/imported/rogue_cast_f_5.png-0aca95df9e677e89c553bbdcc25d17e9.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/guard_f/::1759159533
+rogue_guard_f_0.png::CompressedTexture2D::8547964579669352705::1759173404::1759159533::1::::<><><>0<>0<>4401b399ee105e2dc1e74c6a7b558cc3<>res://.godot/imported/rogue_guard_f_0.png-18fbff4f984b193be64d0c7f2e5cce1d.ctex::
+rogue_guard_f_1.png::CompressedTexture2D::7030861274646274708::1759173404::1759159533::1::::<><><>0<>0<>7588c98c79d56b37e292ffb6ce3156c7<>res://.godot/imported/rogue_guard_f_1.png-512189ae6cb989ac4a548dca65e01728.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/hit_b/::1759159533
+rogue_hit_b_0.png::CompressedTexture2D::8039544869394797348::1759173404::1759159533::1::::<><><>0<>0<>1c0143ee702310089fc64e033bd520fa<>res://.godot/imported/rogue_hit_b_0.png-a48e8990843214ad836a15099ad68707.ctex::
+rogue_hit_b_1.png::CompressedTexture2D::8210810410524372188::1759173404::1759159533::1::::<><><>0<>0<>6ffac7cd63c8bfa1ca2840fe60ba0bfe<>res://.godot/imported/rogue_hit_b_1.png-6a7c0530fac840f0421528e8a0b02dca.ctex::
+rogue_hit_b_2.png::CompressedTexture2D::9201539076985129308::1759173404::1759159533::1::::<><><>0<>0<>bad3c7e8d950032bcf14ec64119b4615<>res://.godot/imported/rogue_hit_b_2.png-28ab1897471913ea1b6a3e27ef7bd939.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/hit_f/::1759159533
+rogue_hit_f_0.png::CompressedTexture2D::4723989270132563027::1759173404::1759159533::1::::<><><>0<>0<>a43cee827e1b4c82d3e9c384334d9a67<>res://.godot/imported/rogue_hit_f_0.png-8b7bc6358c49935ab207de19421625c9.ctex::
+rogue_hit_f_1.png::CompressedTexture2D::8991778992781377342::1759173404::1759159533::1::::<><><>0<>0<>3bf9e49bf90e3abff0b89a17d01fdab4<>res://.godot/imported/rogue_hit_f_1.png-cda4e7a42a034f146c8471ee56c8821e.ctex::
+rogue_hit_f_2.png::CompressedTexture2D::5217488165588986353::1759173404::1759159532::1::::<><><>0<>0<>5a87429768e11b67eba14b0242b7c398<>res://.godot/imported/rogue_hit_f_2.png-383fd7da8674fa8c189cbc57442c70d4.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/idle_b/::1759159532
+rogue_idle_b_0.png::CompressedTexture2D::3164596135564595495::1759173404::1759159532::1::::<><><>0<>0<>0fc3252c52b7d20e7988bbc6af1646cd<>res://.godot/imported/rogue_idle_b_0.png-644d7a55ed2dc0c2b611060f2eef1c21.ctex::
+rogue_idle_b_1.png::CompressedTexture2D::4470451575281036984::1759173404::1759159532::1::::<><><>0<>0<>c054c4e32afe84b50631c94b78242801<>res://.godot/imported/rogue_idle_b_1.png-6efb611bad933122e4f4145fbe735459.ctex::
+rogue_idle_b_2.png::CompressedTexture2D::9161309214323145423::1759173404::1759159532::1::::<><><>0<>0<>2ad68d43eb333ea6593a6854098652a3<>res://.godot/imported/rogue_idle_b_2.png-5bb345ee75471d738b5453fcf8bace2f.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/idle_f/::1759159532
+rogue_idle_f_0.png::CompressedTexture2D::5257732837249243252::1759173404::1759159532::1::::<><><>0<>0<>bd918e06cc96684bf0c86b4458bc2f5b<>res://.godot/imported/rogue_idle_f_0.png-b377b32cd7f047ac4d00e1a6d65b1192.ctex::
+rogue_idle_f_1.png::CompressedTexture2D::6923301494022216416::1759173404::1759159532::1::::<><><>0<>0<>85ad25993cd9a96a255ca242933118a3<>res://.godot/imported/rogue_idle_f_1.png-77d6a7546f850dff704ed718b0a3362c.ctex::
+rogue_idle_f_2.png::CompressedTexture2D::6516580164484718620::1759173404::1759159532::1::::<><><>0<>0<>a64374abe7233473303f7e34e522e50b<>res://.godot/imported/rogue_idle_f_2.png-93ed390e055e58778a45259f2908356d.ctex::
+::res://CHECK HERE/artgame/battlers/rogue/ko_f/::1759159533
+rogue_ko_f_0.png::CompressedTexture2D::9169036225130834357::1759173404::1759159532::1::::<><><>0<>0<>f9df8ec607d28ca22a10878fd445b7bf<>res://.godot/imported/rogue_ko_f_0.png-dc147338f8ef8c994f3c02f93d5565eb.ctex::
+rogue_ko_f_1.png::CompressedTexture2D::6859665857802572663::1759173404::1759159532::1::::<><><>0<>0<>53b3dc7f1eb3ac788ad3960d9d26527a<>res://.godot/imported/rogue_ko_f_1.png-18edcd7f2eb8ee3c32ba8c6dd8b87714.ctex::
+rogue_ko_f_2.png::CompressedTexture2D::2640003113156132011::1759173404::1759159532::1::::<><><>0<>0<>9c0f1e0f1a8fb01aa5b531a8fe332431<>res://.godot/imported/rogue_ko_f_2.png-6158e2ad6b6d1773d34bd8dd0dcedcd6.ctex::
+rogue_ko_f_3.png::CompressedTexture2D::5406391697373385991::1759173404::1759159532::1::::<><><>0<>0<>414b0b09970204f553284aa9ea03e666<>res://.godot/imported/rogue_ko_f_3.png-196702121e6caa774ad0cca913494753.ctex::
+rogue_ko_f_4.png::CompressedTexture2D::4521399125907730935::1759173404::1759159533::1::::<><><>0<>0<>a474d58c7c2addcd625360a90049a3f3<>res://.godot/imported/rogue_ko_f_4.png-effbce92efce2808aae5ca08fef41027.ctex::
+::res://CHECK HERE/artgame/portraits/::1759159533
+healer_portrait_96.png::CompressedTexture2D::7381255501271413830::1759173404::1759159533::1::::<><><>0<>0<>53d531d62d89634d53ccbb05571611a2<>res://.godot/imported/healer_portrait_96.png-0135419cf89e01b59b220e4558aeef80.ctex::
+hero_portrait_96.png::CompressedTexture2D::6347287829428836858::1759173404::1759159533::1::::<><><>0<>0<>e4a1783de796aa27762473b9ac524c54<>res://.godot/imported/hero_portrait_96.png-0663cc34143e8ae10cc5e3bec511b1b7.ctex::
+mage_portrait_96.png::CompressedTexture2D::8359968036576580015::1759173404::1759159533::1::::<><><>0<>0<>ef9e4e1d8b1d96d6a3cd5eb8e680e3e6<>res://.godot/imported/mage_portrait_96.png-1c5a9de4799eb2e067c602238a202d53.ctex::
+rogue_portrait_96.png::CompressedTexture2D::5394409027139545726::1759173404::1759159533::1::::<><><>0<>0<>25ff78f93c9c4376e051d7931bc024ee<>res://.godot/imported/rogue_portrait_96.png-96f879105e196b07cc6b4545e1ed08d4.ctex::
+::res://CHECK HERE/backgrounds/::1759159534
+arena_desert_1280x720.png::CompressedTexture2D::5958451645451758847::1759168764::1759159534::1::::<><><>0<>0<>ee68b7fe53312d56fb5474d0cd8c3a5a<>res://.godot/imported/arena_desert_1280x720.png-e3946ac3bb57a42f3b8609f3ecb88bbc.ctex::
+arena_grassland_1280x720.png::CompressedTexture2D::5169757011935820092::1759168762::1759159534::1::::<><><>0<>0<>f1e57f783e0757609cf491a072d3b5f1<>res://.godot/imported/arena_grassland_1280x720.png-682ad85da1dd40b859e90cd4e53a81f6.ctex::
+arena_ruins_1280x720.png::CompressedTexture2D::5749588848054015918::1759168764::1759159534::1::::<><><>0<>0<>b28757d979a9bc36b39da279c9f7df05<>res://.godot/imported/arena_ruins_1280x720.png-c8fe7e189255e6bdc557f7bf207ca5f1.ctex::
+decal_target_ring.png::CompressedTexture2D::6576540515126819898::1759168762::1759159534::1::::<><><>0<>0<>48bc2c0b38be0a395032471cf4fa6101<>res://.godot/imported/decal_target_ring.png-6818e6b03539e67842075b22f4530b77.ctex::
+overlay_vignette.png::CompressedTexture2D::6268966597018768918::1759168762::1759159534::1::::<><><>0<>0<>aa0f26b32a4bb958c40b9502bcdbffb1<>res://.godot/imported/overlay_vignette.png-702049171d2881801e9370ec37e3bc3b.ctex::
+::res://CHECK HERE/backgrounds/tiles_desert/::1759159533
+edge_bottom.png::CompressedTexture2D::7222003683689876388::1759168762::1759159533::1::::<><><>0<>0<>abcce6d9cd5090c48b069d6884fded17<>res://.godot/imported/edge_bottom.png-a25e656f4610722b0ade72bca1ad10ee.ctex::
+edge_left.png::CompressedTexture2D::4642815255150537218::1759168762::1759159533::1::::<><><>0<>0<>b359660e94d225a79e2e308eb587ec6f<>res://.godot/imported/edge_left.png-bbb0cecee9bf2788750230f5759d96e3.ctex::
+edge_right.png::CompressedTexture2D::6472604636700736693::1759168762::1759159533::1::::<><><>0<>0<>f47dcbbff58292329ccf24b0865c5330<>res://.godot/imported/edge_right.png-f3b2d00bb642d2d837fba5e939565eb6.ctex::
+edge_top.png::CompressedTexture2D::7913637968036603311::1759168762::1759159533::1::::<><><>0<>0<>e39de3a246b36b0ce0b97e21108d4840<>res://.godot/imported/edge_top.png-4f8479ef42b8ccc0acd8bddd713b4c1f.ctex::
+floor_64x32.png::CompressedTexture2D::3686353288841608009::1759168762::1759159533::1::::<><><>0<>0<>9002d6b9f4dd6f616a8999c8530a1582<>res://.godot/imported/floor_64x32.png-67b39ca6115a9fe1cf6d88b4e6007329.ctex::
+tile_shadow.png::CompressedTexture2D::8942092387116996528::1759168762::1759159533::1::::<><><>0<>0<>2f9ad838300591736423b92d087b28d6<>res://.godot/imported/tile_shadow.png-7f8a1d2dde553dfcc27abce394f93d4d.ctex::
+::res://CHECK HERE/backgrounds/tiles_grassland/::1759159533
+edge_bottom.png::CompressedTexture2D::7537138740932913043::1759168762::1759159533::1::::<><><>0<>0<>a62aa8b27bf55ce29128adbe4baee8c5<>res://.godot/imported/edge_bottom.png-66c865f12c8d1e3efa254eddcedefb45.ctex::
+edge_left.png::CompressedTexture2D::6734991223146633819::1759168762::1759159533::1::::<><><>0<>0<>3c549d566afe1b0b1b3f374c0c9d547e<>res://.godot/imported/edge_left.png-14b37eadae563a5905bb82e9bf100e99.ctex::
+edge_right.png::CompressedTexture2D::5224821475784218909::1759168762::1759159533::1::::<><><>0<>0<>7e0a6ef13f50c3fdafa13656260fdfb9<>res://.godot/imported/edge_right.png-ac61c7b14774884dbbc06190b603f4d8.ctex::
+edge_top.png::CompressedTexture2D::4596387417260527028::1759168762::1759159533::1::::<><><>0<>0<>0472a61b93425f3074f0a72d828808f2<>res://.godot/imported/edge_top.png-1ab58c5715c98d1a21c235ad5e3d3dd3.ctex::
+floor_64x32.png::CompressedTexture2D::2878737062827167711::1759168762::1759159533::1::::<><><>0<>0<>9457a059aa646de3b628e643ce001af8<>res://.godot/imported/floor_64x32.png-9e5ee6e41bf8f3ec0270cfef4f835f57.ctex::
+tile_shadow.png::CompressedTexture2D::6001618038950221070::1759168762::1759159533::1::::<><><>0<>0<>d729bd9ca5d3bad8eb8ec04372f1ae9c<>res://.godot/imported/tile_shadow.png-c359495148cbaf79f5266f8e72206fe4.ctex::
+::res://CHECK HERE/backgrounds/tiles_ruins/::1759159533
+edge_bottom.png::CompressedTexture2D::6108094597273588829::1759168762::1759159533::1::::<><><>0<>0<>a7132b238688db632642e5dda27438b8<>res://.godot/imported/edge_bottom.png-e8df113797f32bedad19e695d63420d2.ctex::
+edge_left.png::CompressedTexture2D::6470667037929704805::1759168762::1759159533::1::::<><><>0<>0<>aad91f86fea44363db5178dab90126f3<>res://.godot/imported/edge_left.png-872d86205e9f0c35ad772aa7699a1cd0.ctex::
+edge_right.png::CompressedTexture2D::6574073221125653956::1759168762::1759159533::1::::<><><>0<>0<>5bf7bd15fbb9f1f88849eb6e7387d667<>res://.godot/imported/edge_right.png-499230857f132b3ec6ac82e28979968a.ctex::
+edge_top.png::CompressedTexture2D::5640276013159356562::1759168762::1759159533::1::::<><><>0<>0<>36046f1be68815e78e315157515a1690<>res://.godot/imported/edge_top.png-638a130a28d7b8691da93d0f8be51224.ctex::
+floor_64x32.png::CompressedTexture2D::4780491527334368385::1759168762::1759159533::1::::<><><>0<>0<>9ff109837d8d2a7071a3f21fb6eb6615<>res://.godot/imported/floor_64x32.png-fd46476787ec8b1130f79d38bb4a5047.ctex::
+tile_shadow.png::CompressedTexture2D::670361616508844377::1759168762::1759159533::1::::<><><>0<>0<>d58de6cea5c790afb8b1579c6bc0cdb1<>res://.godot/imported/tile_shadow.png-6f2cfb5a3a6cade215363e27e6e36f72.ctex::
+::res://CHECK HERE/Images/::1759159534
+20250929_1040_Game Character Collection_remix_01k6aykke4f4jrxhpc7mm2zj1j.png::CompressedTexture2D::7043404574192036235::1759157198::1759159534::1::::<><><>0<>0<>cbd6e79c25c0bf704b923781bfadcd2c<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke4f4jrxhpc7mm2zj1j.png-950f1e1ae3a851d3e2764ce129fa9993.ctex::
+20250929_1040_Game Character Collection_remix_01k6aykke5ff6srbpqhjpwbkjy.png::CompressedTexture2D::1430186701279872834::1759157184::1759159534::1::::<><><>0<>0<>667b515e84c342d973ad18c48a4a1616<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke5ff6srbpqhjpwbkjy.png-0d7aa8f99920fd70fca25d9b66a992fb.ctex::
+20250929_1040_Game Character Collection_remix_01k6aykke6erqt033yzr6enqv0.png::CompressedTexture2D::6457646996314223018::1759157160::1759159534::1::::<><><>0<>0<>929a7559665c35dc3cbd279d4f56b668<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke6erqt033yzr6enqv0.png-7196f8177fe36724de43bf807685f8ed.ctex::
+20250929_1040_Game Character Collection_remix_01k6aykke7e9m8macwbw2612my.png::CompressedTexture2D::6951019795953278466::1759157154::1759159534::1::::<><><>0<>0<>ac6800655e53a16c1a7c04c34eb86e10<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke7e9m8macwbw2612my.png-0368c1055e72293a94372adf1132c30c.ctex::
 ::res://data/::1759028273
 characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
@@ -41,10 +399,10 @@ Main.gd::GDScript::8263083135195594883::1759110669::0::1::::<>Node<><>0<>0<><>::
 Main.tscn::PackedScene::-1::1759120559::0::1::::<><><>0<>0<><>::res://scenes/Main.gd
 SanityTest.gd::GDScript::4183202894098008719::1759122209::0::1::::<>Node<><>0<>0<><>::
 SanityTest.tscn::PackedScene::-1::1759116558::0::1::::<><><>0<>0<><>::res://scenes/SanityTest.gd
-::res://scripts/::1759158296
+::res://scripts/::1759158810
 AIController.gd::GDScript::70837940992478045::1759042586::0::1::::<>Node<><>0<>0<><>::
-AnimatedFrames.gd::GDScript::8422127605135520097::1759158691::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
-Battle.gd::GDScript::4670700875644173182::1759154792::0::1::::<>Node2D<><>0<>0<><>::
+AnimatedFrames.gd::GDScript::8422127605135520097::1759158810::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
+Battle.gd::GDScript::4670700875644173182::1759158810::0::1::::<>Node2D<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759111548::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759042586::0::1::::<>Node<><>0<>0<><>::
 Formula.gd::GDScript::7123728041291322933::1759042586::0::1::::<>Node<><>0<>0<><>::
