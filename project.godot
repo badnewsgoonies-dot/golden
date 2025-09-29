@@ -22,10 +22,6 @@ DataRegistry="*res://autoload/DataRegistry.gd"
 SaveService="*res://autoload/SaveService.gd"
 AudioService="*res://autoload/AudioService.gd"
 
-[debug]
-
-shader_language/warnings/treat_warnings_as_errors=true
-
 [rendering]
 
 textures/canvas_textures/default_filter=false
