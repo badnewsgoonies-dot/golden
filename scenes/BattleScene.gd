@@ -620,45 +620,6 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 	sample.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	return sample
 
-func _load_portrait_alias() -> void:
-	portrait_alias.clear()
-	var path := "res://art/portrait_alias.json"
-	if not FileAccess.file_exists(path):
-		return
-	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		return
-	var parsed = JSON.parse_string(file.get_as_text())
-	if typeof(parsed) == TYPE_DICTIONARY:
-		portrait_alias = parsed
-
-func _resolve_portrait_target(unit_name: String) -> String:
-	if unit_name == "":
-		return ""
-	var key := unit_name.to_lower().replace(" ", "_")
-	var alias_value = portrait_alias.get(key, null)
-	if alias_value is String:
-		return alias_value
-	return String(CHARACTER_ART.get(unit_name, key))
-
-func _get_portrait_texture(unit_name: String) -> Texture2D:
-	var target := _resolve_portrait_target(unit_name)
-	if target == "":
-		return null
-	var path := target
-	if not path.begins_with("res://"):
-		path = "res://art/portraits/%s_portrait_96.png" % path
-	var tex: Texture2D = load(path)
-	if tex is Texture2D:
-		return tex
-	if not target.begins_with("res://"):
-		var fallback_key := unit_name.to_lower().replace(" ", "_")
-		var fallback_path := "res://art/portraits/%s_portrait_96.png" % fallback_key
-		tex = load(fallback_path)
-		if tex is Texture2D:
-			return tex
-	return null
-
 func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) -> void:
 	if battle_finished:
 		return
