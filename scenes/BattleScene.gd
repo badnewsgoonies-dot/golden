@@ -6,6 +6,18 @@ const Formula := preload("res://battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const DAMAGE_POPUP := preload("res://ui/DamagePopup.tscn")
+const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
+
+const CHARACTER_ART := {
+	"Pyro Adept": "adept",
+	"Gale Rogue": "rogue",
+	"Sunlit Cleric": "cleric",
+	"Cleric": "cleric",
+	"Iron Guard": "guard",
+	"Guard": "guard",
+	"Goblin": "goblin",
+	"Slime": "slime"
+}
 
 @export var keyboard_end_turn_enabled: bool = true
 
@@ -59,13 +71,11 @@ func _ready() -> void:
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
 
-	hero_sprite.texture = SpriteFactory.make_humanoid("adept", 6)
-	hero_sprite.centered = true
-	hero_sprite.z_index = 1
-	enemy_sprite.texture = SpriteFactory.make_monster("goblin", 6)
-	enemy_sprite.centered = true
+	var hero_folder := CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_"))
+	hero_sprite = _swap_for_animated_sprite(hero_sprite, hero_folder, true)
+	var enemy_folder := CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_"))
+	enemy_sprite = _swap_for_animated_sprite(enemy_sprite, enemy_folder, false)
 	enemy_sprite.flip_h = true
-	enemy_sprite.z_index = 1
 
 	hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
 	hero_shadow.centered = true
@@ -80,6 +90,9 @@ func _ready() -> void:
 	enemy_origin = enemy_sprite.position
 	hero_shadow_base = hero_shadow.scale
 	enemy_shadow_base = enemy_shadow.scale
+
+	_set_portrait($UI/HUD/VBox/HeroRow, hero.name)
+	_set_portrait($UI/HUD/VBox/EnemyRow, enemy.name)
 
 	_update_sprites()
 	_refresh_plan_label()
@@ -221,6 +234,8 @@ func _on_end_turn() -> void:
 			var crit := bool(result.get("crit", false))
 			play_sfx("crit" if crit else "hit")
 			spawn_damage_popup(target_sprite, damage, crit, false)
+			if target_sprite is AnimatedFrames:
+				(target_sprite as AnimatedFrames).play_hit()
 		else:
 			play_sfx("miss")
 			spawn_damage_popup(target_sprite, 0, false, true)
@@ -288,6 +303,8 @@ func _update_ui() -> void:
 		enemy.stats.get("HP", 0),
 		enemy.max_stats.get("HP", 0)
 	]
+	_set_portrait($UI/HUD/VBox/HeroRow, hero.name)
+	_set_portrait($UI/HUD/VBox/EnemyRow, enemy.name)
 	_update_sprites()
 	refresh_status_hud()
 	_refresh_plan_label()
@@ -384,6 +401,47 @@ func _update_sprites() -> void:
 	enemy_shadow.scale = enemy_shadow_base
 	hero_sprite.position = hero_origin
 	enemy_sprite.position = enemy_origin
+
+func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> Sprite2D:
+	if old_sprite == null:
+		return old_sprite
+	var parent := old_sprite.get_parent()
+	var idx := parent.get_children().find(old_sprite) if parent != null else -1
+	var animated := AnimatedFrames.new()
+	animated.centered = old_sprite.centered
+	animated.scale = old_sprite.scale
+	animated.z_index = old_sprite.z_index
+	animated.flip_h = old_sprite.flip_h
+	animated.character = character
+	animated.facing_back = facing_back
+	if parent != null:
+		parent.add_child(animated)
+		if idx >= 0:
+			parent.move_child(animated, idx)
+	animated.position = old_sprite.position
+	animated.scale = old_sprite.scale
+	old_sprite.queue_free()
+	return animated
+
+func _set_portrait(row: HBoxContainer, unit_name: String) -> void:
+	if row == null:
+		return
+	var existing := row.get_node_or_null("Portrait")
+	if existing != null:
+		existing.queue_free()
+	var art_key := CHARACTER_ART.get(unit_name, unit_name.to_lower().replace(" ", "_"))
+	var path := "res://art/portraits/%s_portrait_96.png" % art_key
+	var tex: Texture2D = load(path)
+	if tex == null:
+		return
+	var portrait := TextureRect.new()
+	portrait.name = "Portrait"
+	portrait.texture = tex
+	portrait.custom_minimum_size = Vector2(48, 48)
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(portrait)
+	row.move_child(portrait, 0)
 
 func _sprite_for_unit(unit: Unit) -> Sprite2D:
 	if unit == hero:

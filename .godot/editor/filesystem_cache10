@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759153537
+::res://::1759153705
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
@@ -30,7 +30,7 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnim
 ::res://save/::1759030491
 ::res://scenes/::1759122209
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759153452::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759153594::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759153292::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
 Boot.tscn::PackedScene::8924253083737201428::1759119104::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::

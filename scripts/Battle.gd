@@ -61,6 +61,7 @@ const MAX_LOG := 8
 @onready var cmd_layer: CanvasLayer = CanvasLayer.new()
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
+const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 
 @onready var cmd: CommandMenu = CommandMenu.new()
 
@@ -1353,10 +1354,14 @@ func _make_vignette_material() -> ShaderMaterial:
 	mat.shader = shader
 	return mat
 
-func _jab(sprite: Sprite2D, dir: int) -> void:
+func _jab(sprite: CanvasItem, dir: int) -> void:
+	if sprite == null:
+		return
 	# Nudge the zero-based pivot if available; fallback to sprite
-	var target: Node2D = sprite
-	var parent := sprite.get_parent()
+	var target: Node2D = sprite as Node2D
+	if target == null:
+		return
+	var parent := target.get_parent()
 	if parent != null and parent is Node2D:
 		target = parent as Node2D
 	var t := create_tween()
@@ -1417,8 +1422,8 @@ func _element_color(elem: String) -> Color:
 			return Color(0.9, 0.9, 1.0, 1.0)
 
 func _cast_orb_from_to(caster: Dictionary, target: Dictionary, tint: Color, facing: int) -> void:
-	var s_from: Sprite2D = caster.get("sprite", null)
-	var s_to: Sprite2D = target.get("sprite", null)
+	var s_from := caster.get("sprite", null) as Node2D
+	var s_to := target.get("sprite", null) as Node2D
 	if s_from == null or s_to == null:
 		return
 	var tex: Texture2D = _make_spell_orb_texture(18, tint)
@@ -1460,7 +1465,7 @@ func _process(delta: float) -> void:
 func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 	var root: Node2D = u.get("root", null)
 	var pivot: Node2D = u.get("pivot", null)
-	var s: Sprite2D = u.get("sprite", null)
+	var s: CanvasItem = u.get("sprite", null)
 
 	# Build the Root→Pivot→Sprite (+Arm) structure if missing
 	if root == null or not is_instance_valid(root):
@@ -1477,27 +1482,44 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		u["pivot"] = pivot
 
 		var kind: String = String(u.get("art", ""))
+		var character := ""
 		if kind.begins_with("hero:"):
-			var role: String = String(kind.split(":")[1])
-			var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
-			s = Sprite2D.new()
-			s.texture = layers["body"]
-			pivot.add_child(s)
-			u["sprite"] = s
-			# Arm overlay as a child of the pivot (not the body)
-			var arm := Sprite2D.new()
-			arm.name = "Arm"
-			arm.centered = false
-			arm.texture = layers["arm"]
-			arm.position = layers["arm_pivot_local"]
-			pivot.add_child(arm)
-			u["arm"] = arm
+			character = String(kind.split(":")[1])
 		else:
-			s = Sprite2D.new()
-			var tex: Texture2D = SpriteFactory.make_monster(kind, 3) if kind != "" else SpriteFactory.make_humanoid("rogue", 3)
-			s.texture = tex
-			pivot.add_child(s)
-			u["sprite"] = s
+			character = kind
+
+		var animated: AnimatedFrames = AnimatedFrames.new()
+		animated.centered = false
+		animated.character = character
+		animated.set_facing_back(facing > 0)
+		pivot.add_child(animated)
+		u["sprite"] = animated
+
+		if not animated.has_frames():
+			pivot.remove_child(animated)
+			animated.queue_free()
+			var sprite := Sprite2D.new()
+			sprite.centered = false
+			if kind.begins_with("hero:"):
+				var role: String = String(kind.split(":")[1])
+				var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
+				sprite.texture = layers.get("body")
+				pivot.add_child(sprite)
+				u["sprite"] = sprite
+				var arm := Sprite2D.new()
+				arm.name = "Arm"
+				arm.centered = false
+				arm.texture = layers.get("arm")
+				arm.position = layers.get("arm_pivot_local", Vector2.ZERO)
+				pivot.add_child(arm)
+				u["arm"] = arm
+			else:
+				var tex: Texture2D = SpriteFactory.make_monster(kind, 3) if kind != "" else SpriteFactory.make_humanoid("rogue", 3)
+				sprite.texture = tex
+				pivot.add_child(sprite)
+				u["sprite"] = sprite
+		else:
+			u.erase("arm")
 
 		var ap: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
 		u["anim"] = ap
@@ -1520,6 +1542,11 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 				pivot.add_child(s)
 			var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
 			u["anim"] = ap2
+
+	if s is AnimatedFrames:
+		(s as AnimatedFrames).set_facing_back(facing > 0)
+
+	s = u.get("sprite", null)
 
 	if s != null and is_instance_valid(s):
 		s.z_index = 0
@@ -1545,7 +1572,7 @@ func _reset_pose(u: Dictionary) -> void:
 		pivot.position = Vector2.ZERO
 		pivot.rotation = 0.0
 		pivot.scale = Vector2.ONE
-	var s: Sprite2D = u.get("sprite", null)
+	var s: CanvasItem = u.get("sprite", null)
 	if s != null and is_instance_valid(s):
 		s.modulate = Color(1,1,1,1)
 
@@ -1575,11 +1602,26 @@ func _create_unit_overlay(u: Dictionary) -> void:
 	lbl.size = Vector2(BAR_SIZE.x, 16)
 	root.add_child(lbl)
 
+	var stats_dict: Dictionary = u.get("stats", {})
+	var unit_name: String = String(stats_dict.get("name", "")).to_lower()
+	if unit_name != "":
+		var portrait_rect := TextureRect.new()
+		portrait_rect.name = "POR"
+		portrait_rect.size = Vector2(52, 52)
+		portrait_rect.position = Vector2(-60, -4)
+		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		portrait_rect.z_index = -1
+		var portrait_path := "res://art/portraits/%s_portrait_96.png" % unit_name
+		var portrait_tex: Texture2D = load(portrait_path)
+		if portrait_tex is Texture2D:
+			portrait_rect.texture = portrait_tex
+			root.add_child(portrait_rect)
+
 	overlay.add_child(root)
 	u["hud"] = root
 
 func _update_unit_overlay(u: Dictionary) -> void:
-	var s: Sprite2D = u.get("sprite", null)
+	var s: CanvasItem = u.get("sprite", null)
 	var root: Node2D = u.get("root", null)
 	var hud: Control = u.get("hud", null)
 	if hud == null:
