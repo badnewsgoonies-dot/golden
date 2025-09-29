@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759083396
+::res://::1759102709
 ::res://art/::1759049135
 SpriteFactory.gd::GDScript::6545000406659124052::1759049274::0::1::::SpriteFactory<>Node<><>0<>0<><>::
 ::res://audio/::1759030491
@@ -9,7 +9,8 @@ DataRegistry.gd::GDScript::1869354952928479482::1759045746::0::1::::<>Node<><>0<
 GameManager.gd::GDScript::1729807557281203855::1759033140::0::1::::<>Node<><>0<>0<><>::
 RunManager.gd::GDScript::9001988606965223525::1759031448::0::1::::<>Node<><>0<>0<><>::
 SaveService.gd::GDScript::2519183938991418370::1759042586::0::1::::<>Node<><>0<>0<><>::
-::res://battle/::1759030491
+::res://battle/::1759102709
+::res://battle/models/::1759102709
 ::res://data/::1759028273
 characters.json::JSON::-1::1759042586::0::1::::<><><>0<>0<><>::
 encounters.json::JSON::-1::1759042586::0::1::::<><><>0<>0<><>::
@@ -33,5 +34,5 @@ Formula.gd::GDScript::7123728041291322933::1759042586::0::1::::<>Node<><>0<>0<><
 TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://shop/::1759030491
 ::res://tests/::1759030491
-::res://ui/::1759082924
-CommandMenu.gd::GDScript::6169794612215573323::1759083290::0::1::::CommandMenu<>Control<><>0<>0<><>::
+::res://ui/::1759102593
+CommandMenu.gd::GDScript::6169794612215573323::1759102593::0::1::::CommandMenu<>Control<><>0<>0<><>::
