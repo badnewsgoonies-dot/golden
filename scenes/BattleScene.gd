@@ -31,6 +31,7 @@ var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
 @onready var hero_shadow: Sprite2D = $Stage/HeroShadow
 @onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
+@onready var popups_container: Control = $FX/Popups
 @onready var fx_controller: Node = $FX
 @onready var overlay_fade: ColorRect = $Overlay/Fade
 @onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
