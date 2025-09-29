@@ -1,4 +1,4 @@
-extends Node2D
+ï»¿extends Node2D
 
 const Action := preload("res://battle/models/Action.gd")
 const Unit := preload("res://battle/models/Unit.gd")
@@ -132,7 +132,7 @@ func _on_end_turn() -> void:
 			for status_line in result.get("status_logs", []):
 				_log(status_line)
 		else:
-			_log("%s uses %s — Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
+			_log("%s uses %s â€” Miss!" % [a.actor.name, a.skill.get("name", "Skill")])
 
 	var tick_logs := turn_engine.end_of_round_tick([hero, enemy])
 	for line in tick_logs:
@@ -147,7 +147,7 @@ func _check_end() -> void:
 		_log("Victory! Goblin is defeated.")
 		_disable_inputs()
 	elif !hero.is_alive():
-		_log("Defeat… The hero falls.")
+		_log("Defeatâ€¦ The hero falls.")
 		_disable_inputs()
 
 func _disable_inputs() -> void:

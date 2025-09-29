@@ -1,4 +1,4 @@
-class_name TurnEngine
+﻿class_name TurnEngine
 extends Node
 
 const Action := preload("res://battle/models/Action.gd")
