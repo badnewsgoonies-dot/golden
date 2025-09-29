@@ -1,0 +1,37 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://actors/hero.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://actors/mage.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://actors/rogue.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://actors/healer.tscn" id="4"]
+
+[node name="Battle" type="Node2D"]
+y_sort_enabled = true
+
+[node name="PartyRoot" type="Node2D" parent="."]
+
+[node name="Hero" parent="PartyRoot" instance=ExtResource("1")]
+position = Vector2(100, 300)
+back_facing = true
+
+[node name="Warrior" parent="PartyRoot" instance=ExtResource("3")]
+position = Vector2(140, 330)
+back_facing = true
+
+[node name="Healer" parent="PartyRoot" instance=ExtResource("4")]
+position = Vector2(180, 360)
+back_facing = true
+
+[node name="Mage" parent="PartyRoot" instance=ExtResource("2")]
+position = Vector2(220, 390)
+back_facing = true
+
+[node name="EnemyRoot" type="Node2D" parent="."]
+
+[node name="EnemyA" parent="EnemyRoot" instance=ExtResource("3")]
+position = Vector2(520, 200)
+back_facing = false
+
+[node name="EnemyB" parent="EnemyRoot" instance=ExtResource("2")]
+position = Vector2(560, 230)
+back_facing = false

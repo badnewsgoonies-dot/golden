@@ -1349,7 +1349,7 @@ func _make_vignette_material() -> ShaderMaterial:
             vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);
             COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
         }
-    """
+	"""
 	var mat := ShaderMaterial.new()
 	mat.shader = shader
 	return mat

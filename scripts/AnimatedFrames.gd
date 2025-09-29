@@ -1,4 +1,4 @@
-﻿extends AnimatedSprite2D
+extends AnimatedSprite2D
 
 class_name AnimatedFrames
 
@@ -93,4 +93,3 @@ func play_hit() -> void:
 		if tree != null:
 			await tree.create_timer(0.18).timeout
 			play(idle_anim)
-

@@ -1,0 +1,143 @@
+{
+  "portraits": {
+    "hero": {
+      "source": "/mnt/data/input_assets2/art/portraits/hero_portrait_96.png",
+      "output": "/mnt/data/prepared_art2/art/portraits/hero_portrait_96.png"
+    },
+    "mage": {
+      "source": "/mnt/data/input_assets2/art/portraits/mage_portrait_96.png",
+      "output": "/mnt/data/prepared_art2/art/portraits/mage_portrait_96.png"
+    },
+    "rogue": {
+      "source": "/mnt/data/input_assets2/art/portraits/rogue_portrait_96.png",
+      "output": "/mnt/data/prepared_art2/art/portraits/rogue_portrait_96.png"
+    },
+    "healer": {
+      "source": "/mnt/data/input_assets2/art/portraits/healer_portrait_96.png",
+      "output": "/mnt/data/prepared_art2/art/portraits/healer_portrait_96.png"
+    }
+  },
+  "battlers": {
+    "healer": {
+      "source_examples": [
+        "/mnt/data/input_assets2/art/battlers/healer/hit_b/healer_hit_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/healer/hit_b/healer_hit_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/healer/hit_b/healer_hit_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/healer/hit_f/healer_hit_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/healer/hit_f/healer_hit_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/healer/hit_f/healer_hit_f_2.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_b/healer_idle_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_b/healer_idle_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_b/healer_idle_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_f/healer_idle_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_f/healer_idle_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/healer/idle_f/healer_idle_f_2.png",
+        "/mnt/data/input_assets2/art/portraits/healer_portrait_96.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_b/healer_hit_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_b/healer_hit_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_b/healer_hit_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_f/healer_hit_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_f/healer_hit_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/hit_f/healer_hit_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_b/healer_idle_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_b/healer_idle_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_b/healer_idle_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_f/healer_idle_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_f/healer_idle_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/healer/idle_f/healer_idle_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/portraits/healer_portrait_96.png"
+      ]
+    },
+    "hero": {
+      "source_examples": [
+        "/mnt/data/input_assets2/art/battlers/hero/hit_b/hero_hit_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/hero/hit_b/hero_hit_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/hero/hit_b/hero_hit_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/hero/hit_f/hero_hit_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/hero/hit_f/hero_hit_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/hero/hit_f/hero_hit_f_2.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_b/hero_idle_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_b/hero_idle_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_b/hero_idle_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_f/hero_idle_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_f/hero_idle_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/hero/idle_f/hero_idle_f_2.png",
+        "/mnt/data/input_assets2/art/portraits/hero_portrait_96.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_b/hero_hit_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_b/hero_hit_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_b/hero_hit_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_f/hero_hit_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_f/hero_hit_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/hit_f/hero_hit_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_b/hero_idle_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_b/hero_idle_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_b/hero_idle_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_f/hero_idle_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_f/hero_idle_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/hero/idle_f/hero_idle_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/portraits/hero_portrait_96.png"
+      ]
+    },
+    "mage": {
+      "source_examples": [
+        "/mnt/data/input_assets2/art/battlers/mage/hit_b/mage_hit_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/mage/hit_b/mage_hit_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/mage/hit_b/mage_hit_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/mage/hit_f/mage_hit_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/mage/hit_f/mage_hit_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/mage/hit_f/mage_hit_f_2.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_b/mage_idle_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_b/mage_idle_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_b/mage_idle_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_f/mage_idle_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_f/mage_idle_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/mage/idle_f/mage_idle_f_2.png",
+        "/mnt/data/input_assets2/art/portraits/mage_portrait_96.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_b/mage_hit_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_b/mage_hit_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_b/mage_hit_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_f/mage_hit_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_f/mage_hit_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/hit_f/mage_hit_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_b/mage_idle_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_b/mage_idle_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_b/mage_idle_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_f/mage_idle_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_f/mage_idle_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/mage/idle_f/mage_idle_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/portraits/mage_portrait_96.png"
+      ]
+    },
+    "rogue": {
+      "source_examples": [
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_b/rogue_hit_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_b/rogue_hit_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_b/rogue_hit_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_f/rogue_hit_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_f/rogue_hit_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/hit_f/rogue_hit_f_2.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_b/rogue_idle_b_0.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_b/rogue_idle_b_1.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_b/rogue_idle_b_2.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_f/rogue_idle_f_0.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_f/rogue_idle_f_1.png",
+        "/mnt/data/input_assets2/art/battlers/rogue/idle_f/rogue_idle_f_2.png",
+        "/mnt/data/input_assets2/art/portraits/rogue_portrait_96.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/portraits/rogue_portrait_96.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_b/rogue_hit_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_b/rogue_hit_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_b/rogue_hit_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_f/rogue_hit_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_f/rogue_hit_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/hit_f/rogue_hit_f_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_b/rogue_idle_b_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_b/rogue_idle_b_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_b/rogue_idle_b_2.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_f/rogue_idle_f_0.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_f/rogue_idle_f_1.png",
+        "/mnt/data/input_assets2/gjrpg_project/sprites/rogue/idle_f/rogue_idle_f_2.png"
+      ]
+    }
+  },
+  "notes": []
+}
