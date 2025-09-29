@@ -80,8 +80,8 @@ func _queue_hero_action(skill: Dictionary) -> void:
 func _on_end_turn() -> void:
 	if !hero.is_alive() or !enemy.is_alive():
 		return
-	if planned_actions.is_empty():
-	planned_actions.append(Action.new(hero, skill_slash, enemy))
+    if planned_actions.is_empty():
+		planned_actions.append(Action.new(hero, skill_slash, enemy))
 
 	var enemy_action := Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
