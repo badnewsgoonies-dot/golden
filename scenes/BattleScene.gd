@@ -526,7 +526,7 @@ func spawn_damage_popup(node: Node2D, amount: int, crit: bool = false, miss: boo
 	if popup_label == null:
 		return
 	var world_pos: Vector2 = node.get_global_transform_with_canvas().origin
-	var local_pos: Vector2 = popups_container.to_local(world_pos)
+	var local_pos: Vector2 = popups_container.get_global_transform_with_canvas().affine_inverse().xform(world_pos)
 	var text: String
 	if miss:
 		text = "Miss"
