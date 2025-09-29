@@ -507,11 +507,11 @@ func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
 		if seen.has(key):
 			continue
 		seen[key] = true
-		var icon := TextureRect.new()
-		icon.texture = _get_status_icon(key)
-		icon.custom_min_size = Vector2(18, 18)
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		container.add_child(icon)
+		var icon_rect := TextureRect.new()
+		icon_rect.texture = _get_status_icon(key)
+		icon_rect.size = Vector2(18, 18)
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		container.add_child(icon_rect)
 
 func _get_status_icon(status_name: String) -> Texture2D:
 	var key := status_name.to_lower()
