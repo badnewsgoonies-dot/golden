@@ -1,0 +1,20 @@
+
+[gd_scene format=3]
+[node name="Background" type="Node2D"]
+[node name="Sky" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+material = ShaderMaterial { shader = load("res://art/background/sky_gradient.gdshader") }
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+[node name="Far" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.05, 0.0)
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Far"]
+texture = load("res://art/background/parallax_far.png")
+[node name="Mid" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.12, 0.0)
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Mid"]
+texture = load("res://art/background/parallax_mid.png")
+[node name="Near" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2(0.22, 0.0)
+[node name="Sprite2D" type="Sprite2D" parent="ParallaxBackground/Near"]
+texture = load("res://art/background/parallax_near.png")

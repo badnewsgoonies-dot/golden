@@ -1,8 +1,14 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759165980
-::res://art/::1759160529
+::res://::1759166601
+::res://art/::1759166475
 portrait_alias.json::JSON::-1::1759176462::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
+::res://art/background/::1759166475
+parallax_far.png::CompressedTexture2D::1119906802922616564::1759179988::1759167057::1::::<><><>0<>0<>dd50f32bff4bfff221c07765a43079d7<>res://.godot/imported/parallax_far.png-c2a73a3132678b6cd162c9279cd23a4e.ctex::
+parallax_mid.png::CompressedTexture2D::2193658007147279426::1759179988::1759167057::1::::<><><>0<>0<>83fe9141f779c7ae926c72b0f114f9d0<>res://.godot/imported/parallax_mid.png-31568b87944eb90e66da6919e6c19c9a.ctex::
+parallax_near.png::CompressedTexture2D::626925822434722790::1759179988::1759167057::1::::<><><>0<>0<>8cee3786a3d2afbb107895a438f20477<>res://.godot/imported/parallax_near.png-c3731418adf45090b19a639a75d5a00d.ctex::
+sky_gradient.gdshader::Shader::7003610297170274955::1759179988::0::1::::<><><>0<>0<><>::
+tileset_meadow.png::CompressedTexture2D::5133938800549014618::1759179988::1759167057::1::::<><><>0<>0<>b6477570c1c0eaccbaf33d97454c8a4e<>res://.godot/imported/tileset_meadow.png-325eca960bdbfc805f11c6735b247d75.ctex::
 ::res://art/battlers/::1759159492
 ::res://art/battlers/healer/::1759160518
 ::res://art/battlers/healer/attack_f/::1759160616
@@ -169,8 +175,36 @@ healer_portrait_96.png::CompressedTexture2D::5778355447807482119::1759173404::17
 hero_portrait_96.png::CompressedTexture2D::5818966128248645670::1759173404::1759159533::1::::<><><>0<>0<>d766fb2eccecf11b53d7d8991e002281<>res://.godot/imported/hero_portrait_96.png-352ec87a859ee7e7d660a2d112399995.ctex::
 mage_portrait_96.png::CompressedTexture2D::8556147450852217501::1759173404::1759159533::1::::<><><>0<>0<>8237f5b9d8fb96020493bfb6dec67cea<>res://.godot/imported/mage_portrait_96.png-428f80d291fc2238f520c4f5ffb436a5.ctex::
 rogue_portrait_96.png::CompressedTexture2D::2497703807721057426::1759173404::1759159533::1::::<><><>0<>0<>95e6b2fc56d27fbac75d15a8918bd129<>res://.godot/imported/rogue_portrait_96.png-c9ea60f2b69d2d6c9388811523b57c1a.ctex::
-::res://art/ui/::1759159534
+::res://art/ui/::1759166494
+selector_arrow.png::CompressedTexture2D::6092581699365048728::1759179988::1759167057::1::::<><><>0<>0<>f365ed5bfe1c11c8af0ae1de8c45a8a1<>res://.godot/imported/selector_arrow.png-718aa0a5a14896f4eae8225597e4cd3b.ctex::
 target_arrow.png::CompressedTexture2D::8842930395228776704::1759168150::1759159534::1::::<><><>0<>0<>b32b3dcc51796a0ce2206276bb354c23<>res://.godot/imported/target_arrow.png-23e5b5dd15fe4aa20e1f6a2e70cf0e00.ctex::
+::res://Art Info/::1759166265
+README_BATTLE.txt::TextFile::-1::1759179988::0::1::::<><><>0<>0<><>::
+::res://Art Info/art/::1759166265
+::res://Art Info/art/background/::1759166424
+parallax_far.png::CompressedTexture2D::1119906802922616564::1759179988::1759166424::1::::<><><>0<>0<>f67280f2eceb2245c31b48761ccfa8ee<>res://.godot/imported/parallax_far.png-fa96eaf9609b965307b379a391ac8d3a.ctex::
+parallax_mid.png::CompressedTexture2D::2193658007147279426::1759179988::1759166424::1::::<><><>0<>0<>e1911c3028ffd7eec4e46e1a6c5e6d30<>res://.godot/imported/parallax_mid.png-d58572a1bd0111f6c53898b02c459a6a.ctex::
+parallax_near.png::CompressedTexture2D::626925822434722790::1759179988::1759166424::1::::<><><>0<>0<>e6ba8ddb9bf84551e7b075bc2ee87528<>res://.godot/imported/parallax_near.png-6706d51a7b8cbf8143b73112671ecc51.ctex::
+sky_gradient.gdshader::Shader::7003610297170274955::1759179988::0::1::::<><><>0<>0<><>::
+tileset_meadow.png::CompressedTexture2D::5133938800549014618::1759179988::1759166424::1::::<><><>0<>0<>10a4d88da8d4b0702c87caee1692fab1<>res://.godot/imported/tileset_meadow.png-9aae165560e7e0113e761c0f8de3ec01.ctex::
+::res://Art Info/art/ui/::1759166424
+selector_arrow.png::CompressedTexture2D::4769879093552561120::1759179988::1759166424::1::::<><><>0<>0<>b3292f702c84a9a4cf1a5f63c155f7a2<>res://.godot/imported/selector_arrow.png-8906ec53c367499fc0359a66cdd4e675.ctex::
+::res://Art Info/data/::1759166423
+config.gd::GDScript::1780991272925395839::1759179988::0::1::::BattleConfig<>Resource<><>0<>0<><>::
+::res://Art Info/scenes/::1759166265
+background_meadow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
+::res://Art Info/scenes/FX/::1759166265
+damage_number.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
+selector_arrow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
+::res://Art Info/scripts/::1759166423
+ActionQueue.gd::GDScript::2185839688817861664::1759179988::0::1::::<>Node<><>0<>0<><>::
+BattleState.gd::GDScript::2582550453894339558::1759179988::0::1::::<>Node<><>0<>0<><>::
+FX.gd::GDScript::2857231172079987558::1759179988::0::1::::<>Node<><>0<>0<><>::
+FXDamageNumber.gd::GDScript::5790063536421429034::1759179988::0::1::::<>Node2D<><>0<>0<><>::
+SelectorArrow.gd::GDScript::5445884318294594554::1759179988::0::1::::<>Sprite2D<><>0<>0<><>::
+TurnController.gd::GDScript::6297705614612741337::1759179988::0::1::::<>Node<><>0<>0<><>::
+::res://Art Info/tools/::1759166424
+PortraitPacker.gd::GDScript::8792022561182801555::1759179988::0::1::::<>EditorScript<><>0<>1<><>::
 ::res://audio/::1759030491
 ::res://autoload/::1759033140
 AudioService.gd::GDScript::6139316943950983922::1759042586::0::1::::<>Node<><>0<>0<><>::
@@ -186,10 +220,7 @@ TurnEngine.gd::GDScript::1600127830131858564::1759118379::0::1::::TurnEngine<>No
 Action.gd::GDScript::2902208919305840334::1759110581::0::1::::Action<>RefCounted<><>0<>0<><>::
 Status.gd::GDScript::8460283941071225789::1759110591::0::1::::Status<>RefCounted<><>0<>0<><>::
 Unit.gd::GDScript::2311536089322643174::1759123879::0::1::::Unit<>RefCounted<><>0<>0<><>::
-::res://CHECK HERE/::1759164644
-5B8854E0-4965-4D20-80C3-F4C0BA15C37A.jpeg::CompressedTexture2D::7713759818859843293::1759150856::1759159534::1::::<><><>0<>0<>8a066b27effa6017155700d2e9c50105<>res://.godot/imported/5B8854E0-4965-4D20-80C3-F4C0BA15C37A.jpeg-b21a449f3c3d243ee1fd0315833216e9.ctex::
-8078c11f-21de-4e7d-852d-5766d9234731.png::CompressedTexture2D::7542907768083605469::1759150870::1759159535::1::::<><><>0<>0<>b656670071d601bc39a3e57f0fb9f372<>res://.godot/imported/8078c11f-21de-4e7d-852d-5766d9234731.png-1bd4ff470239bcfef2b09926d8c6ebd6.ctex::
-b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3236864610668937559::1759151388::1759159535::1::::<><><>0<>0<>902a0abad7ac9de8d0baa9778185081d<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-19fa469cbd3b7ace01593270d5fd40e3.ctex::
+::res://CHECK HERE/::1759166190
 ::res://CHECK HERE/art/::1759159309
 ::res://CHECK HERE/art/battlers/::1759159309
 ::res://CHECK HERE/art/battlers/healer/::1759159309
@@ -647,13 +678,9 @@ example_units.gd::GDScript::866695634309438505::1759176462::0::1::::<>RefCounted
 AnimatedFrames.gd::GDScript::8846103685064761488::1759176462::0::1::::<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::5330476040809933415::1759176462::0::1::::<>EditorScript<><>0<>1<><>::
 PortraitLoader.gd::GDScript::580063668320622506::1759176462::0::1::::<>Node<><>0<>0<><>::
-::res://CHECK HERE/Images/::1759159534
-20250929_1040_Game Character Collection_remix_01k6aykke4f4jrxhpc7mm2zj1j.png::CompressedTexture2D::7043404574192036235::1759157198::1759159534::1::::<><><>0<>0<>cbd6e79c25c0bf704b923781bfadcd2c<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke4f4jrxhpc7mm2zj1j.png-950f1e1ae3a851d3e2764ce129fa9993.ctex::
-20250929_1040_Game Character Collection_remix_01k6aykke5ff6srbpqhjpwbkjy.png::CompressedTexture2D::1430186701279872834::1759157184::1759159534::1::::<><><>0<>0<>667b515e84c342d973ad18c48a4a1616<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke5ff6srbpqhjpwbkjy.png-0d7aa8f99920fd70fca25d9b66a992fb.ctex::
-20250929_1040_Game Character Collection_remix_01k6aykke6erqt033yzr6enqv0.png::CompressedTexture2D::6457646996314223018::1759157160::1759159534::1::::<><><>0<>0<>929a7559665c35dc3cbd279d4f56b668<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke6erqt033yzr6enqv0.png-7196f8177fe36724de43bf807685f8ed.ctex::
-20250929_1040_Game Character Collection_remix_01k6aykke7e9m8macwbw2612my.png::CompressedTexture2D::6951019795953278466::1759157154::1759159534::1::::<><><>0<>0<>ac6800655e53a16c1a7c04c34eb86e10<>res://.godot/imported/20250929_1040_Game Character Collection_remix_01k6aykke7e9m8macwbw2612my.png-0368c1055e72293a94372adf1132c30c.ctex::
-::res://data/::1759165516
+::res://data/::1759166553
 characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
+config.gd::GDScript::2921269395567463457::1759179988::0::1::::BattleConfig<>Resource<><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
 enemies.json::JSON::-1::1759111877::0::1::::<><><>0<>0<><>::
 example_units.gd::GDScript::1126065583066013675::1759176462::0::1::::<>RefCounted<><>0<>0<><>::
@@ -664,10 +691,11 @@ AI_Godot4_Guide.md::TextFile::-1::1759116499::0::1::::<><><>0<>0<><>::
 ::res://fx/::1759050031
 SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnimator<>Node<><>0<>0<><>::
 ::res://save/::1759030491
-::res://scenes/::1759164379
+::res://scenes/::1759166521
+background_meadow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::-1::1759042586::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
-BattleScene.gd::GDScript::8322624433477628582::1759165703::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::-1::1759162198::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
+BattleScene.gd::GDScript::8322624433477628582::1759165984::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.tscn::PackedScene::-1::1759166966::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd
 Boot.tscn::PackedScene::8924253083737201428::1759119104::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759034594::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759034594::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
@@ -675,18 +703,29 @@ Main.gd::GDScript::8263083135195594883::1759110669::0::1::::<>Node<><>0<>0<><>::
 Main.tscn::PackedScene::-1::1759120559::0::1::::<><><>0<>0<><>::res://scenes/Main.gd
 SanityTest.gd::GDScript::4183202894098008719::1759122209::0::1::::<>Node<><>0<>0<><>::
 SanityTest.tscn::PackedScene::-1::1759116558::0::1::::<><><>0<>0<><>::res://scenes/SanityTest.gd
-::res://scripts/::1759165516
+::res://scenes/FX/::1759166508
+damage_number.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
+selector_arrow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
+::res://scripts/::1759166539
+ActionQueue.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 AIController.gd::GDScript::70837940992478045::1759042586::0::1::::<>Node<><>0<>0<><>::
 AnimatedFrames.gd::GDScript::8422127605135520097::1759161236::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::103620466065294098::1759176462::0::1::::<>EditorScript<><>0<>1<><>::
 Battle.gd::GDScript::4670700875644173182::1759158810::0::1::::<>Node2D<><>0<>0<><>::
+BattleState.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759111548::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759042586::0::1::::<>Node<><>0<>0<><>::
 Formula.gd::GDScript::7123728041291322933::1759042586::0::1::::<>Node<><>0<>0<><>::
+FX.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
+FXDamageNumber.gd::GDScript::-1::1759179988::0::1::::<>Node2D<><>0<>0<><>::
 PortraitLoader.gd::GDScript::8626782880797348315::1759176462::0::1::::<>Node<><>0<>0<><>::
+SelectorArrow.gd::GDScript::-1::1759179988::0::1::::<>Sprite2D<><>0<>0<><>::
+TurnController.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0<><>::
 ::res://shop/::1759030491
 ::res://tests/::1759030491
+::res://tools/::1759166615
+PortraitPacker.gd::GDScript::5548992340685240776::1759179988::0::1::::<>EditorScript<><>0<>1<><>::
 ::res://ui/::1759124783
 CommandMenu.gd::GDScript::6169794612215573323::1759121584::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759123853::0::1::::<>Label<><>0<>0<><>::

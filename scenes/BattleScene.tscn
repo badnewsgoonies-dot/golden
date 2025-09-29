@@ -1,6 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scenes/BattleScene.gd" id=1]
+[ext_resource type="Script" path="res://scripts/FX.gd" id=2]
+[ext_resource type="PackedScene" path="res://scenes/background_meadow.tscn" id=3]
 
 [node name="BattleScene" type="Node2D"]
 script = ExtResource(1)
@@ -11,6 +13,8 @@ anchor_bottom = 1.0
 color = Color(0.09, 0.10, 0.14, 1.0)
 mouse_filter = 2
 z_index = -10
+
+[node name="MeadowBackground" parent="." instance=ExtResource(3)]
 
 [node name="Stage" type="Node2D" parent="."]
 
@@ -160,6 +164,7 @@ text = "Potion"
 [node name="EndTurn" type="Button" parent="UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons"]
 text = "End Turn"
 [node name="FX" type="CanvasLayer" parent="."]
+script = ExtResource(2)
 
 [node name="Popups" type="Control" parent="FX"]
 anchor_right = 1.0
@@ -191,6 +196,10 @@ horizontal_alignment = 1
 [node name="Label2" type="Label" parent="Overlay/CenterContainer/VBoxContainer"]
 text = "XP +0\nLoot: --"
 horizontal_alignment = 1
+
+
+
+
 
 
 

@@ -32,7 +32,8 @@ var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
 @onready var hero_shadow: Sprite2D = $Stage/HeroShadow
 @onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
-@onready var popups_container: Control = $FX/Popups
+$target
+@onready var fx_controller: Node = $FX
 @onready var overlay_fade: ColorRect = $Overlay/Fade
 @onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
 @onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
@@ -564,30 +565,10 @@ func _get_status_icon(status_name: String) -> Texture2D:
 	return status_icon_cache[key]
 
 func spawn_damage_popup(node: Node2D, amount: int, crit: bool = false, miss: bool = false) -> void:
-	if node == null or popups_container == null:
+	if node == null or popups_container == null or fx_controller == null:
 		return
-	var popup_label: Label = DAMAGE_POPUP.instantiate() as Label
-	if popup_label == null:
-		return
-	var world_pos: Vector2 = node.get_global_transform_with_canvas().origin
-	var local_transform: Transform2D = popups_container.get_global_transform_with_canvas().affine_inverse()
-	var local_pos: Vector2 = local_transform * world_pos
-	var text: String
-	if miss:
-		text = "Miss"
-	elif crit:
-		text = "%d!" % amount
-	else:
-		text = str(amount)
-	var color: Color
-	if miss:
-		color = Color(0.7, 0.7, 0.7)
-	elif crit:
-		color = Color(1.0, 0.85, 0.2)
-	else:
-		color = Color(1, 1, 1)
-	popups_container.add_child(popup_label)
-	popup_label.popup(local_pos + Vector2(-8, -16), text, color)
+	var world_pos: Vector2 = node.get_global_transform_with_canvas().origin + Vector2(-8, -16)
+	fx_controller.spawn_damage_number(popups_container, world_pos, amount, crit, miss)
 
 func play_sfx(kind: String) -> void:
 	var stream: AudioStream = sfx_streams.get(kind, null) as AudioStream
@@ -643,3 +624,5 @@ func show_battle_result(victory: bool, xp: int = 0, loot: Array[String] = []) ->
 
 func _lock_input_after_battle() -> void:
 	keyboard_end_turn_enabled = false
+
+
