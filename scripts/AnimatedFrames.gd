@@ -24,10 +24,8 @@ var _has_frames := false
 func _ready() -> void:
 	_build_frames()
 	_apply_orientation()
-	print("AnimatedFrames ready - has_frames: ", _has_frames)
 
 func _build_frames() -> void:
-	print("Building frames for character: ", character)
 	var frames = SpriteFrames.new()
 	var total_frames = 0
 	for anim_name in ANIM_DEF.keys():
@@ -38,13 +36,9 @@ func _build_frames() -> void:
 		var textures: Array = []
 		for i in range(frame_count):
 			var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
-			print("Trying to load: ", path)
 			var tex: Texture2D = load(path)
 			if tex is Texture2D:
 				textures.append(tex)
-				print("Successfully loaded: ", path)
-			else:
-				print("Failed to load sprite: ", path)
 		if textures.is_empty():
 			continue
 		frames.add_animation(anim_name)
@@ -65,7 +59,6 @@ func _build_frames() -> void:
 		return
 	sprite_frames = frames
 	_has_frames = true
-	print("Successfully built frames for ", character, " - total frames: ", total_frames)
 
 func _make_placeholder_texture() -> Texture2D:
 	var img = Image.create(48, 64, false, Image.FORMAT_RGBA8)
