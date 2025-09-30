@@ -65,6 +65,7 @@ func _build_frames() -> void:
 		return
 	sprite_frames = frames
 	_has_frames = true
+	print("Successfully built frames for ", character, " - total frames: ", total_frames)
 
 func _make_placeholder_texture() -> Texture2D:
 	var img = Image.create(48, 64, false, Image.FORMAT_RGBA8)

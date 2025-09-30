@@ -1510,7 +1510,9 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		pivot.add_child(animated)
 		u["sprite"] = animated
 
+		print("Checking has_frames for ", character, ": ", animated.has_frames())
 		if not animated.has_frames():
+			print("No frames found for ", character, " - using fallback")
 			pivot.remove_child(animated)
 			animated.queue_free()
 			var sprite := Sprite2D.new()
@@ -1542,6 +1544,7 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 				pivot.add_child(sprite)
 				u["sprite"] = sprite
 		else:
+			print("Frames found for ", character, " - using AnimatedFrames")
 			u.erase("arm")
 
 		var ap: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
