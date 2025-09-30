@@ -26,6 +26,7 @@ func _ready() -> void:
 	_apply_orientation()
 
 func _build_frames() -> void:
+	print("Building frames for character: ", character)
 	var frames = SpriteFrames.new()
 	var total_frames = 0
 	for anim_name in ANIM_DEF.keys():
@@ -39,6 +40,8 @@ func _build_frames() -> void:
 			var tex: Texture2D = load(path)
 			if tex is Texture2D:
 				textures.append(tex)
+			else:
+				print("Failed to load sprite: ", path)
 		if textures.is_empty():
 			continue
 		frames.add_animation(anim_name)
@@ -54,7 +57,7 @@ func _build_frames() -> void:
 		placeholder.set_animation_speed(PLACEHOLDER_ANIM, 1.0)
 		placeholder.add_frame(PLACEHOLDER_ANIM, _make_placeholder_texture())
 		sprite_frames = placeholder
-		_has_frames = true
+		_has_frames = false  # Mark as no real frames
 		play(PLACEHOLDER_ANIM)
 		return
 	sprite_frames = frames

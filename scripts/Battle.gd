@@ -1089,17 +1089,17 @@ func _on_cmd_action(kind: String, id: String) -> void:
 			pass
 
 func _menu_items_for_actor(actor: Dictionary) -> Array[Dictionary]:
-    var out: Array[Dictionary] = []
-    for k in inventory.keys():
-        var entry: Dictionary = inventory[k]
-        var qty: int = int(entry.get("qty", 0))
-        if qty <= 0:
-            continue
-        var d: Dictionary = entry.duplicate(true)
-        d["id"] = k
-        d["qty"] = qty
-        out.append(d)
-    return out
+	var out: Array[Dictionary] = []
+	for k in inventory.keys():
+		var entry: Dictionary = inventory[k]
+		var qty: int = int(entry.get("qty", 0))
+		if qty <= 0:
+			continue
+		var d: Dictionary = entry.duplicate(true)
+		d["id"] = k
+		d["qty"] = qty
+		out.append(d)
+	return out
 
 func _queue_player_action(act: Dictionary) -> void:
 	var actor = declare_allies[declare_index]
@@ -1491,7 +1491,7 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		var kind: String = String(u.get("art", ""))
 		var character := ""
 		if kind.begins_with("hero:"):
-			character = String(kind.split(":")[1])
+			character = "hero"  # Always use "hero" for hero folder
 		elif kind.begins_with("healer:"):
 			character = "healer"
 		elif kind.begins_with("mage:"):
