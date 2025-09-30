@@ -762,7 +762,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 	if kind == "defend":
 		actor["defending"] = true
-		_log("%s braces to defend!" % actor["stats"]["name"])
+		_log("%s braces to defend!" % actor["stats"].get("name", "?"))
 		_update_all_overlays()
 		return
 
@@ -771,7 +771,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 		var mp_cost: int   = int(sp.get("mp", 0))
 		var cur_mp: int    = int(actor["stats"].get("mp", 0))
 		if mp_cost > cur_mp:
-			_log("%s tried %s but lacks MP." % [actor["stats"]["name"], String(sp.get("name","Spell"))])
+			_log("%s tried %s but lacks MP." % [actor["stats"].get("name", "?"), String(sp.get("name","Spell"))])
 			return
 		# pay MP
 		actor["stats"]["mp"] = max(0, cur_mp - mp_cost)
@@ -783,7 +783,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var amount: int = int(ceil(maxhp * float(sp.get("ratio", 0.30))))
 			t["stats"]["hp"] = min(maxhp, int(t["stats"]["hp"]) + amount)
 			_log("%s casts %s and heals %s for %d." %
-				[actor["stats"]["name"], String(sp.get("name","Spell")), t["stats"]["name"], amount])
+				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), t["stats"].get("name", "?"), amount])
 			_update_all_overlays()
 			return
 		else:
@@ -797,7 +797,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var dmg:int = formula.damage(atk, dfn, power, crit, weak, tgt_def)
 			target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
 			_log("%s casts %s! %s takes %d." %
-				[actor["stats"]["name"], String(sp.get("name","Spell")), target["stats"]["name"], dmg])
+				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), target["stats"].get("name", "?"), dmg])
 			_anim(target, "hurt")
 			if int(target["stats"]["hp"]) == 0:
 				await _anim_wait(target, "die")
@@ -814,12 +814,12 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var maxhp: int = int(t["stats"].get("max_hp", 1))
 			var before: int = int(t["stats"].get("hp", 0))
 			t["stats"]["hp"] = min(maxhp, before + amount)
-			_log("%s uses %s on %s for +%d HP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+			_log("%s uses %s on %s for +%d HP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
 		elif itype == "mp":
 			var maxmp: int = int(t["stats"].get("max_mp", 0))
 			var before_mp: int = int(t["stats"].get("mp", 0))
 			t["stats"]["mp"] = min(maxmp, before_mp + amount)
-			_log("%s uses %s on %s for +%d MP." % [actor["stats"]["name"], String(it.get("name","Item")), t["stats"]["name"], amount])
+			_log("%s uses %s on %s for +%d MP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
 
 		# decrement inventory
 		var iid: String = String(it.get("id", ""))
@@ -838,7 +838,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 	var tgt_def := bool(target.get("defending", false))
 	var dmg:int = formula.damage(atk, dfn, 2.0, crit, weak, tgt_def)
 	target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
-	_log("%s attacks! %s takes %d damage." % [actor["stats"]["name"], target["stats"]["name"], dmg])
+	_log("%s attacks! %s takes %d damage." % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
 	_anim(target, "hurt")
 	if int(target["stats"]["hp"]) == 0:
 		await _anim_wait(target, "die")
@@ -970,7 +970,7 @@ func _show_target_menu(caster_idx: int, candidates: Array[Dictionary]) -> void:
 	# Guard: if no valid targets, bounce back to the main menu
 	if target_candidates.is_empty():
 		_log("No valid targets.")
-		_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+		_show_command_menu(String(party[current_actor_index]["stats"].get("name", "?")))
 		return
 
 	# Build a button per candidate
@@ -1048,7 +1048,7 @@ func _on_target_chosen(idx: int) -> void:
 	if idx < 0 or idx >= target_candidates.size():
 		_log("Target selection invalid.")
 		_hide_target_menu()
-		_show_command_menu(String(party[current_actor_index]["stats"]["name"]))
+		_show_command_menu(String(party[current_actor_index]["stats"].get("name", "?")))
 		return
 
 	var tgt: Dictionary = target_candidates[idx]
