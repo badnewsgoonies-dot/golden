@@ -207,7 +207,7 @@ func _ready() -> void:
 	menu_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	ui.add_child(menu_label)
 
-	_log("Battle start! %s vs %s" % [party[0].stats.name, wave[0].stats.name])
+	_log("Battle start! %s vs %s" % [party[0].stats["name"], wave[0].stats["name"]])
 	_start_round_declare()
 
 func _start_round_declare() -> void:
