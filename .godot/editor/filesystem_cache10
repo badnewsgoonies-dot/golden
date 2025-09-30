@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759206957
+::res://::1759207221
 ::res://art/::1759166475
 portrait_alias.json::JSON::-1::1759176866::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
@@ -230,7 +230,7 @@ items.json::JSON::-1::1759193130::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1759111923::0::1::::<><><>0<>0<><>::
 ::res://docs/::1759116499
 AI_Godot4_Guide.md::TextFile::-1::1759116499::0::1::::<><><>0<>0<><>::
-::res://errors/::1759206563
+::res://errors/::1759207121
 Capture.JPG::CompressedTexture2D::8494496166714288162::1759204801::1759204860::1::::<><><>0<>0<>bb2f367005e5a6d90132da19e055d849<>res://.godot/imported/Capture.JPG-0f4f6d43a968395c973b94b9837f6c17.ctex::
 Capture.PNG::CompressedTexture2D::5441905508402472233::1759206827::1759207121::1::::<><><>0<>0<>1658b20cc41aaa23f020b2b4f610dded<>res://.godot/imported/Capture.PNG-c75dfe776529e3e1a57dd6f9107edcb3.ctex::
 pture.PNG::CompressedTexture2D::8189537708618562344::1759206196::1759206266::1::::<><><>0<>0<>fc5918daa3c7f372bde17f2f22f734e0<>res://.godot/imported/pture.PNG-d89058eba0b18e9db9377d721bf90f01.ctex::
@@ -239,7 +239,7 @@ ure.PNG::CompressedTexture2D::4319280674404312125::1759205948::1759206143::1::::
 ::res://events/::1759030491
 ::res://fx/::1759050031
 SpriteAnimator.gd::GDScript::9192173146037707020::1759065281::0::1::::SpriteAnimator<>Node<><>0<>0<><>::
-::res://New folder/::1759206995
+::res://New folder/::1759207121
 8078c11f-21de-4e7d-852d-5766d9234731.png::CompressedTexture2D::1601733822705907496::1759206975::1759207121::1::::<><><>0<>0<>10aa50f1edfe730992341ebdeaff0c0f<>res://.godot/imported/8078c11f-21de-4e7d-852d-5766d9234731.png-11f8988e6bc14cb4054be053811f0da4.ctex::
 a712ee61-806f-49f6-9608-45b9fd6959b2.png::CompressedTexture2D::6544871841151166593::1759206995::1759207121::1::::<><><>0<>0<>9a25968da9625659b439bb86f9c6ce47<>res://.godot/imported/a712ee61-806f-49f6-9608-45b9fd6959b2.png-fb8ba0ae4fa4096fdaa1f293baa6af6e.ctex::
 b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3403586726018460945::1759206965::1759207121::1::::<><><>0<>0<>94669af87436d58f0cc9a3ba29ca93d8<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-ccde70bf42811fa196955fcbd283fcbe.ctex::
@@ -262,9 +262,9 @@ selector_arrow.tscn::PackedScene::-1::1759179988::0::1::::<><><>0<>0<><>::
 ::res://scripts/::1759206768
 ActionQueue.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 AIController.gd::GDScript::70837940992478045::1759042586::0::1::::<>Node<><>0<>0<><>::
-AnimatedFrames.gd::GDScript::8422127605135520097::1759161236::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
+AnimatedFrames.gd::GDScript::8422127605135520097::1759207195::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::103620466065294098::1759176462::0::1::::<>EditorScript<><>0<>1<><>::
-Battle.gd::GDScript::4670700875644173182::1759206768::0::1::::<>Node2D<><>0<>0<><>::
+Battle.gd::GDScript::4670700875644173182::1759207195::0::1::::<>Node2D<><>0<>0<><>::
 BattleState.gd::GDScript::-1::1759179988::0::1::::<>Node<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759111548::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759042586::0::1::::<>Node<><>0<>0<><>::
