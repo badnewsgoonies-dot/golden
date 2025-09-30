@@ -31,27 +31,27 @@ func _ready() -> void:
 	_root.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	add_child(_root)
 	var margin: MarginContainer = MarginContainer.new()
-	margin.theme_override_constants["margin_left"] = 24
-	margin.theme_override_constants["margin_top"] = 18
-	margin.theme_override_constants["margin_right"] = 24
-	margin.theme_override_constants["margin_bottom"] = 18
+	margin.add_theme_constant_override("margin_left", 24)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_right", 24)
+	margin.add_theme_constant_override("margin_bottom", 18)
 	_root.add_child(margin)
 	var h: HBoxContainer = HBoxContainer.new()
-	h.theme_override_constants["separation"] = 24
+	h.add_theme_constant_override("separation", 24)
 	margin.add_child(h)
 	_main_vbox = VBoxContainer.new()
 	_main_vbox.custom_minimum_size = Vector2(360, 180)
-	_main_vbox.theme_override_constants["separation"] = 12
+	_main_vbox.add_theme_constant_override("separation", 12)
 	h.add_child(_main_vbox)
 	_sub_panel = Panel.new()
 	_sub_panel.visible = false
 	_sub_panel.custom_minimum_size = Vector2(520, 180)
 	h.add_child(_sub_panel)
 	var sub_margin: MarginContainer = MarginContainer.new()
-	sub_margin.theme_override_constants["margin_left"] = 16
-	sub_margin.theme_override_constants["margin_top"] = 12
-	sub_margin.theme_override_constants["margin_right"] = 16
-	sub_margin.theme_override_constants["margin_bottom"] = 12
+	sub_margin.add_theme_constant_override("margin_left", 16)
+	sub_margin.add_theme_constant_override("margin_top", 12)
+	sub_margin.add_theme_constant_override("margin_right", 16)
+	sub_margin.add_theme_constant_override("margin_bottom", 12)
 	_sub_panel.add_child(sub_margin)
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -59,7 +59,7 @@ func _ready() -> void:
 	sub_margin.add_child(scroll)
 	_sub_vbox = VBoxContainer.new()
 	_sub_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_sub_vbox.theme_override_constants["separation"] = 8
+	_sub_vbox.add_theme_constant_override("separation", 8)
 	scroll.add_child(_sub_vbox)
 	_create_main_button("Attack", func(): _emit_main("attack", "slash"))
 	_create_main_button("Spells", func(): _open_submenu("spells"))
