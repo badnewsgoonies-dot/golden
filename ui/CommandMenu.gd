@@ -76,10 +76,16 @@ func _create_main_button(text: String, on_press: Callable) -> void:
 	_main_vbox.add_child(b)
 	_main_buttons.append(b)
 
-func show_for_actor(actor_name: String, spells: Array[Dictionary], items: Array[Dictionary]) -> void:
+func show_for_actor(actor_name: String, spells: Array, items: Array) -> void:
 	_actor_name = actor_name
-	_spells = spells
-	_items = items
+	_spells = []
+	_items = []
+	for s in spells:
+		if typeof(s) == TYPE_DICTIONARY:
+			_spells.append((s as Dictionary).duplicate(true))
+	for it in items:
+		if typeof(it) == TYPE_DICTIONARY:
+			_items.append((it as Dictionary).duplicate(true))
 	_sub_mode = ""
 	_sub_panel.visible = false
 	visible = true

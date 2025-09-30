@@ -185,8 +185,8 @@ func _ready() -> void:
 	cmd_layer.add_child(cmd)
 
 	if "adept_pyro" in DataRegistry.characters:
-		party[0].stats = DataRegistry.characters["adept_pyro"]["stats"]
-		party[0].stats["hp"] = party[0].stats.get("max_hp", 100)
+		party[0]["stats"] = DataRegistry.characters["adept_pyro"]["stats"]
+		party[0]["stats"]["hp"] = party[0]["stats"].get("max_hp", 100)
 
 	# wave stats are now assigned in RunManager
 
@@ -207,7 +207,7 @@ func _ready() -> void:
 	menu_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	ui.add_child(menu_label)
 
-	_log("Battle start! %s vs %s" % [party[0].stats["name"], wave[0].stats["name"]])
+	_log("Battle start! %s vs %s" % [party[0]["stats"].get("name", "?"), wave[0]["stats"].get("name", "?")])
 	_start_round_declare()
 
 func _start_round_declare() -> void:
@@ -227,13 +227,13 @@ func _prompt_next_actor() -> void:
 	var actor_name: String = String(a["stats"].get("name", "Adept"))
 	var spells_arr: Array = a.get("spells", [])
 	# Map to include mp_cost for display if missing
-	var spells_for_menu: Array = []
+	var spells_for_menu: Array[Dictionary] = []
 	for s in spells_arr:
 		var sd: Dictionary = (s as Dictionary).duplicate(true)
 		if not sd.has("mp_cost") and sd.has("mp"):
 			sd["mp_cost"] = int(sd.get("mp", 0))
 		spells_for_menu.append(sd)
-	var items_for_menu: Array = _menu_items_for_actor(a)
+	var items_for_menu: Array[Dictionary] = _menu_items_for_actor(a)
 	cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
 	current_actor_index = party.find(a)
 
@@ -1088,18 +1088,18 @@ func _on_cmd_action(kind: String, id: String) -> void:
 		_:
 			pass
 
-func _menu_items_for_actor(actor: Dictionary) -> Array:
-	var out: Array = []
-	for k in inventory.keys():
-		var entry: Dictionary = inventory[k]
-		var qty: int = int(entry.get("qty", 0))
-		if qty <= 0:
-			continue
-		var d := entry.duplicate(true)
-		d["id"] = k
-		d["qty"] = qty
-		out.append(d)
-	return out
+func _menu_items_for_actor(actor: Dictionary) -> Array[Dictionary]:
+    var out: Array[Dictionary] = []
+    for k in inventory.keys():
+        var entry: Dictionary = inventory[k]
+        var qty: int = int(entry.get("qty", 0))
+        if qty <= 0:
+            continue
+        var d: Dictionary = entry.duplicate(true)
+        d["id"] = k
+        d["qty"] = qty
+        out.append(d)
+    return out
 
 func _queue_player_action(act: Dictionary) -> void:
 	var actor = declare_allies[declare_index]
