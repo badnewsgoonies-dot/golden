@@ -90,11 +90,11 @@ func _ready() -> void:
 	add_child(turn_engine)
 
 	# Swap to AnimatedFrames
-	var hero_pos := hero_sprite_placeholder.position
-	var enemy_pos := enemy_sprite_placeholder.position
-	var hero_folder := String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
+	var hero_pos: Vector2 = hero_sprite_placeholder.position
+	var enemy_pos: Vector2 = enemy_sprite_placeholder.position
+	var hero_folder: String = String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
 	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true)
-	var enemy_folder := String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
+	var enemy_folder: String = String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
 	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, false)
 	if enemy_sprite:
 		enemy_sprite.flip_h = true
@@ -176,7 +176,7 @@ func _on_attack() -> void:
 func _on_fireball() -> void:
 	if battle_finished:
 		return
-	var cost := int(skill_fireball.get("mp_cost", 0))
+	var cost: int = int(skill_fireball.get("mp_cost", 0))
 	if int(hero.stats.get("MP",0)) >= cost:
 		_queue_hero_action(skill_fireball)
 	else:
@@ -188,12 +188,12 @@ func _on_potion() -> void:
 	if potion_used:
 		_log("The potion bottle is empty.")
 		return
-	var cur := int(hero.stats.get("HP",0))
-	var max := int(hero.max_stats.get("HP",cur))
+	var cur: int = int(hero.stats.get("HP",0))
+	var max: int = int(hero.max_stats.get("HP",cur))
 	if cur >= max:
 		_log("HP is already full!")
 		return
-	var healed := hero.heal(int(ceil(max * POTION_HEAL_PCT)))
+	var healed: int = hero.heal(int(ceil(max * POTION_HEAL_PCT)))
 	potion_used = true
 	_log("Hero uses Potion and heals %d HP." % healed)
 	_update_ui()
@@ -214,23 +214,23 @@ func _on_end_turn() -> void:
 		planned_actions.append(Action.new(hero, skill_slash, enemy))
 	_refresh_plan_label()
 	_refresh_end_turn_button()
-	var enemy_action := Action.new(enemy, skill_slash.duplicate(true), hero)
+	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
 	actions.append(enemy_action)
 	actions = turn_engine.build_queue(actions)
 	_update_turn_order(actions)
 	for a in actions:
 		if a.actor == hero:
-			var mp := int(a.skill.get("mp_cost",0))
+			var mp: int = int(a.skill.get("mp_cost",0))
 			if mp>0:
 				hero.spend_mp(mp)
 	for a in actions:
 		if a.actor==null or a.target==null or !a.actor.is_alive():
 			continue
-		var res := turn_engine.execute(a)
+		var res: Dictionary = turn_engine.execute(a)
 		if res.get("hit", false):
-			var dmg := int(res.get("damage",0))
-			var crit := bool(res.get("crit",false))
+			var dmg: int = int(res.get("damage",0))
+			var crit: bool = bool(res.get("crit",false))
 			play_sfx("crit" if crit else "hit")
 			spawn_damage_popup(_sprite_for_unit(a.target), dmg, crit, false)
 			if _sprite_for_unit(a.target) is AnimatedFrames:
@@ -304,7 +304,7 @@ func _update_ui() -> void:
 	_refresh_end_turn_button()
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
-	var line := msg
+	var line: String = msg
 	if !rich and color != Color(1,1,1):
 		line = "[color=%s]%s[/color]" % [color.to_html(false), msg]
 	log_view.append_text(line+"\n")
@@ -317,11 +317,11 @@ func _update_turn_order(actions: Array) -> void:
 		return
 	var parts: Array[String] = []
 	for item in actions:
-		var act := item as Action
+		var act: Action = item as Action
 		if act==null:
 			continue
-		var actor_name := act.actor.name if act.actor else "?"
-		var skill_name := String(act.skill.get("name","Action"))
+		var actor_name: String = act.actor.name if act.actor else "?"
+		var skill_name: String = String(act.skill.get("name","Action"))
 		parts.append("%s (%s)" % [actor_name, skill_name])
 	lbl_queue.text = "Turn order: "+" -> ".join(parts)
 
@@ -331,13 +331,13 @@ func _fetch_skill(id: String) -> Dictionary:
 	return {"id":id,"name":id.capitalize(),"type":"damage","stat":"ATK","power":1.0,"acc":0.95,"crit":0.05,"element":"earth","mp_cost":0,"effects":[]}
 
 func _build_unit_from_character(id: String) -> Unit:
-	var def := DataRegistry.characters.get(id, {})
+	var def: Dictionary = DataRegistry.characters.get(id, {})
 	if def.is_empty():
 		def = {"name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
 	return _build_unit(def)
 
 func _build_unit_from_enemy(id: String) -> Unit:
-	var def := DataRegistry.enemies.get(id, {})
+	var def: Dictionary = DataRegistry.enemies.get(id, {})
 	if def.is_empty():
 		def = {"name":"Goblin","stats":{"max_hp":70,"max_mp":0,"atk":12,"def":6,"agi":10,"focus":6},"resist":{"fire":1.0,"water":1.0,"earth":1.0,"air":1.0}}
 	return _build_unit(def)
@@ -345,12 +345,12 @@ func _build_unit_from_enemy(id: String) -> Unit:
 func _build_unit(def: Dictionary) -> Unit:
 	var u := Unit.new()
 	u.name = String(def.get("name","Unit"))
-	var s := def.get("stats", {})
-	var max_hp := int(s.get("max_hp",80))
-	var max_mp := int(s.get("max_mp",0))
+	var s: Dictionary = def.get("stats", {})
+	var max_hp: int = int(s.get("max_hp",80))
+	var max_mp: int = int(s.get("max_mp",0))
 	u.max_stats = {"HP":max_hp,"MP":max_mp}
 	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
-	var r := def.get("resist", {})
+	var r: Dictionary = def.get("resist", {})
 	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
 	return u
 
@@ -373,11 +373,11 @@ func _update_sprites() -> void:
 func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
 	if old_sprite == null:
 		return null
-	var parent := old_sprite.get_parent()
-	var idx := -1
+	var parent: Node = old_sprite.get_parent()
+	var idx: int = -1
 	if parent:
 		idx = parent.get_children().find(old_sprite)
-	var a := AnimatedFrames.new()
+	var a: AnimatedFrames = AnimatedFrames.new()
 	a.centered = old_sprite.centered
 	a.position = old_sprite.position
 	a.scale = old_sprite.scale
@@ -418,14 +418,14 @@ func _shadow_color_for(u: Unit) -> Color:
 	return Color(0,0,0,0.45) if u.is_alive() else Color(0,0,0,0.2)
 
 func _play_attack_animation(a: Action, res: Dictionary) -> void:
-	var s := _sprite_for_unit(a.actor)
+	var s: AnimatedFrames = _sprite_for_unit(a.actor)
 	if s==null:
 		return
-	var sh := _shadow_for_unit(a.actor)
-	var o := _origin_for_unit(a.actor)
-	var sb := _shadow_base_scale(a.actor)
-	var dash := o + _attack_offset(a.actor)
-	var t := create_tween()
+	var sh: Sprite2D = _shadow_for_unit(a.actor)
+	var o: Vector2 = _origin_for_unit(a.actor)
+	var sb: Vector2 = _shadow_base_scale(a.actor)
+	var dash: Vector2 = o + _attack_offset(a.actor)
+	var t: Tween = create_tween()
 	t.tween_property(s, "position", dash, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	if sh:
 		t.parallel().tween_property(sh, "scale", sb*Vector2(1.2,0.75), 0.12)
@@ -439,24 +439,24 @@ func _play_attack_animation(a: Action, res: Dictionary) -> void:
 		await _flash_sprite(a.target)
 
 func _flash_sprite(u: Unit) -> void:
-	var s := _sprite_for_unit(u)
+	var s: AnimatedFrames = _sprite_for_unit(u)
 	if s==null:
 		return
-	var base := _base_modulate_for(u)
-	var t := create_tween()
+	var base: Color = _base_modulate_for(u)
+	var t: Tween = create_tween()
 	t.tween_property(s, "modulate", Color(1.0,0.6,0.6,1.0), 0.08)
 	t.tween_property(s, "modulate", base, 0.12)
 	await t.finished
 
 func _shake_sprite(u: Unit) -> void:
-	var s := _sprite_for_unit(u)
+	var s: AnimatedFrames = _sprite_for_unit(u)
 	if s==null:
 		return
-	var o := _origin_for_unit(u)
-	var off := Vector2(12,0)
+	var o: Vector2 = _origin_for_unit(u)
+	var off: Vector2 = Vector2(12,0)
 	if u==enemy:
 		off.x = -off.x
-	var t := create_tween()
+	var t: Tween = create_tween()
 	t.tween_property(s, "position", o+off, 0.05)
 	t.tween_property(s, "position", o-off*0.6, 0.07)
 	t.tween_property(s, "position", o, 0.08)
@@ -482,20 +482,20 @@ func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
 		c.queue_free()
 	if unit==null:
 		return
-	var seen := {}
+	var seen: Dictionary = {}
 	for name in unit.get_status_types():
-		var key := String(name).to_lower()
+		var key: String = String(name).to_lower()
 		if seen.has(key):
 			continue
 		seen[key] = true
-		var r := TextureRect.new()
+		var r: TextureRect = TextureRect.new()
 		r.texture = _get_status_icon(key)
 		r.size = Vector2(18,18)
 		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		container.add_child(r)
 
 func _get_status_icon(status_name: String) -> Texture2D:
-	var key := status_name.to_lower()
+	var key: String = status_name.to_lower()
 	if !status_icon_cache.has(key):
 		status_icon_cache[key] = SpriteFactory.make_status_icon(key)
 	return status_icon_cache[key]
@@ -503,7 +503,7 @@ func _get_status_icon(status_name: String) -> Texture2D:
 func spawn_damage_popup(node: Node2D, amount: int, crit:=false, miss:=false) -> void:
 	if node==null or popups_container==null or fx_controller==null:
 		return
-	var p := node.get_global_transform_with_canvas().origin + Vector2(-8,-16)
+	var p: Vector2 = node.get_global_transform_with_canvas().origin + Vector2(-8,-16)
 	fx_controller.spawn_damage_number(popups_container, p, amount, crit, miss)
 
 func play_sfx(kind: String) -> void:
@@ -521,14 +521,14 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 	w.format = AudioStreamWAV.FORMAT_16_BITS
 	w.mix_rate = 44100
 	w.stereo = false
-	var n := max(1, int(duration*w.mix_rate))
-	var data := PackedByteArray()
+	var n: int = max(1, int(duration*w.mix_rate))
+	var data: PackedByteArray = PackedByteArray()
 	data.resize(n*2)
 	for i in range(n):
-		var t := float(i)/w.mix_rate
-		var fi := min(1.0, t/0.02)
-		var fo := min(1.0, (duration-t)/0.06)
-		var env := min(fi, fo)
+		var t: float = float(i)/w.mix_rate
+		var fi: float = min(1.0, t/0.02)
+		var fo: float = min(1.0, (duration-t)/0.06)
+		var env: float = min(fi, fo)
 		var v := int(sin(TAU*freq*t)*volume*env*32767.0)
 		v = clamp(v, -32768, 32767)
 		data[i*2] = v & 0xFF
@@ -548,12 +548,12 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
 	overlay_title.text = "Victory!" if victory else "Defeat"
-	var names := PackedStringArray()
+	var names: PackedStringArray = PackedStringArray()
 	for e in loot:
 		names.append(str(e))
-	var loot_text := "—" if names.is_empty() else ", ".join(names)
+	var loot_text: String = "—" if names.is_empty() else ", ".join(names)
 	overlay_subtitle.text = ("XP +%d\nLoot: %s" % [xp, loot_text]) if victory else "You fall in battle."
-	var t := create_tween()
+	var t: Tween = create_tween()
 	t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
 	t.tween_interval(0.1)
 	t.finished.connect(_lock_input_after_battle)
