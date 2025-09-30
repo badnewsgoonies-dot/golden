@@ -1,0 +1,14 @@
+{
+  "potion": {
+    "name": "Health Potion",
+    "type": "healing",
+    "heal_percent": 0.30,
+    "description": "Restores 30% of max HP"
+  },
+  "ether": {
+    "name": "Ether",
+    "type": "mana",
+    "restore_percent": 0.50,
+    "description": "Restores 50% of max MP"
+  }
+}

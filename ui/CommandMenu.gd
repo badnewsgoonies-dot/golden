@@ -118,7 +118,10 @@ func _open_submenu(kind: String) -> void:
 		var label := entry.get("name", entry.get("id", "?"))
 		var mp := entry.get("mp_cost", null)
 		var btn := Button.new()
-		var _t := label\n\t\tif mp != null:\n\t\t\t_t = "%s  (%d MP)" % [label, int(mp)]\n\t\tbtn.text = _t
+		var _t := label
+		if mp != null:
+			_t = "%s  (%d MP)" % [label, int(mp)]
+		btn.text = _t
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(func():
 			var eid := String(entry.get("id", label)).to_lower()
