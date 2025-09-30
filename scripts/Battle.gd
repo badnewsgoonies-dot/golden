@@ -1505,6 +1505,8 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		animated.centered = false
 		animated.character = character
 		animated.set_facing_back(facing > 0)
+		# Build frames immediately since _ready() hasn't been called yet
+		animated._build_frames()
 		pivot.add_child(animated)
 		u["sprite"] = animated
 

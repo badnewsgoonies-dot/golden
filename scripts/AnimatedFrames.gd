@@ -24,6 +24,7 @@ var _has_frames := false
 func _ready() -> void:
 	_build_frames()
 	_apply_orientation()
+	print("AnimatedFrames ready - has_frames: ", _has_frames)
 
 func _build_frames() -> void:
 	print("Building frames for character: ", character)
@@ -37,9 +38,11 @@ func _build_frames() -> void:
 		var textures: Array = []
 		for i in range(frame_count):
 			var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
+			print("Trying to load: ", path)
 			var tex: Texture2D = load(path)
 			if tex is Texture2D:
 				textures.append(tex)
+				print("Successfully loaded: ", path)
 			else:
 				print("Failed to load sprite: ", path)
 		if textures.is_empty():
