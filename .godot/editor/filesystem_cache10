@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759193055
+::res://::1759193591
 ::res://art/::1759166475
 portrait_alias.json::JSON::-1::1759176866::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759123909::0::1::::SpriteFactory<>Node<><>0<>0<><>::
@@ -220,12 +220,13 @@ TurnEngine.gd::GDScript::1600127830131858564::1759118379::0::1::::TurnEngine<>No
 Action.gd::GDScript::2902208919305840334::1759110581::0::1::::Action<>RefCounted<><>0<>0<><>::
 Status.gd::GDScript::8460283941071225789::1759110591::0::1::::Status<>RefCounted<><>0<>0<><>::
 Unit.gd::GDScript::2311536089322643174::1759123879::0::1::::Unit<>RefCounted<><>0<>0<><>::
-::res://data/::1759167057
+::res://data/::1759193130
 characters.json::JSON::-1::1759111850::0::1::::<><><>0<>0<><>::
 config.gd::GDScript::2921269395567463457::1759179988::0::1::::BattleConfig<>Resource<><>0<>0<><>::
 encounters.json::JSON::-1::1759111888::0::1::::<><><>0<>0<><>::
-enemies.json::JSON::-1::1759111877::0::1::::<><><>0<>0<><>::
+enemies.json::JSON::-1::1759193142::0::1::::<><><>0<>0<><>::
 example_units.gd::GDScript::1126065583066013675::1759176462::0::1::::<>RefCounted<><>0<>0<><>::
+items.json::JSON::-1::1759193130::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1759111923::0::1::::<><><>0<>0<><>::
 ::res://docs/::1759116499
 AI_Godot4_Guide.md::TextFile::-1::1759116499::0::1::::<><><>0<>0<><>::
@@ -269,6 +270,6 @@ TurnEngine.gd::GDScript::6229571860048936110::1759042586::0::1::::<>Node<><>0<>0
 ::res://tools/::1759168099
 PortraitPacker.gd::GDScript::5548992340685240776::1759168099::0::1::::<>EditorScript<><>0<>1<><>::
 ::res://ui/::1759188302
-CommandMenu.gd::GDScript::6169794612215573323::1759188302::0::1::::CommandMenu<>Control<><>0<>0<><>::
+CommandMenu.gd::GDScript::6169794612215573323::1759193443::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759123853::0::1::::<>Label<><>0<>0<><>::
 DamagePopup.tscn::PackedScene::-1::1759124650::0::1::::<><><>0<>0<><>::res://ui/DamagePopup.gd
