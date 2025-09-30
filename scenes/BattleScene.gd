@@ -90,8 +90,12 @@ func _ready() -> void:
 	add_child(turn_engine)
 
 	# Swap to AnimatedFrames
-	var hero_pos: Vector2 = hero_sprite_placeholder.position
-	var enemy_pos: Vector2 = enemy_sprite_placeholder.position
+	var hero_pos: Vector2 = Vector2(780, 396)
+	var enemy_pos: Vector2 = Vector2(420, 310)
+	if hero_sprite_placeholder:
+		hero_pos = hero_sprite_placeholder.position
+	if enemy_sprite_placeholder:
+		enemy_pos = enemy_sprite_placeholder.position
 	var hero_folder: String = String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
 	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true)
 	var enemy_folder: String = String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
@@ -100,32 +104,42 @@ func _ready() -> void:
 		enemy_sprite.flip_h = true
 
 	# Shadows
-	hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
-	enemy_shadow.texture = SpriteFactory.make_shadow(64, 18)
-	hero_shadow.centered = true
-	enemy_shadow.centered = true
-	hero_shadow.scale = Vector2(1.25, 0.85)
-	enemy_shadow.scale = Vector2(1.35, 0.9)
+	if hero_shadow:
+		hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
+		hero_shadow.centered = true
+		hero_shadow.scale = Vector2(1.25, 0.85)
+	if enemy_shadow:
+		enemy_shadow.texture = SpriteFactory.make_shadow(64, 18)
+		enemy_shadow.centered = true
+		enemy_shadow.scale = Vector2(1.35, 0.9)
 	
 	# Origins
 	hero_origin = hero_sprite.position if hero_sprite else hero_pos
 	enemy_origin = enemy_sprite.position if enemy_sprite else enemy_pos
-	hero_shadow_base = hero_shadow.scale
-	enemy_shadow_base = enemy_shadow.scale
+	hero_shadow_base = hero_shadow.scale if hero_shadow else Vector2.ONE
+	enemy_shadow_base = enemy_shadow.scale if enemy_shadow else Vector2.ONE
 
 	# FX/overlay
-	$Overlay.visible = false
-	overlay_fade.modulate.a = 0.0
-	log_view.bbcode_enabled = true
+	if has_node("Overlay"):
+		$Overlay.visible = false
+	if overlay_fade:
+		overlay_fade.modulate.a = 0.0
+	if log_view:
+		log_view.bbcode_enabled = true
 	sfx_streams = {"hit": _make_tone(420.0,0.14,0.35), "crit": _make_tone(660.0,0.2,0.4), "miss": _make_tone(240.0,0.16,0.3)}
 
 	# Debug buttons (hidden)
-	buttons_row.visible = false
-	btn_attack.pressed.connect(_on_attack)
-	btn_fire.pressed.connect(_on_fireball)
-	btn_potion.pressed.connect(_on_potion)
-	btn_end.pressed.connect(_on_end_turn)
-	btn_end.disabled = true
+	if buttons_row:
+		buttons_row.visible = false
+	if btn_attack:
+		btn_attack.pressed.connect(_on_attack)
+	if btn_fire:
+		btn_fire.pressed.connect(_on_fireball)
+	if btn_potion:
+		btn_potion.pressed.connect(_on_potion)
+	if btn_end:
+		btn_end.pressed.connect(_on_end_turn)
+		btn_end.disabled = true
 
 	# Command menu
 	command_menu = CommandMenu.new()
@@ -365,10 +379,12 @@ func _update_sprites() -> void:
 		enemy_sprite.position = enemy_origin
 		enemy_sprite.z_index = 1
 		enemy_sprite.set_facing_back(false)
-	hero_shadow.modulate = _shadow_color_for(hero)
-	enemy_shadow.modulate = _shadow_color_for(enemy)
-	hero_shadow.scale = hero_shadow_base
-	enemy_shadow.scale = enemy_shadow_base
+	if hero_shadow:
+		hero_shadow.modulate = _shadow_color_for(hero)
+		hero_shadow.scale = hero_shadow_base
+	if enemy_shadow:
+		enemy_shadow.modulate = _shadow_color_for(enemy)
+		enemy_shadow.scale = enemy_shadow_base
 
 func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
 	if old_sprite == null:

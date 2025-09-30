@@ -30,13 +30,13 @@ func _ready() -> void:
 	_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_root.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	add_child(_root)
-	var margin := MarginContainer.new()
+	var margin: MarginContainer = MarginContainer.new()
 	margin.theme_override_constants["margin_left"] = 24
 	margin.theme_override_constants["margin_top"] = 18
 	margin.theme_override_constants["margin_right"] = 24
 	margin.theme_override_constants["margin_bottom"] = 18
 	_root.add_child(margin)
-	var h := HBoxContainer.new()
+	var h: HBoxContainer = HBoxContainer.new()
 	h.theme_override_constants["separation"] = 24
 	margin.add_child(h)
 	_main_vbox = VBoxContainer.new()
@@ -47,13 +47,13 @@ func _ready() -> void:
 	_sub_panel.visible = false
 	_sub_panel.custom_minimum_size = Vector2(520, 180)
 	h.add_child(_sub_panel)
-	var sub_margin := MarginContainer.new()
+	var sub_margin: MarginContainer = MarginContainer.new()
 	sub_margin.theme_override_constants["margin_left"] = 16
 	sub_margin.theme_override_constants["margin_top"] = 12
 	sub_margin.theme_override_constants["margin_right"] = 16
 	sub_margin.theme_override_constants["margin_bottom"] = 12
 	_sub_panel.add_child(sub_margin)
-	var scroll := ScrollContainer.new()
+	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sub_margin.add_child(scroll)
@@ -68,7 +68,7 @@ func _ready() -> void:
 	_update_cursor(0)
 
 func _create_main_button(text: String, on_press: Callable) -> void:
-	var b := Button.new()
+	var b: Button = Button.new()
 	b.text = text
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.focus_mode = Control.FOCUS_ALL
@@ -113,18 +113,18 @@ func _open_submenu(kind: String) -> void:
 	_sub_mode = kind
 	for c in _sub_vbox.get_children():
 		c.queue_free()
-	var list := _spells if kind == "spells" else _items
+	var list: Array = _spells if kind == "spells" else _items
 	for entry in list:
-		var label := entry.get("name", entry.get("id", "?"))
-		var mp := entry.get("mp_cost", null)
-		var btn := Button.new()
-		var _t := label
+		var label: String = entry.get("name", entry.get("id", "?"))
+		var mp: Variant = entry.get("mp_cost", null)
+		var btn: Button = Button.new()
+		var _t: String = label
 		if mp != null:
 			_t = "%s  (%d MP)" % [label, int(mp)]
 		btn.text = _t
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(func():
-			var eid := String(entry.get("id", label)).to_lower()
+			var eid: String = String(entry.get("id", label)).to_lower()
 			emit_signal("menu_action", kind, eid)
 			visible = false
 		)
