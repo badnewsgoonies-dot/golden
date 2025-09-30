@@ -18,7 +18,7 @@ const START_ENEMY := {
 # --- Party (player controls index 0 only for now) ---
 var party: Array[Dictionary] = [
 	{ "stats": {"name":"Adept","max_hp":100,"hp":100,"atk":24,"def":8,"spd":12,"max_mp":20,"mp":20},
-	  "defending":false, "sprite": null, "art":"hero:adept",
+	  "defending":false, "sprite": null, "art":"hero:hero",
 	  "spells":[
 		{"id":"fireball","name":"Fireball","type":"damage","power":2.0,"mp":6}
 	  ]
@@ -27,13 +27,13 @@ var party: Array[Dictionary] = [
 	  "defending":false, "sprite": null, "art":"hero:rogue", "spells":[]
 	},
 	{ "stats": {"name":"Cleric","max_hp":90,"hp":90,"atk":12,"def":9,"spd":10,"max_mp":18,"mp":18},
-	  "defending":false, "sprite": null, "art":"hero:cleric",
+	  "defending":false, "sprite": null, "art":"healer:healer",
 	  "spells":[
 		{"id":"mend","name":"Mend","type":"heal","ratio":0.30,"mp":5}
 	  ]
 	},
 	{ "stats": {"name":"Guard","max_hp":120,"hp":120,"atk":14,"def":14,"spd":8,"max_mp":0,"mp":0},
-	  "defending":false, "sprite": null, "art":"hero:guard", "spells":[]
+	  "defending":false, "sprite": null, "art":"mage:mage", "spells":[]
 	}
 ]
 
@@ -184,8 +184,8 @@ func _ready() -> void:
 	cmd.menu_action.connect(_on_cmd_action)
 	cmd_layer.add_child(cmd)
 
-	if "adept" in DataRegistry.characters:
-		party[0].stats = DataRegistry.characters["adept"]
+	if "adept_pyro" in DataRegistry.characters:
+		party[0].stats = DataRegistry.characters["adept_pyro"].stats
 		party[0].stats["hp"] = party[0].stats.get("max_hp", 100)
 
 	# wave stats are now assigned in RunManager
@@ -1062,7 +1062,7 @@ func _on_target_chosen(idx: int) -> void:
 			_queue_player_action({"kind":"attack"})
 
 # --- New CommandMenu wiring ---
-func _on_cmd_action(kind: String, payload: Dictionary) -> void:
+func _on_cmd_action(kind: String, id: String) -> void:
 	match kind:
 		"attack":
 			cmd.hide_menu()
@@ -1070,14 +1070,21 @@ func _on_cmd_action(kind: String, payload: Dictionary) -> void:
 		"defend":
 			cmd.hide_menu()
 			_queue_player_action({"kind":"defend"})
-		"spell_pick":
-			cmd.hide_menu()
-			var sp: Dictionary = payload.get("skill", {})
-			_on_spell_chosen(sp)
-		"item_pick":
-			cmd.hide_menu()
-			var it: Dictionary = payload.get("item", {})
-			_on_item_chosen(it)
+		"spells":
+			# Find the spell by ID and handle it
+			var actor: Dictionary = party[current_actor_index]
+			var spells: Array = actor.get("spells", [])
+			for spell in spells:
+				if String(spell.get("id", "")).to_lower() == id.to_lower():
+					_on_spell_chosen(spell)
+					break
+		"items":
+			# Find the item by ID and handle it
+			for item_id in inventory.keys():
+				if item_id.to_lower() == id.to_lower():
+					var item: Dictionary = inventory[item_id]
+					_on_item_chosen(item)
+					break
 		_:
 			pass
 
@@ -1485,6 +1492,12 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		var character := ""
 		if kind.begins_with("hero:"):
 			character = String(kind.split(":")[1])
+		elif kind.begins_with("healer:"):
+			character = "healer"
+		elif kind.begins_with("mage:"):
+			character = "mage"
+		elif kind.begins_with("rogue:"):
+			character = "rogue"
 		else:
 			character = kind
 
@@ -1500,8 +1513,16 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 			animated.queue_free()
 			var sprite := Sprite2D.new()
 			sprite.centered = false
-			if kind.begins_with("hero:"):
-				var role: String = String(kind.split(":")[1])
+			if kind.begins_with("hero:") or kind.begins_with("healer:") or kind.begins_with("mage:") or kind.begins_with("rogue:"):
+				var role: String = "adept"  # default role
+				if kind.begins_with("hero:"):
+					role = String(kind.split(":")[1])
+				elif kind.begins_with("healer:"):
+					role = "cleric"
+				elif kind.begins_with("mage:"):
+					role = "guard"
+				elif kind.begins_with("rogue:"):
+					role = "rogue"
 				var layers: Dictionary = SpriteFactory.make_humanoid_with_arm(role, 3)
 				sprite.texture = layers.get("body")
 				pivot.add_child(sprite)
@@ -1611,7 +1632,16 @@ func _create_unit_overlay(u: Dictionary) -> void:
 		portrait_rect.position = Vector2(-60, -4)
 		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		portrait_rect.z_index = -1
-		var portrait_path := "res://art/portraits/%s_portrait_96.png" % unit_name
+		# Map character names to portrait names
+		var portrait_name: String = unit_name
+		match unit_name:
+			"adept":
+				portrait_name = "hero"
+			"cleric":
+				portrait_name = "healer"
+			"guard":
+				portrait_name = "mage"
+		var portrait_path := "res://art/portraits/%s_portrait_96.png" % portrait_name
 		var portrait_tex: Texture2D = load(portrait_path)
 		if portrait_tex is Texture2D:
 			portrait_rect.texture = portrait_tex

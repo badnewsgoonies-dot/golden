@@ -134,3 +134,7 @@ func _open_submenu(kind: String) -> void:
 func _close_submenu() -> void:
 	_sub_mode = ""
 	_sub_panel.visible = false
+
+func hide_menu() -> void:
+	visible = false
+	_close_submenu()

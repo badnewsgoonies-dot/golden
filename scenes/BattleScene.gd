@@ -151,7 +151,7 @@ func _on_menu_action(kind: String, id: String) -> void:
 	match kind:
 		"attack":
 			_queue_hero_action(skill_slash)
-6		"spells":
+		"spells":
 			if id == "fireball":
 				_on_fireball()
 			else:
