@@ -185,7 +185,7 @@ func _ready() -> void:
 	cmd_layer.add_child(cmd)
 
 	if "adept_pyro" in DataRegistry.characters:
-		party[0].stats = DataRegistry.characters["adept_pyro"].stats
+		party[0].stats = DataRegistry.characters["adept_pyro"]["stats"]
 		party[0].stats["hp"] = party[0].stats.get("max_hp", 100)
 
 	# wave stats are now assigned in RunManager
