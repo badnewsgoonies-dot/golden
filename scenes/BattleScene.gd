@@ -16,19 +16,20 @@ const CHARACTER_ART := {
 	"Gale Rogue": "rogue",
 	"Sunlit Cleric": "healer",
 	"Cleric": "healer",
-	"Iron Guard": "mage",  # Using mage sprite for guard
-	"Guard": "mage",
-	"Hero Warrior": "hero",
-	"Crimson Mage": "mage",
-	"Azure Cleric": "healer",
-	"Armored Knight": "hero",
-	"Forest Archer": "rogue",
-	"Elder Wizard": "mage",
-	"Fierce Barbarian": "hero",
+	"Iron Guard": "hero_warrior",  # Using hero_warrior sprite for guard
+	"Guard": "hero_warrior",
+	"Hero Warrior": "hero_warrior",
+	"Crimson Mage": "mage_red",
+	"Azure Cleric": "cleric_blue",
+	"Armored Knight": "knight_armored",
+	"Forest Archer": "archer_green",
+	"Elder Wizard": "wizard_elder",
+	"Fierce Barbarian": "barbarian",
 	"Primal Werewolf": "werewolf",
 	# Enemy mappings
 	"Goblin": "werewolf",
-	"Slime": "mage"  # Using mage as slime sprite
+	"Slime": "werewolf",  # Using werewolf as slime sprite fallback
+	"Water Slime": "werewolf"  # Using werewolf as water slime sprite fallback
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -121,30 +122,40 @@ var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
 
 func _ready() -> void:
+	# Safety check for required nodes
+	if !has_node("Stage"):
+		print("ERROR: BattleScene missing required Stage node!")
+		return
+		
 	# Data
 	skill_slash = _fetch_skill("slash")
 	skill_fireball = _fetch_skill("fireball")
 	
-	# Initialize 4 heroes
+	# Initialize heroes - use available characters
 	var hero_characters := ["adept_pyro", "gale_rogue", "cleric_blue", "knight_armored"]
-	for i in range(4):
-		var hero_id: String = hero_characters[min(i, hero_characters.size() - 1)]
+	for i in range(min(4, hero_characters.size())):
+		var hero_id: String = hero_characters[i]
 		var unit: Unit = _build_unit_from_character(hero_id)
-		# Names will be loaded from the character data
-		heroes.append(unit)
+		if unit:
+			heroes.append(unit)
+		else:
+			print("ERROR: Failed to create hero unit from character: %s" % hero_id)
 	
 	# Initialize main hero reference for compatibility
 	if GameManager.current_hero_unit == null and heroes.size() > 0:
 		GameManager.current_hero_unit = heroes[0]
 		
-	# Initialize 3 enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "slime"]
-	for i in range(3):
-		var enemy_id: String = enemy_types[min(i, enemy_types.size() - 1)]
+	# Initialize enemies (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(min(3, enemy_types.size())):
+		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		# Give them distinct names
-		unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-		enemies.append(unit)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id)
 
 	# Engine
 	turn_engine = TurnEngine.new()
@@ -162,8 +173,11 @@ func _ready() -> void:
 	selector_arrow.visible = false
 	selector_arrow.z_index = 1000
 	selector_arrow.scale = Vector2(2.0, 2.0)
-	$Stage.add_child(selector_arrow)
-	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
+	if has_node("Stage"):
+		$Stage.add_child(selector_arrow)
+		print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
+	else:
+		print("ERROR: Stage node not found, cannot add selector arrow!")
 
 	# Hide placeholder sprites
 	if hero_sprite_placeholder:
@@ -194,6 +208,9 @@ func _ready() -> void:
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
+		# Debug logging
+		print("Created hero sprite for %s using folder: %s" % [unit.name, hero_folder])
+		
 		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
@@ -223,6 +240,9 @@ func _ready() -> void:
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
+		
+		# Debug logging
+		print("Created enemy sprite for %s using folder: %s" % [unit.name, enemy_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -377,19 +397,26 @@ func _on_end_turn() -> void:
 	
 	# Execute actions
 	for a in actions:
-		if a.actor == null or a.target == null or !a.actor.is_alive() or !a.target.is_alive():
+		if a.actor == null or a.target == null:
+			print("WARNING: Action has null actor or target, skipping")
+			continue
+		if !a.actor.is_alive() or !a.target.is_alive():
 			continue
 		var res: Dictionary = turn_engine.execute(a)
 		if res.get("hit", false):
 			var dmg: int = int(res.get("damage", 0))
 			var crit: bool = bool(res.get("crit", false))
 			play_sfx("crit" if crit else "hit")
-			spawn_damage_popup(_sprite_for_unit(a.target), dmg, crit, false)
-			if _sprite_for_unit(a.target) is AnimatedFrames:
-				(_sprite_for_unit(a.target) as AnimatedFrames).play_hit()
+			var target_sprite = _sprite_for_unit(a.target)
+			if target_sprite:
+				spawn_damage_popup(target_sprite, dmg, crit, false)
+				if target_sprite is AnimatedFrames:
+					(target_sprite as AnimatedFrames).play_hit()
 		else:
 			play_sfx("miss")
-			spawn_damage_popup(_sprite_for_unit(a.target), 0, false, true)
+			var target_sprite = _sprite_for_unit(a.target)
+			if target_sprite:
+				spawn_damage_popup(target_sprite, 0, false, true)
 		await _play_attack_animation(a, res)
 		_update_ui()
 		
