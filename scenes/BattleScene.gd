@@ -216,12 +216,14 @@ func _ready() -> void:
 		sprite.position = pos
 		sprite.scale = Vector2(4.0, 4.0)  # Scale up significantly for better visibility
 		sprite.visible = true
-		sprite.z_index = 10 + i
+		sprite.z_index = 1000 + i  # Very high z-index to ensure visibility
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
-		# Debug logging
-		print("Created hero sprite for %s (ID: %s) using folder: %s at position %s with scale 4.0" % [unit.name, unit.character_id, hero_folder, pos])
+		# Debug logging with full details
+		print("✓ Hero sprite #%d: %s (ID: %s) folder='%s' pos=%s scale=%s z=%d visible=%s" % [
+			i, unit.name, unit.character_id, hero_folder, pos, sprite.scale, sprite.z_index, sprite.visible
+		])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -248,14 +250,14 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(4.0, 4.0)  # Scale up significantly for better visibility
+		sprite.scale = Vector2(6.0, 6.0)  # Scale up significantly for better visibility
 		sprite.visible = true
-		sprite.z_index = 5 + i
+		sprite.z_index = 100 + i  # High z-index to ensure visibility above background
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created enemy sprite for %s (ID: %s) using folder: %s at position %s with scale 4.0" % [unit.name, unit.character_id, enemy_folder, pos])
+		print("Created enemy sprite for %s (ID: %s) using folder: %s at position %s with scale 6.0, z_index %d" % [unit.name, unit.character_id, enemy_folder, pos, sprite.z_index])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
