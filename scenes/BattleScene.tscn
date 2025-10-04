@@ -48,14 +48,14 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bar_fill"]
-bg_color = Color(1, 0.2, 0.2, 1)
+bg_color = Color(1, 0.1, 0.1, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mp_bar_fill"]
-bg_color = Color(0.3, 0.9, 0.3, 1)
+bg_color = Color(0.2, 0.9, 0.2, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
@@ -76,8 +76,8 @@ z_index = -10
 [node name="Stage" type="Node2D" parent="."]
 
 [node name="Floor" type="Polygon2D" parent="Stage"]
-polygon = PackedVector2Array(260, 300, 920, 300, 1080, 520, 100, 520)
-color = Color(0.20, 0.26, 0.30, 1.0)
+polygon = PackedVector2Array(590, 220, 920, 390, 590, 560, 260, 390)
+color = Color(0.20, 0.60, 0.80, 1.0)
 z_index = -1
 
 [node name="HeroShadow" type="Sprite2D" parent="Stage"]
@@ -103,7 +103,7 @@ offset_left = 16.0
 offset_top = 16.0
 offset_right = 176.0
 offset_bottom = 160.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_gray_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="PartyMargin" type="MarginContainer" parent="UI/HUD/PartyPanel"]
 theme_override_constants/margin_left = 8
@@ -147,7 +147,7 @@ offset_left = -196.0
 offset_top = 16.0
 offset_right = -16.0
 offset_bottom = 160.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_gray_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="EnemyMargin" type="MarginContainer" parent="UI/HUD/EnemyPanel"]
 theme_override_constants/margin_left = 8
@@ -203,7 +203,7 @@ theme_override_constants/margin_bottom = 12
 theme_override_constants/separation = 12
 
 [node name="ActivePortrait" type="TextureRect" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(100, 100)
 stretch_mode = 6
 
 [node name="ActiveStats" type="VBoxContainer" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
@@ -272,7 +272,8 @@ custom_minimum_size = Vector2(150, 40)
 text = "Defend"
 
 [node name="SpellBubble" type="PanelContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
-visible = false
+visible = true
+theme_override_styles/panel = SubResource("StyleBoxFlat_yellow_panel")
 
 [node name="SpellMargin" type="MarginContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble"]
 theme_override_constants/margin_left = 12
