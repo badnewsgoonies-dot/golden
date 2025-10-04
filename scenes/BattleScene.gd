@@ -1,10 +1,13 @@
 extends Node2D
 
-# This script # Top HUD - Party Panel (top right)
+# --- UI NODE REFERENCES ---
+# `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
+
+# Top HUD - Party Panel (top right)
 @onready var hero_info_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyHBox
 
 # Top HUD - Enemy Panel (top left)
-@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBoxstrates the entire battle sequence, from setup to conclusion.
+@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox
 # It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
 
 # --- CONFIGURATION ---

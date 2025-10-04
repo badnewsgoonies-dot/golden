@@ -35,19 +35,22 @@ func _build_frames() -> void:
 		var frame_count := int(meta.get("frames", 0))
 		if frame_count <= 0:
 			continue
-		var textures: Array = []
+		var textures: Array[Texture2D] = []
 		for i in range(frame_count):
-			var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
-			# Avoid noisy errors by checking existence before load(); use SpriteFactory fallback later
+			# CORRECTED PATH: Removed the extra anim_name folder from the path.
+			var path = "res://art/battlers/%s/%s_%s_%d.png" % [character, character, anim_name, i]
 			if FileAccess.file_exists(path):
 				var tex: Texture2D = load(path)
 				if tex is Texture2D:
 					textures.append(tex)
 				else:
-					pass # Fail silently
+					# Add explicit logging for failed loads
+					print("ERROR: Failed to load texture at path: %s" % path)
 			else:
-				pass # Fail silently
+				# Add explicit logging for missing files
+				print("ERROR: Texture file not found at path: %s" % path)
 		if textures.is_empty():
+			print("WARNING: No textures loaded for animation '%s' for character '%s'." % [anim_name, character])
 			continue
 		frames.add_animation(anim_name)
 		frames.set_animation_speed(anim_name, float(meta.get("fps", 12.0)))
