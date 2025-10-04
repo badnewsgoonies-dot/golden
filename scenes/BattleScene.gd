@@ -35,10 +35,10 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 # `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
 
 # Top HUD - Party Panel (top right)
-@onready var hero_info_container: VBoxContainer = $UI/TopHud/HBox/HeroInfoPanel/Margin/VBox
+@onready var hero_info_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyHBox
 
 # Top HUD - Enemy Panel (top left)
-@onready var enemy_info_container: VBoxContainer = $UI/TopHud/HBox/EnemyInfoPanel/Margin/VBox
+@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox
 
 # Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
@@ -98,15 +98,15 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(850, 600), # barbarian (front)
-	Vector2(950, 550), # cleric_blue (middle)
-	Vector2(1050, 600) # mage_red (back)
+	Vector2(800, 500),
+	Vector2(900, 550),
+	Vector2(850, 600),
+	Vector2(950, 650)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(300, 550), # werewolf 1 (top)
-	Vector2(400, 600), # werewolf 2 (bottom)
-	Vector2(500, 550)  # werewolf 3 (middle)
+	Vector2(350, 525),
+	Vector2(300, 625)
 ]
 
 # Battle floor (blue diamond) configuration
@@ -132,11 +132,14 @@ func _ready() -> void:
 	skill_fireball = _fetch_skill("fireball")
 	
 	# Initialize heroes - use available characters
-	var hero_characters := ["barbarian", "cleric_blue", "mage_red"]
-	for i in range(min(3, hero_characters.size())):
+	var hero_characters := ["barbarian", "cleric_blue", "mage_red", "barbarian"] # Changed to 4 heroes
+	for i in range(min(4, hero_characters.size())): # Changed to 4
 		var hero_id: String = hero_characters[i]
 		var unit: Unit = _build_unit_from_character(hero_id)
 		if unit:
+			# Give them distinct names if they are the same type
+			if hero_characters.count(hero_id) > 1:
+				unit.name = unit.name + " " + String.chr(65 + i)
 			heroes.append(unit)
 		else:
 			print("ERROR: Failed to create hero unit from character: %s" % hero_id)
@@ -146,8 +149,8 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["werewolf", "werewolf", "werewolf"]
-	for i in range(min(3, enemy_types.size())):
+	var enemy_types := ["werewolf", "werewolf"] # Changed to 2 enemies
+	for i in range(min(2, enemy_types.size())): # Changed to 2
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
@@ -621,50 +624,44 @@ func _update_ui() -> void:
 	_update_sprites()
 	# refresh_status_hud() # This is now handled by the info panels
 
-func _update_info_panel(container: VBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
+func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
 	if !container:
 		return
-		
-	# Clear previous entries
-	for child in container.get_children():
-		child.queue_free()
-		
-	# Create an entry for each unit
-	for i in range(unit_list.size()):
+
+	var child_count = container.get_child_count()
+
+	for i in range(max(child_count, unit_list.size())):
+		if i >= unit_list.size():
+			# Hide extra UI elements if the list is smaller
+			if i < child_count:
+				container.get_child(i).visible = false
+			continue
+
+		if i >= child_count:
+			# This case should ideally not happen if the scene is set up correctly
+			# for the max number of units.
+			print("Warning: Not enough UI containers for all units.")
+			break
+
 		var unit: Unit = unit_list[i]
-		
-		var hbox := HBoxContainer.new()
-		
-		var name_label := Label.new()
-		name_label.text = "%s %d" % [label_prefix, i + 1]
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		
-		var hp_bar := ProgressBar.new()
+		var unit_box: VBoxContainer = container.get_child(i) as VBoxContainer
+		unit_box.visible = true
+
+		var name_label: Label = unit_box.get_node("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node("EnemyLabel" + str(i+1))
+		var hp_bar: ProgressBar = unit_box.get_node("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node("EnemyHPBar" + str(i+1))
+		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) # Enemies might not have this
+
+		name_label.text = unit.name
 		hp_bar.max_value = unit.max_stats.get("HP", 1)
 		hp_bar.value = unit.stats.get("HP", 0)
-		hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		
-		var mp_bar := ProgressBar.new()
-		mp_bar.max_value = unit.max_stats.get("MP", 1)
-		mp_bar.value = unit.stats.get("MP", 0)
-		mp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		
-		# Style the bars
-		var hp_stylebox := StyleBoxFlat.new()
-		hp_stylebox.bg_color = Color.RED
-		hp_bar.add_theme_stylebox_override("fill", hp_stylebox)
-		
-		var mp_stylebox := StyleBoxFlat.new()
-		mp_stylebox.bg_color = Color.BLUE
-		mp_bar.add_theme_stylebox_override("fill", mp_stylebox)
 
-		hbox.add_child(name_label)
-		hbox.add_child(hp_bar)
-		if unit.max_stats.get("MP", 0) > 0: # Only show MP bar if they have MP
-			hbox.add_child(mp_bar)
-			
-		container.add_child(hbox)
+		if mp_bar:
+			if unit.max_stats.get("MP", 0) > 0:
+				mp_bar.visible = true
+				mp_bar.max_value = unit.max_stats.get("MP", 1)
+				mp_bar.value = unit.stats.get("MP", 0)
+			else:
+				mp_bar.visible = false
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	# Log to console only since we removed the log view
