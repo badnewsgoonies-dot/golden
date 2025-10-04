@@ -1,1 +1,2 @@
-res://scenes/BattleScene.gd
+res://scripts/SelectorArrow.gd
+res://scripts/AnimatedFrames.gd
