@@ -268,9 +268,9 @@ func _style_button(b: Button) -> void:
 	sbn.corner_radius_top_right = 8
 	sbn.corner_radius_bottom_left = 8
 	sbn.corner_radius_bottom_right = 8
-	var sbh := sbn.duplicate() as StyleBoxFlat
+	var sbh: StyleBoxFlat = sbn.duplicate() as StyleBoxFlat
 	sbh.bg_color = COL_BTN_HOVER
-	var sbp := sbn.duplicate() as StyleBoxFlat
+	var sbp: StyleBoxFlat = sbn.duplicate() as StyleBoxFlat
 	sbp.bg_color = COL_BTN_PRESSED
 	b.add_theme_stylebox_override("normal", sbn)
 	b.add_theme_stylebox_override("hover", sbh)
