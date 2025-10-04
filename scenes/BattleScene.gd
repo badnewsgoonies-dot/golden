@@ -105,23 +105,22 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(900, 350),
-	Vector2(950, 450),
-	Vector2(850, 500),
-	Vector2(920, 580)
+	Vector2(750, 450), # hero
+	Vector2(800, 350), # barbarian
+	Vector2(850, 450), # cleric_blue
+	Vector2(900, 350)  # mage_red
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(300, 300),
-	Vector2(350, 400),
-	Vector2(280, 500)
+	Vector2(300, 450), # wizard_elder
+	Vector2(400, 350)  # archer_green
 ]
 
 # Battle floor (blue diamond) configuration
 const FLOOR_CENTER := Vector2(640, 360)
 const FLOOR_HALF_WIDTH := 520.0
 const FLOOR_HALF_HEIGHT := 240.0
-const FLOOR_COLOR := Color(0.28, 0.72, 1.0, 0.85)
+const FLOOR_COLOR := Color(0.47, 0.78, 0.94, 0.85)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -137,7 +136,7 @@ func _ready() -> void:
 	skill_fireball = _fetch_skill("fireball")
 	
 	# Initialize heroes - use available characters
-	var hero_characters := ["adept_pyro", "gale_rogue", "cleric_blue", "knight_armored"]
+	var hero_characters := ["hero", "barbarian", "cleric_blue", "mage_red"]
 	for i in range(min(4, hero_characters.size())):
 		var hero_id: String = hero_characters[i]
 		var unit: Unit = _build_unit_from_character(hero_id)
@@ -151,7 +150,7 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "water_slime"]
+	var enemy_types := ["wizard_elder", "archer_green"]
 	for i in range(min(2, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
@@ -214,8 +213,17 @@ func _ready() -> void:
 		var unit: Unit = heroes[i]
 		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 		
-		# Create sprite
-		var hero_folder: String = String(CHARACTER_ART.get(unit.name, unit.name.to_lower().replace(" ", "_")))
+		var hero_folder: String
+		var unit_name_lower: String = unit.name.to_lower()
+
+		if CHARACTER_ART.has(unit.name):
+			hero_folder = CHARACTER_ART[unit.name]
+		elif DataRegistry.characters.has(unit_name_lower) and DataRegistry.characters[unit_name_lower].has("name"):
+			var character_name: String = DataRegistry.characters[unit_name_lower]["name"]
+			hero_folder = CHARACTER_ART.get(character_name, unit_name_lower.replace(" ", "_"))
+		else:
+			hero_folder = unit_name_lower.replace(" ", "_")
+			
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
 		sprite.character = hero_folder
