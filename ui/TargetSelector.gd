@@ -7,10 +7,16 @@ signal cancelled()
 var _targets: Array[Dictionary] = []
 var _selected_index: int = 0
 var _selector_sprites: Array[Sprite2D] = []
+var _selector_container: Node2D = null
 
 func _ready() -> void:
 	name = "TargetSelector"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# Create a container for selector sprites
+	_selector_container = Node2D.new()
+	_selector_container.name = "SelectorContainer"
+	_selector_container.z_index = 100
 
 func show_for_targets(targets: Array) -> void:
 	_targets.clear()
@@ -24,11 +30,23 @@ func show_for_targets(targets: Array) -> void:
 	
 	_selected_index = 0
 	visible = true
+	
+	# Ensure selector container is added to scene tree
+	if _selector_container and not _selector_container.is_inside_tree():
+		var battle_scene = get_tree().current_scene
+		if battle_scene != null and battle_scene.has_node("Stage"):
+			var stage = battle_scene.get_node("Stage")
+			stage.add_child(_selector_container)
+	
 	_update_selectors()
 
 func hide_selector() -> void:
 	visible = false
 	_clear_selectors()
+	
+	# Remove selector container from scene tree
+	if _selector_container and _selector_container.is_inside_tree():
+		_selector_container.get_parent().remove_child(_selector_container)
 
 func _clear_selectors() -> void:
 	for sprite in _selector_sprites:
@@ -36,10 +54,30 @@ func _clear_selectors() -> void:
 			sprite.queue_free()
 	_selector_sprites.clear()
 
+func _process(_delta: float) -> void:
+	# Update selector positions each frame to track moving targets
+	if not visible or _targets.is_empty() or _selector_sprites.size() != _targets.size():
+		return
+	
+	for i in range(_targets.size()):
+		if i >= _selector_sprites.size():
+			break
+			
+		var target: Dictionary = _targets[i]
+		var sprite_node = target.get("sprite", null)
+		var selector = _selector_sprites[i]
+		
+		if sprite_node is Node2D and is_instance_valid(selector):
+			var target_pos: Vector2 = (sprite_node as Node2D).global_position
+			selector.position = target_pos + Vector2(0, -80)
+
 func _update_selectors() -> void:
 	_clear_selectors()
 	
 	if not visible or _targets.is_empty():
+		return
+	
+	if not _selector_container or not _selector_container.is_inside_tree():
 		return
 	
 	# Create selector sprites for each target
@@ -58,22 +96,21 @@ func _update_selectors() -> void:
 		# Create selector arrow sprite
 		var selector := Sprite2D.new()
 		selector.texture = _get_arrow_texture()
-		selector.global_position = target_pos + Vector2(0, -60)  # Above the target
+		selector.position = target_pos + Vector2(0, -80)  # Above the target
 		selector.modulate = Color(1, 1, 0) if i == _selected_index else Color(0.5, 0.5, 0.5, 0.3)
-		selector.z_index = 100
+		selector.scale = Vector2(2.0, 2.0)  # Make it more visible
 		
-		# Add to scene tree (find the root battle scene)
-		var battle_scene = get_tree().current_scene
-		if battle_scene != null:
-			battle_scene.add_child(selector)
-			_selector_sprites.append(selector)
+		# Add to selector container
+		_selector_container.add_child(selector)
+		_selector_sprites.append(selector)
 		
-		# Animate the selected one
+		# Animate the selected one with bounce effect
 		if i == _selected_index:
+			var base_y = selector.position.y
 			var tween = create_tween()
 			tween.set_loops()
-			tween.tween_property(selector, "position:y", selector.position.y - 5, 0.3)
-			tween.tween_property(selector, "position:y", selector.position.y, 0.3)
+			tween.tween_property(selector, "position:y", base_y - 10, 0.4).set_trans(Tween.TRANS_SINE)
+			tween.tween_property(selector, "position:y", base_y, 0.4).set_trans(Tween.TRANS_SINE)
 
 func _create_arrow_texture() -> Texture2D:
 	# Create a simple downward-pointing arrow
