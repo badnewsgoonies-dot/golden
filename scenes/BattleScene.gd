@@ -105,15 +105,15 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - centered like classic JRPG layout
 const HERO_POSITIONS := [
-	Vector2(520, 420),  # Left
-	Vector2(600, 420),  # Mid-left
-	Vector2(680, 420),  # Mid-right
-	Vector2(760, 420)   # Right
+	Vector2(520, 440),  # Left
+	Vector2(600, 440),  # Mid-left
+	Vector2(680, 440),  # Mid-right
+	Vector2(760, 440)   # Right
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(900, 300),  # Upper-right
-	Vector2(780, 260)   # Upper-mid
+	Vector2(840, 280),  # Upper-right
+	Vector2(650, 250)   # Upper-mid
 ]
 
 # Battle floor (blue diamond) configuration
@@ -179,7 +179,7 @@ func _ready() -> void:
 			])
 			floor.polygon = pts
 			floor.color = FLOOR_COLOR
-			floor.z_index = -10
+			floor.z_index = 1
 			stage.add_child(floor)
 	
 	# Create selector arrow (initially hidden)
