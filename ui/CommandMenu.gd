@@ -78,7 +78,7 @@ func _ready() -> void:
 	_attack_button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_attack_button.add_theme_color_override("font_color", Color(0,0,0))
 	_attack_button.add_theme_font_size_override("font_size", 18)
-	_attack_button.pressed.connect(func(): emit_signal("attack_requested"))
+	_attack_button.pressed.connect(func(): attack_requested.emit())
 	attack_margin.add_child(_attack_button)
 
 	# Main box for Spells/Items/Defend (right side)
@@ -212,7 +212,7 @@ func _update_cursor(i: int) -> void:
 			_main_buttons[idx].grab_focus()
 
 func _emit_main(kind: String, id: String) -> void:
-	emit_signal("menu_action", kind, id)
+	menu_action.emit(kind, id)
 	visible = false
 
 func _open_submenu(kind: String) -> void:
@@ -243,7 +243,7 @@ func _open_submenu(kind: String) -> void:
 		
 		btn_container.pressed.connect(func():
 			var eid: String = String(entry.get("id", label)).to_lower()
-			emit_signal("menu_action", kind, eid)
+			menu_action.emit(kind, eid)
 			visible = false
 		)
 		_sub_vbox.add_child(btn_container)
