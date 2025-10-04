@@ -11,25 +11,21 @@ const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
 
 const CHARACTER_ART := {
-	# Playable characters with proper sprite mappings
-	"Pyro Adept": "hero",
-	"Gale Rogue": "rogue",
-	"Sunlit Cleric": "healer",
-	"Cleric": "healer",
-	"Iron Guard": "hero_warrior",  # Using hero_warrior sprite for guard
-	"Guard": "hero_warrior",
-	"Hero Warrior": "hero_warrior",
-	"Crimson Mage": "mage_red",
-	"Azure Cleric": "cleric_blue",
-	"Armored Knight": "knight_armored",
-	"Forest Archer": "archer_green",
-	"Elder Wizard": "wizard_elder",
-	"Fierce Barbarian": "barbarian",
-	"Primal Werewolf": "werewolf",
+	# Map character IDs to sprite folder names
+	"adept_pyro": "hero",
+	"gale_rogue": "rogue",
+	"cleric_blue": "cleric_blue",
+	"hero_warrior": "hero_warrior",
+	"mage_red": "mage_red",
+	"knight_armored": "knight_armored",
+	"archer_green": "archer_green",
+	"barbarian": "barbarian",
+	"wizard_elder": "wizard_elder",
+	"werewolf": "werewolf",
 	# Enemy mappings
-	"Goblin": "werewolf",
-	"Slime": "werewolf",  # Using werewolf as slime sprite fallback
-	"Water Slime": "werewolf"  # Using werewolf as water slime sprite fallback
+	"goblin": "werewolf",  # Using werewolf sprite for goblin
+	"slime": "werewolf",  # Using werewolf as slime sprite fallback
+	"water_slime": "werewolf"  # Using werewolf as water slime sprite fallback
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -209,22 +205,23 @@ func _ready() -> void:
 		var unit: Unit = heroes[i]
 		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 		
-		# Create sprite
-		var hero_folder: String = String(CHARACTER_ART.get(unit.name, unit.name.to_lower().replace(" ", "_")))
+		# Create sprite - use character_id for proper folder mapping
+		var hero_folder: String = String(CHARACTER_ART.get(unit.character_id, unit.character_id))
 		var sprite := AnimatedFrames.new()
-		sprite.centered = false
+		sprite.centered = true  # Center the sprite for better positioning
 		sprite.character = hero_folder
 		sprite.set_facing_back(false)  # Heroes face forward
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
+		sprite.scale = Vector2(2.0, 2.0)  # Scale up for better visibility
 		sprite.visible = true
 		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created hero sprite for %s using folder: %s" % [unit.name, hero_folder])
+		print("Created hero sprite for %s (ID: %s) using folder: %s" % [unit.name, unit.character_id, hero_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -242,22 +239,23 @@ func _ready() -> void:
 		var unit: Unit = enemies[i]
 		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 		
-		# Create sprite
-		var enemy_folder: String = String(CHARACTER_ART.get(unit.name.split(" ")[0], unit.name.split(" ")[0].to_lower()))
+		# Create sprite - use character_id for proper folder mapping
+		var enemy_folder: String = String(CHARACTER_ART.get(unit.character_id, unit.character_id))
 		var sprite := AnimatedFrames.new()
-		sprite.centered = false
+		sprite.centered = true  # Center the sprite for better positioning
 		sprite.character = enemy_folder
 		sprite.set_facing_back(true)  # Enemies face back
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
+		sprite.scale = Vector2(2.0, 2.0)  # Scale up for better visibility
 		sprite.visible = true
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created enemy sprite for %s using folder: %s" % [unit.name, enemy_folder])
+		print("Created enemy sprite for %s (ID: %s) using folder: %s" % [unit.name, unit.character_id, enemy_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -797,18 +795,25 @@ func _fetch_skill(id: String) -> Dictionary:
 func _build_unit_from_character(id: String) -> Unit:
 	var def: Dictionary = DataRegistry.characters.get(id, {})
 	if def.is_empty():
-		def = {"name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
+		def = {"id": id, "name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
+	else:
+		# Add the ID to the definition if it's not already there
+		def["id"] = id
 	return _build_unit(def)
 
 func _build_unit_from_enemy(id: String) -> Unit:
 	var def: Dictionary = DataRegistry.enemies.get(id, {})
 	if def.is_empty():
-		def = {"name":"Goblin","stats":{"max_hp":70,"max_mp":0,"atk":12,"def":6,"agi":10,"focus":6},"resist":{"fire":1.0,"water":1.0,"earth":1.0,"air":1.0}}
+		def = {"id": id, "name":"Goblin","stats":{"max_hp":70,"max_mp":0,"atk":12,"def":6,"agi":10,"focus":6},"resist":{"fire":1.0,"water":1.0,"earth":1.0,"air":1.0}}
+	else:
+		# Add the ID to the definition if it's not already there
+		def["id"] = id
 	return _build_unit(def)
 
 func _build_unit(def: Dictionary) -> Unit:
 	var u := Unit.new()
 	u.name = String(def.get("name","Unit"))
+	u.character_id = String(def.get("id", ""))  # Store the character ID for sprite mapping
 	var s: Dictionary = def.get("stats", {})
 	var max_hp: int = int(s.get("max_hp",80))
 	var max_mp: int = int(s.get("max_mp",0))

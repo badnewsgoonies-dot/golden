@@ -4,6 +4,7 @@ extends RefCounted
 const Status := preload("res://battle/models/Status.gd")
 
 var name: String = ""
+var character_id: String = ""  # Added to track the original character/enemy ID for sprite mapping
 var stats: Dictionary = {}
 var max_stats: Dictionary = {}
 var resist: Dictionary = {}
