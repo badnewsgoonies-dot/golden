@@ -128,33 +128,33 @@ color = Color(0.02, 0.01, 0.03, 1)
 color = Color(0.7, 0.65, 0.8, 1)
 
 [node name="Stage" type="Node2D" parent="."]
-position = Vector2(0, -100)
+position = Vector2(0, -220)
 
 [node name="Floor" type="Polygon2D" parent="Stage"]
 z_index = -1
 color = Color(0.06, 0.05, 0.08, 0.9)
-polygon = PackedVector2Array(220, 780, 1200, 780, 1100, 420, 340, 420)
+polygon = PackedVector2Array(220, 840, 1200, 840, 1080, 440, 360, 440)
 
 [node name="FloorOutline" type="Line2D" parent="Stage"]
 z_index = -1
-points = PackedVector2Array(220, 780, 1200, 780, 1100, 420, 340, 420, 220, 780)
+points = PackedVector2Array(220, 840, 1200, 840, 1080, 440, 360, 440, 220, 840)
 width = 3.0
-default_color = Color(0.3, 0.25, 0.4, 0.6)
+default_color = Color(0.4, 0.5, 0.8, 0.8)
 
 [node name="HeroShadow" type="Sprite2D" parent="Stage"]
-position = Vector2(320, 720)
-scale = Vector2(0.44, 0.22)
+position = Vector2(320, 780)
+scale = Vector2(0.46, 0.24)
 
 [node name="EnemyShadow" type="Sprite2D" parent="Stage"]
-position = Vector2(950, 500)
+position = Vector2(950, 560)
 scale = Vector2(0.6, 0.3)
 
 [node name="HeroSprite" type="Sprite2D" parent="Stage"]
-position = Vector2(320, 700)
-scale = Vector2(0.74, 0.74)
+position = Vector2(320, 760)
+scale = Vector2(0.75, 0.75)
 
 [node name="EnemySprite" type="Sprite2D" parent="Stage"]
-position = Vector2(950, 480)
+position = Vector2(950, 540)
 scale = Vector2(0.95, 0.95)
 
 [node name="UI" type="CanvasLayer" parent="."]

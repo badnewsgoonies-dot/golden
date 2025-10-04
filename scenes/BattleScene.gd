@@ -93,32 +93,32 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(320, 700),
-	Vector2(440, 660),
-	Vector2(560, 710),
-	Vector2(680, 670)
+	Vector2(320, 760),
+	Vector2(440, 720),
+	Vector2(560, 780),
+	Vector2(680, 740)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(950, 480),
-	Vector2(1070, 520),
-	Vector2(1190, 460),
-	Vector2(1030, 560)
+	Vector2(950, 540),
+	Vector2(1070, 580),
+	Vector2(1190, 520),
+	Vector2(1030, 640)
 ]
 
-const HERO_SCALE := Vector2(0.74, 0.74)
+const HERO_SCALE := Vector2(0.75, 0.75)
 const ENEMY_SCALE := Vector2(0.95, 0.95)
-const HERO_SHADOW_SCALE := Vector2(0.44, 0.22)
+const HERO_SHADOW_SCALE := Vector2(0.46, 0.24)
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(220, 780),
-	Vector2(1200, 780),
-	Vector2(1100, 420),
-	Vector2(340, 420)
+	Vector2(220, 840),
+	Vector2(1200, 840),
+	Vector2(1080, 440),
+	Vector2(360, 440)
 ]
-const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
+const FLOOR_COLOR := Color(0.25, 0.5, 0.9, 0.92)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -805,7 +805,7 @@ func _shadow_base_scale(u: Unit) -> Vector2:
 
 func _attack_offset(u: Unit) -> Vector2:
 	# Adjust offsets for new formation scale
-	return Vector2(-70, -14) if u in heroes else Vector2(72, -10) if u in enemies else Vector2.ZERO
+	return Vector2(-66, -12) if u in heroes else Vector2(70, -10) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
