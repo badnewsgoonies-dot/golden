@@ -105,22 +105,21 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(750, 450), # hero
-	Vector2(800, 350), # barbarian
-	Vector2(850, 450), # cleric_blue
-	Vector2(900, 350)  # mage_red
+	Vector2(800, 450), # barbarian
+	Vector2(850, 500), # cleric_blue
+	Vector2(900, 450)  # mage_red
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(300, 450), # wizard_elder
-	Vector2(400, 350)  # archer_green
+	Vector2(300, 450), # werewolf 1
+	Vector2(350, 500)  # werewolf 2
 ]
 
 # Battle floor (blue diamond) configuration
 const FLOOR_CENTER := Vector2(640, 360)
 const FLOOR_HALF_WIDTH := 520.0
 const FLOOR_HALF_HEIGHT := 240.0
-const FLOOR_COLOR := Color(0.47, 0.78, 0.94, 0.85)
+const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -136,8 +135,8 @@ func _ready() -> void:
 	skill_fireball = _fetch_skill("fireball")
 	
 	# Initialize heroes - use available characters
-	var hero_characters := ["hero", "barbarian", "cleric_blue", "mage_red"]
-	for i in range(min(4, hero_characters.size())):
+	var hero_characters := ["barbarian", "cleric_blue", "mage_red"]
+	for i in range(min(3, hero_characters.size())):
 		var hero_id: String = hero_characters[i]
 		var unit: Unit = _build_unit_from_character(hero_id)
 		if unit:
@@ -150,7 +149,7 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["wizard_elder", "archer_green"]
+	var enemy_types := ["werewolf", "werewolf"]
 	for i in range(min(2, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
