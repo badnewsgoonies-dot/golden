@@ -1,4 +1,4 @@
-﻿{
+{
   "adept_pyro": {
     "name": "Pyro Adept",
     "stats": {"max_hp": 90, "max_mp": 40, "atk": 10, "def": 8, "agi": 12, "focus": 16},
@@ -10,5 +10,53 @@
     "stats": {"max_hp": 80, "max_mp": 10, "atk": 18, "def": 7, "agi": 16, "focus": 6},
     "skills": ["slash"],
     "resist": {"fire": 1.0, "water": 1.0, "earth": 1.0, "air": 0.8}
+  },
+  "hero_warrior": {
+    "name": "Hero Warrior",
+    "stats": {"max_hp": 100, "max_mp": 20, "atk": 16, "def": 12, "agi": 14, "focus": 10},
+    "skills": ["slash", "guard"],
+    "resist": {"fire": 1.0, "water": 1.0, "earth": 1.0, "air": 1.0}
+  },
+  "mage_red": {
+    "name": "Crimson Mage",
+    "stats": {"max_hp": 75, "max_mp": 60, "atk": 8, "def": 6, "agi": 10, "focus": 20},
+    "skills": ["fireball", "heal"],
+    "resist": {"fire": 0.4, "water": 1.6, "earth": 1.0, "air": 1.0}
+  },
+  "cleric_blue": {
+    "name": "Azure Cleric",
+    "stats": {"max_hp": 85, "max_mp": 50, "atk": 6, "def": 10, "agi": 8, "focus": 18},
+    "skills": ["heal", "guard"],
+    "resist": {"fire": 1.0, "water": 0.7, "earth": 1.0, "air": 1.0}
+  },
+  "barbarian": {
+    "name": "Fierce Barbarian",
+    "stats": {"max_hp": 120, "max_mp": 5, "atk": 20, "def": 8, "agi": 12, "focus": 8},
+    "skills": ["slash"],
+    "resist": {"fire": 1.0, "water": 1.0, "earth": 0.9, "air": 1.0}
+  },
+  "archer_green": {
+    "name": "Forest Archer",
+    "stats": {"max_hp": 70, "max_mp": 15, "atk": 14, "def": 7, "agi": 18, "focus": 12},
+    "skills": ["slash"],
+    "resist": {"fire": 1.0, "water": 1.0, "earth": 0.8, "air": 1.0}
+  },
+  "wizard_elder": {
+    "name": "Elder Wizard",
+    "stats": {"max_hp": 65, "max_mp": 80, "atk": 6, "def": 8, "agi": 6, "focus": 25},
+    "skills": ["fireball", "heal"],
+    "resist": {"fire": 0.5, "water": 0.5, "earth": 0.5, "air": 0.5}
+  },
+  "knight_armored": {
+    "name": "Armored Knight",
+    "stats": {"max_hp": 110, "max_mp": 10, "atk": 14, "def": 18, "agi": 8, "focus": 12},
+    "skills": ["slash", "guard"],
+    "resist": {"fire": 0.9, "water": 1.0, "earth": 0.8, "air": 1.0}
+  },
+  "werewolf": {
+    "name": "Primal Werewolf",
+    "stats": {"max_hp": 95, "max_mp": 20, "atk": 18, "def": 10, "agi": 16, "focus": 14},
+    "skills": ["slash"],
+    "resist": {"fire": 1.2, "water": 1.0, "earth": 0.9, "air": 1.0}
   }
 }
