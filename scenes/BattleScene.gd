@@ -1,79 +1,5 @@
 extends Node2D
 
-# It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
-
-# --- CONFIGURATION ---
-# Set to true to allow ending the turn with a keyboard key (e.g., 'E')
-var keyboard_end_turn_enabled := true
-
-# --- ART ASSETS MAPPING ---
-# Maps character/enemy IDs to their corresponding folder names in `art/battlers/`
-# This allows using different art for units with the same name (e.g., color variations).
-const CHARACTER_ART := {
-	"barbarian": "barbarian",
-	"cleric_blue": "cleric_blue",
-	"mage_red": "mage_red",
-	"werewolf": "werewolf",
-	# Add other character mappings here
-}
-
-# --- PRELOAD SCRIPT CLASSES ---
-const Unit = preload("res://battle/models/Unit.gd")
-const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const Action = preload("res://battle/models/Action.gd")
-const TurnEngine = preload("res://battle/TurnEngine.gd")
-const SpriteFactory = preload("res://art/SpriteFactory.gd")
-const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-
-# --- UI NODE REFERENCES ---
-# `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
-
-# Top HUD - Party Panel (top right)
-@onready var hero_info_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyHBox
-
-# Top HUD - Enemy Panel (top left)
-@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox
-
-# Bottom HUD - Active Character Panel (left)
-@onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
-@onready var active_hp_label: Label = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
-@onready var active_hp_bar: ProgressBar = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPBar
-@onready var active_mp_label: Label = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel
-@onready var active_mp_bar: ProgressBar = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar
-
-# Bottom HUD - Action Panel (right)
-@onready var btn_attack: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack
-@onready var btn_spells: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells
-@onready var btn_items: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
-@onready var btn_defend: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
-@onready var spell_bubble: PanelContainer = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble
-@onready var spell_list_label: Label = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin/SpellList/SpellLabel
-
-# Stage
-@onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
-@onready var enemy_sprite_placeholder: Sprite2D = $Stage/EnemySprite
-@onready var hero_shadow: Sprite2D = $Stage/HeroShadow
-@onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
-
-# FX / Overlay
-@onready var fx_controller: Node = $FX
-@onready var popups_container: Control = $FX/Popups
-@onready var overlay_fade: ColorRect = $Overlay/Fade
-@onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
-@onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
-
-# Runtime objects
-var hero_sprite: AnimatedFrames
-var enemy_sprite: AnimatedFrames
-# command_menu removed - using built-in UI
-var selector_arrow: SelectorArrow
-extends Node2D
-
-# -----------------------------------------------------------------------------
-# CLEAN SIMPLIFIED BATTLE CONTROLLER (VALID GDSCRIPT)
-# -----------------------------------------------------------------------------
-
 const Unit          = preload("res://battle/models/Unit.gd")
 const Action        = preload("res://battle/models/Action.gd")
 const TurnEngine    = preload("res://battle/TurnEngine.gd")
@@ -208,9 +134,6 @@ func _advance_to_next_hero() -> void:
 	current_hero_index += 1
 	_show_action_ui_for_current()
 
-# ------------------------------------------------------------------
-# Button handlers
-# ------------------------------------------------------------------
 func _on_attack_pressed() -> void:
 	if _hero_invalid(): return
 	pending_skill = _get_skill("slash")
@@ -266,9 +189,6 @@ func _on_defend_pressed() -> void:
 func _hero_invalid() -> bool:
 	return battle_over or current_hero_index >= heroes.size() or !heroes[current_hero_index].is_alive()
 
-# ------------------------------------------------------------------
-# Targeting
-# ------------------------------------------------------------------
 func _begin_target_selection(units: Array[Unit]) -> void:
 	var sprites: Array = []
 	for u in units:
@@ -331,9 +251,6 @@ func _skill_targets(skill: Dictionary) -> Array[Unit]:
 func _item_targets(data: Dictionary) -> Array[Unit]:
 	return heroes.filter(func(u): return u.is_alive())
 
-# ------------------------------------------------------------------
-# Round execution
-# ------------------------------------------------------------------
 func _execute_round() -> void:
 	for e in enemies:
 		if !e.is_alive(): continue
@@ -357,9 +274,6 @@ func _execute_round() -> void:
 	if !battle_over:
 		_start_round()
 
-# ------------------------------------------------------------------
-# Helpers
-# ------------------------------------------------------------------
 func _get_skill(id: String) -> Dictionary:
 	var d := DataRegistry.get_skill(id)
 	if d.is_empty():
