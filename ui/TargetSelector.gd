@@ -82,16 +82,16 @@ func _create_arrow_texture() -> Texture2D:
 	
 	# Draw a yellow arrow (inverted V shape pointing down)
 	for y in range(16, 26):
-		var width := (y - 15) * 2
-		for x in range(16 - width/2, 16 + width/2 + 1):
+		var width: int = (y - 15) * 2
+		for x in range(16 - width // 2, 16 + width // 2 + 1):
 			if x >= 0 and x < 32:
 				img.set_pixel(x, y, Color(1, 1, 0))
 	
 	# Add black outline
 	for y in range(15, 27):
-		var width := max(0, (y - 15) * 2)
-		var left_x := 16 - width/2 - 1
-		var right_x := 16 + width/2 + 1
+		var width: int = (y - 15) * 2
+		var left_x: int = 16 - width // 2 - 1
+		var right_x: int = 16 + width // 2 + 1
 		if left_x >= 0 and left_x < 32:
 			img.set_pixel(left_x, y, Color(0, 0, 0))
 		if right_x >= 0 and right_x < 32:
