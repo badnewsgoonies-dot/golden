@@ -34,18 +34,30 @@ const CHARACTER_ART := {
 
 @export var keyboard_end_turn_enabled: bool = true
 
-# Top HUD - Party Panel (left)
-@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroLabel
-@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroStatus
-@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroHPBar
-@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroMPBar
-@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroPortrait
+# Top HUD - Party Panel (left) - Updated for multiple heroes
+@onready var hero_portraits: Array[TextureRect] = []
+@onready var hero_labels: Array[Label] = []
+@onready var hero_hp_bars: Array[ProgressBar] = []
+@onready var hero_mp_bars: Array[ProgressBar] = []
+@onready var hero_status_containers: Array[HBoxContainer] = []
 
-# Top HUD - Enemy Panel (right)
-@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyLabel
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyStatus
-@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyHPBar
-@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyPortrait
+# Top HUD - Enemy Panel (right) - Updated for multiple enemies
+@onready var enemy_portraits: Array[TextureRect] = []
+@onready var enemy_labels: Array[Label] = []
+@onready var enemy_hp_bars: Array[ProgressBar] = []
+@onready var enemy_status_containers: Array[HBoxContainer] = []
+
+# Legacy UI references (for compatibility)
+@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/HeroLabel
+@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/HeroStatus
+@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/HeroHPBar
+@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/HeroMPBar
+@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/HeroPortrait if has_node("UI/HUD/PartyPanel/PartyMargin/HeroPortrait") else null
+
+@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel
+@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus
+@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar
+@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait") else null
 
 # Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
@@ -126,6 +138,9 @@ func _ready() -> void:
 	if !has_node("Stage"):
 		print("ERROR: BattleScene missing required Stage node!")
 		return
+	
+	# Initialize UI arrays for multiple heroes and enemies
+	_initialize_ui_arrays()
 		
 	# Data
 	skill_slash = _fetch_skill("slash")
@@ -568,6 +583,69 @@ func _cancel_target_selection() -> void:
 	selector_arrow.visible = false
 	pending_skill = {}
 
+func _initialize_ui_arrays() -> void:
+	# Initialize hero UI arrays (up to 4 heroes)
+	for i in range(4):
+		var hero_num := i + 1
+		var hero_container = get_node_or_null("UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero%d" % hero_num)
+		if hero_container:
+			var hero_portrait = hero_container.get_node_or_null("HeroPortrait%d" % hero_num)
+			var hero_label = hero_container.get_node_or_null("HeroLabel%d" % hero_num)
+			var hero_hp = hero_container.get_node_or_null("HeroHPBar%d" % hero_num)
+			var hero_mp = hero_container.get_node_or_null("HeroMPBar%d" % hero_num)
+			var hero_status = hero_container.get_node_or_null("HeroStatus%d" % hero_num)
+			
+			hero_portraits.append(hero_portrait)
+			hero_labels.append(hero_label)
+			hero_hp_bars.append(hero_hp)
+			hero_mp_bars.append(hero_mp)
+			hero_status_containers.append(hero_status)
+			
+			print("Hero %d UI elements: Portrait=%s, Label=%s, HP=%s, MP=%s, Status=%s" % [
+				hero_num, 
+				"found" if hero_portrait else "missing",
+				"found" if hero_label else "missing", 
+				"found" if hero_hp else "missing",
+				"found" if hero_mp else "missing",
+				"found" if hero_status else "missing"
+			])
+		else:
+			print("Hero %d container not found" % hero_num)
+			hero_portraits.append(null)
+			hero_labels.append(null)
+			hero_hp_bars.append(null)
+			hero_mp_bars.append(null)
+			hero_status_containers.append(null)
+	
+	# Initialize enemy UI arrays (up to 3 enemies)
+	for i in range(3):
+		var enemy_num := i + 1
+		var enemy_container = get_node_or_null("UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy%d" % enemy_num)
+		if enemy_container:
+			var enemy_portrait = enemy_container.get_node_or_null("EnemyPortrait%d" % enemy_num)
+			var enemy_label = enemy_container.get_node_or_null("EnemyLabel%d" % enemy_num)
+			var enemy_hp = enemy_container.get_node_or_null("EnemyHPBar%d" % enemy_num)
+			var enemy_status = enemy_container.get_node_or_null("EnemyStatus%d" % enemy_num)
+			
+			enemy_portraits.append(enemy_portrait)
+			enemy_labels.append(enemy_label)
+			enemy_hp_bars.append(enemy_hp)
+			enemy_status_containers.append(enemy_status)
+			
+			print("Enemy %d UI elements: Portrait=%s, Label=%s, HP=%s, Status=%s" % [
+				enemy_num,
+				"found" if enemy_portrait else "missing",
+				"found" if enemy_label else "missing",
+				"found" if enemy_hp else "missing", 
+				"found" if enemy_status else "missing"
+			])
+		else:
+			print("Enemy %d container not found" % enemy_num)
+			enemy_portraits.append(null)
+			enemy_labels.append(null)
+			enemy_hp_bars.append(null)
+			enemy_status_containers.append(null)
+
 func _check_end() -> void:
 	if battle_finished:
 		return
@@ -585,28 +663,86 @@ func _check_end() -> void:
 		battle_finished = true
 
 func _update_ui() -> void:
-	# Show current hero in active character panel
+	# Update all heroes in the party panel
+	for i in range(heroes.size()):
+		if i < hero_portraits.size() and i < hero_labels.size() and i < hero_hp_bars.size() and i < hero_mp_bars.size():
+			var hero: Unit = heroes[i]
+			
+			# Update portrait
+			if hero_portraits[i]:
+				hero_portraits[i].texture = PortraitLoader.get_portrait_for(hero.name)
+				hero_portraits[i].get_parent().visible = true
+				
+			# Update label with name and HP/MP
+			if hero_labels[i]:
+				hero_labels[i].text = "%s\nHP: %d/%d\nMP: %d/%d" % [
+					hero.name, 
+					hero.stats.get("HP", 0), 
+					hero.max_stats.get("HP", 0),
+					hero.stats.get("MP", 0), 
+					hero.max_stats.get("MP", 0)
+				]
+				hero_labels[i].modulate = Color.WHITE if hero.is_alive() else Color(0.6, 0.6, 0.6, 0.8)
+				
+			# Update HP bar
+			if hero_hp_bars[i]:
+				hero_hp_bars[i].max_value = hero.max_stats.get("HP", 0)
+				hero_hp_bars[i].value = hero.stats.get("HP", 0)
+				
+			# Update MP bar  
+			if hero_mp_bars[i]:
+				hero_mp_bars[i].max_value = hero.max_stats.get("MP", 0)
+				hero_mp_bars[i].value = hero.stats.get("MP", 0)
+				
+			# Update status icons
+			if i < hero_status_containers.size() and hero_status_containers[i]:
+				_populate_status_container(hero_status_containers[i], hero)
+	
+	# Hide unused hero slots
+	for i in range(heroes.size(), hero_portraits.size()):
+		if i < hero_portraits.size() and hero_portraits[i]:
+			hero_portraits[i].get_parent().visible = false
+	
+	# Update all enemies in the enemy panel  
+	for i in range(enemies.size()):
+		if i < enemy_portraits.size() and i < enemy_labels.size() and i < enemy_hp_bars.size():
+			var enemy: Unit = enemies[i]
+			
+			# Update portrait
+			if enemy_portraits[i]:
+				enemy_portraits[i].texture = PortraitLoader.get_portrait_for(enemy.name)
+				enemy_portraits[i].get_parent().visible = true
+				
+			# Update label with name and HP
+			if enemy_labels[i]:
+				enemy_labels[i].text = "%s\nHP: %d/%d" % [
+					enemy.name,
+					enemy.stats.get("HP", 0),
+					enemy.max_stats.get("HP", 0)
+				]
+				enemy_labels[i].modulate = Color.WHITE if enemy.is_alive() else Color(0.6, 0.6, 0.6, 0.8)
+				
+			# Update HP bar
+			if enemy_hp_bars[i]:
+				enemy_hp_bars[i].max_value = enemy.max_stats.get("HP", 0)
+				enemy_hp_bars[i].value = enemy.stats.get("HP", 0)
+				
+			# Update status icons
+			if i < enemy_status_containers.size() and enemy_status_containers[i]:
+				_populate_status_container(enemy_status_containers[i], enemy)
+	
+	# Hide unused enemy slots
+	for i in range(enemies.size(), enemy_portraits.size()):
+		if i < enemy_portraits.size() and enemy_portraits[i]:
+			enemy_portraits[i].get_parent().visible = false
+			
+	# Show current hero in active character panel (bottom-left)
 	var current_hero: Unit = null
 	if current_acting_hero_index < heroes.size():
 		current_hero = heroes[current_acting_hero_index]
 	elif heroes.size() > 0:
 		current_hero = heroes[0]
 		
-	# Update top panels - show all heroes summary
-	if lbl_hero:
-		var heroes_text := "Heroes: "
-		for h in heroes:
-			if h.is_alive():
-				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
-		lbl_hero.text = heroes_text
-		
-	if lbl_enemy:
-		var enemies_text := "Enemies: "
-		for e in enemies:
-			if e.is_alive():
-				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
-		lbl_enemy.text = enemies_text
-	
 	# Update bottom-left active character panel
 	if current_hero:
 		if active_hp_label:
@@ -622,7 +758,22 @@ func _update_ui() -> void:
 		if active_portrait:
 			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
 			
-	# Update portraits with first alive hero/enemy
+	# Legacy compatibility - update old UI elements if they exist
+	if lbl_hero:
+		var heroes_text := "Heroes: "
+		for h in heroes:
+			if h.is_alive():
+				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
+		lbl_hero.text = heroes_text
+		
+	if lbl_enemy:
+		var enemies_text := "Enemies: "
+		for e in enemies:
+			if e.is_alive():
+				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
+		lbl_enemy.text = enemies_text
+	
+	# Update legacy portrait references
 	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
 	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
 	
@@ -630,6 +781,7 @@ func _update_ui() -> void:
 		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(first_hero.name)
 	if enemy_portrait_rect and first_enemy:
 		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(first_enemy.name)
+		
 	_update_sprites()
 	refresh_status_hud()
 
@@ -818,13 +970,23 @@ func _shake_sprite(u: Unit) -> void:
 	await t.finished
 
 func refresh_status_hud() -> void:
-	# Show status for first alive hero/enemy
+	# Update status for all heroes
+	for i in range(heroes.size()):
+		if i < hero_status_containers.size() and hero_status_containers[i]:
+			_populate_status_container(hero_status_containers[i], heroes[i])
+	
+	# Update status for all enemies
+	for i in range(enemies.size()):
+		if i < enemy_status_containers.size() and enemy_status_containers[i]:
+			_populate_status_container(enemy_status_containers[i], enemies[i])
+	
+	# Legacy compatibility - show status for first alive hero/enemy
 	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
 	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
 	
-	if first_hero:
+	if first_hero and hero_status_container:
 		_populate_status_container(hero_status_container, first_hero)
-	if first_enemy:
+	if first_enemy and enemy_status_container:
 		_populate_status_container(enemy_status_container, first_enemy)
 
 func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
