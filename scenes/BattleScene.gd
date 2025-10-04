@@ -137,8 +137,8 @@ func _ready() -> void:
 	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 
 	# Swap to AnimatedFrames
-	var hero_pos: Vector2 = Vector2(780, 396)
-	var enemy_pos: Vector2 = Vector2(420, 310)
+	var hero_pos: Vector2 = Vector2(800, 420)
+	var enemy_pos: Vector2 = Vector2(400, 340)
 	if hero_sprite_placeholder:
 		hero_pos = hero_sprite_placeholder.position
 	if enemy_sprite_placeholder:
@@ -152,13 +152,15 @@ func _ready() -> void:
 
 	# Shadows
 	if hero_shadow:
-		hero_shadow.texture = SpriteFactory.make_shadow(64, 18)
+		hero_shadow.texture = SpriteFactory.make_shadow(80, 24)
 		hero_shadow.centered = true
-		hero_shadow.scale = Vector2(1.25, 0.85)
+		hero_shadow.scale = Vector2(1.5, 1.0)
+		hero_shadow.modulate = Color(0, 0, 0, 0.7)
 	if enemy_shadow:
-		enemy_shadow.texture = SpriteFactory.make_shadow(64, 18)
+		enemy_shadow.texture = SpriteFactory.make_shadow(80, 24)
 		enemy_shadow.centered = true
-		enemy_shadow.scale = Vector2(1.35, 0.9)
+		enemy_shadow.scale = Vector2(1.6, 1.0)
+		enemy_shadow.modulate = Color(0, 0, 0, 0.7)
 	
 	# Origins
 	hero_origin = hero_sprite.position if hero_sprite else hero_pos
@@ -562,8 +564,8 @@ func _base_modulate_for(u: Unit) -> Color:
 
 func _shadow_color_for(u: Unit) -> Color:
 	if u==null:
-		return Color(0,0,0,0.2)
-	return Color(0,0,0,0.45) if u.is_alive() else Color(0,0,0,0.2)
+		return Color(0,0,0,0.3)
+	return Color(0,0,0,0.7) if u.is_alive() else Color(0,0,0,0.3)
 
 func _play_attack_animation(a: Action, res: Dictionary) -> void:
 	var s: AnimatedFrames = _sprite_for_unit(a.actor)
