@@ -11,16 +11,13 @@ const CommandMenu := preload("res://ui/CommandMenu.gd")
 const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
 
 const CHARACTER_ART := {
+	# Playable characters with proper sprite mappings
 	"Pyro Adept": "hero",
 	"Gale Rogue": "rogue",
 	"Sunlit Cleric": "healer",
 	"Cleric": "healer",
 	"Iron Guard": "hero",
 	"Guard": "hero",
-	# Map enemy names to available art folders to avoid placeholders
-	"Goblin": "werewolf",
-	"Slime": "slime",
-	# Additional playable/NPC name mappings for richer art coverage
 	"Hero Warrior": "hero_warrior",
 	"Crimson Mage": "mage_red",
 	"Azure Cleric": "cleric_blue",
@@ -28,7 +25,10 @@ const CHARACTER_ART := {
 	"Forest Archer": "archer_green",
 	"Elder Wizard": "wizard_elder",
 	"Fierce Barbarian": "barbarian",
-	"Primal Werewolf": "werewolf"
+	"Primal Werewolf": "werewolf",
+	# Enemy mappings
+	"Goblin": "werewolf",
+	"Slime": "slime"
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -136,19 +136,19 @@ func _ready() -> void:
 	$Stage.add_child(selector_arrow)
 	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 
-	# Swap to AnimatedFrames
-	var hero_pos: Vector2 = Vector2(800, 420)
-	var enemy_pos: Vector2 = Vector2(400, 340)
+	# Swap to AnimatedFrames - positions swapped: enemies in back, allies in front
+	var hero_pos: Vector2 = Vector2(400, 420)  # Allies in front
+	var enemy_pos: Vector2 = Vector2(800, 340)  # Enemies in back
 	if hero_sprite_placeholder:
 		hero_pos = hero_sprite_placeholder.position
 	if enemy_sprite_placeholder:
 		enemy_pos = enemy_sprite_placeholder.position
 	var hero_folder: String = String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
-	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, true)
+	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, false)  # Allies face forward
 	var enemy_folder: String = String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
-	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, false)
+	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, true)  # Enemies face back
 	if enemy_sprite:
-		enemy_sprite.flip_h = true
+		enemy_sprite.flip_h = false  # Don't flip enemies
 
 	# Shadows
 	if hero_shadow:
@@ -156,11 +156,13 @@ func _ready() -> void:
 		hero_shadow.centered = true
 		hero_shadow.scale = Vector2(1.5, 1.0)
 		hero_shadow.modulate = Color(0, 0, 0, 0.7)
+		hero_shadow.z_index = 9  # Just below hero sprite
 	if enemy_shadow:
 		enemy_shadow.texture = SpriteFactory.make_shadow(80, 24)
 		enemy_shadow.centered = true
 		enemy_shadow.scale = Vector2(1.6, 1.0)
 		enemy_shadow.modulate = Color(0, 0, 0, 0.7)
+		enemy_shadow.z_index = 0  # Just below enemy sprite
 	
 	# Origins
 	hero_origin = hero_sprite.position if hero_sprite else hero_pos
@@ -506,19 +508,21 @@ func _update_sprites() -> void:
 	if hero_sprite:
 		hero_sprite.modulate = _base_modulate_for(hero)
 		hero_sprite.position = hero_origin
-		hero_sprite.z_index = 1
-		hero_sprite.set_facing_back(true)
+		hero_sprite.z_index = 10  # Higher z-index for allies (front)
+		hero_sprite.set_facing_back(false)  # Allies face forward
 	if enemy_sprite:
 		enemy_sprite.modulate = _base_modulate_for(enemy)
 		enemy_sprite.position = enemy_origin
-		enemy_sprite.z_index = 1
-		enemy_sprite.set_facing_back(false)
+		enemy_sprite.z_index = 1  # Lower z-index for enemies (back)
+		enemy_sprite.set_facing_back(true)  # Enemies face backward
 	if hero_shadow:
 		hero_shadow.modulate = _shadow_color_for(hero)
 		hero_shadow.scale = hero_shadow_base
+		hero_shadow.z_index = 9  # Maintain z-index
 	if enemy_shadow:
 		enemy_shadow.modulate = _shadow_color_for(enemy)
 		enemy_shadow.scale = enemy_shadow_base
+		enemy_shadow.z_index = 0  # Maintain z-index
 
 func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
 	if old_sprite == null:
