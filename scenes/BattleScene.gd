@@ -93,28 +93,30 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(360, 540),
-	Vector2(480, 580),
-	Vector2(600, 620),
-	Vector2(720, 660)
+	Vector2(320, 620),
+	Vector2(440, 580),
+	Vector2(560, 630),
+	Vector2(680, 590)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(880, 360),
-	Vector2(980, 420)
+	Vector2(940, 380),
+	Vector2(1060, 420),
+	Vector2(1180, 360),
+	Vector2(1000, 470)
 ]
 
-const HERO_SCALE := Vector2(0.82, 0.82)
+const HERO_SCALE := Vector2(0.72, 0.72)
 const ENEMY_SCALE := Vector2(0.95, 0.95)
-const HERO_SHADOW_SCALE := Vector2(0.5, 0.24)
+const HERO_SHADOW_SCALE := Vector2(0.44, 0.22)
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(100, 700),
-	Vector2(1180, 700),
-	Vector2(980, 400),
-	Vector2(300, 400)
+	Vector2(200, 720),
+	Vector2(1160, 720),
+	Vector2(1040, 360),
+	Vector2(320, 360)
 ]
 const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
 
@@ -802,8 +804,8 @@ func _shadow_base_scale(u: Unit) -> Vector2:
 	return Vector2(0.4, 0.2) # Fallback to default scale
 
 func _attack_offset(u: Unit) -> Vector2:
-	# Adjusted offsets for original sprite size
-	return Vector2(-90, -18) if u in heroes else Vector2(90, -12) if u in enemies else Vector2.ZERO
+	# Adjust offsets for new formation scale
+	return Vector2(-70, -14) if u in heroes else Vector2(72, -10) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
