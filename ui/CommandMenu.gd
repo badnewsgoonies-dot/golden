@@ -8,11 +8,14 @@ var _items: Array[Dictionary] = []
 var _actor_name: String = ""
 
 var _root: Control
+var _attack_box: Panel  # Separate box for Attack button
+var _main_box: Panel    # Box for Spells/Items/Defend
 var _main_row: HBoxContainer
 var _sub_panel: Panel
 var _sub_vbox: VBoxContainer
 var _cursor_idx := 0
 var _main_buttons: Array[Button] = []
+var _attack_button: Button
 var _sub_mode := ""
 var _tail: Control
 const TailScene := preload("res://ui/TriangleTail.gd")
@@ -30,27 +33,87 @@ func _ready() -> void:
 	anchor_top = 1.0
 	anchor_right = 1.0
 	anchor_bottom = 1.0
-	offset_left = -680  # Position on the right side
-	offset_right = -20
-	offset_top = -100
-	offset_bottom = -20
+	offset_left = -540
+	offset_right = -12
+	offset_top = -90
+	offset_bottom = -12
 	_root = Control.new()
 	_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_root.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	add_child(_root)
 
-	# Bottom button strip (Attack / Spells / Items / Defend)
+	# Attack button in its own yellow box (left side)
+	_attack_box = Panel.new()
+	_attack_box.anchor_left = 0.0
+	_attack_box.anchor_right = 0.0
+	_attack_box.anchor_top = 1.0
+	_attack_box.anchor_bottom = 1.0
+	_attack_box.offset_left = 0
+	_attack_box.offset_right = 100
+	_attack_box.offset_top = -60
+	_attack_box.offset_bottom = 0
+	var attack_sb := StyleBoxFlat.new()
+	attack_sb.bg_color = COL_BTN
+	attack_sb.border_color = COL_BORDER
+	attack_sb.set_border_width_all(2)
+	attack_sb.corner_radius_top_left = 8
+	attack_sb.corner_radius_top_right = 8
+	attack_sb.corner_radius_bottom_left = 8
+	attack_sb.corner_radius_bottom_right = 8
+	_attack_box.add_theme_stylebox_override("panel", attack_sb)
+	_root.add_child(_attack_box)
+	
+	var attack_margin := MarginContainer.new()
+	attack_margin.add_theme_constant_override("margin_left", 6)
+	attack_margin.add_theme_constant_override("margin_top", 6)
+	attack_margin.add_theme_constant_override("margin_right", 6)
+	attack_margin.add_theme_constant_override("margin_bottom", 6)
+	_attack_box.add_child(attack_margin)
+	
+	_attack_button = Button.new()
+	_attack_button.text = "Attack"
+	_attack_button.flat = true
+	_attack_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_attack_button.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_attack_button.add_theme_color_override("font_color", Color(0,0,0))
+	_attack_button.add_theme_font_size_override("font_size", 18)
+	_attack_button.pressed.connect(func(): _emit_main("attack", "slash"))
+	attack_margin.add_child(_attack_button)
+
+	# Main box for Spells/Items/Defend (right side)
+	_main_box = Panel.new()
+	_main_box.anchor_left = 0.0
+	_main_box.anchor_right = 1.0
+	_main_box.anchor_top = 1.0
+	_main_box.anchor_bottom = 1.0
+	_main_box.offset_left = 110
+	_main_box.offset_right = 0
+	_main_box.offset_top = -60
+	_main_box.offset_bottom = 0
+	var main_sb := StyleBoxFlat.new()
+	main_sb.bg_color = COL_BTN
+	main_sb.border_color = COL_BORDER
+	main_sb.set_border_width_all(2)
+	main_sb.corner_radius_top_left = 8
+	main_sb.corner_radius_top_right = 8
+	main_sb.corner_radius_bottom_left = 8
+	main_sb.corner_radius_bottom_right = 8
+	_main_box.add_theme_stylebox_override("panel", main_sb)
+	_root.add_child(_main_box)
+	
+	var main_margin := MarginContainer.new()
+	main_margin.add_theme_constant_override("margin_left", 8)
+	main_margin.add_theme_constant_override("margin_top", 8)
+	main_margin.add_theme_constant_override("margin_right", 8)
+	main_margin.add_theme_constant_override("margin_bottom", 8)
+	_main_box.add_child(main_margin)
+
+	# Button strip for Spells/Items/Defend
 	_main_row = HBoxContainer.new()
-	_main_row.anchor_left = 0.0
-	_main_row.anchor_right = 1.0
-	_main_row.anchor_top = 1.0
-	_main_row.anchor_bottom = 1.0
-	_main_row.offset_left = 0
-	_main_row.offset_right = 0
-	_main_row.offset_top = -64
-	_main_row.offset_bottom = 0
-	_main_row.add_theme_constant_override("separation", 8)
-	_root.add_child(_main_row)
+	_main_row.add_theme_constant_override("separation", 6)
+	_main_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_main_row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_margin.add_child(_main_row)
 
 	# Submenu bubble (appears above the buttons) - styled as yellow speech bubble
 	_sub_panel = Panel.new()
@@ -59,18 +122,18 @@ func _ready() -> void:
 	_sub_panel.anchor_right = 1.0
 	_sub_panel.anchor_top = 1.0
 	_sub_panel.anchor_bottom = 1.0
-	_sub_panel.offset_left = -440
-	_sub_panel.offset_right = -20
-	_sub_panel.offset_top = -320
-	_sub_panel.offset_bottom = -100
+	_sub_panel.offset_left = -380
+	_sub_panel.offset_right = -10
+	_sub_panel.offset_top = -280
+	_sub_panel.offset_bottom = -75
 	_style_bubble(_sub_panel)
 	_root.add_child(_sub_panel)
 
 	var sub_margin: MarginContainer = MarginContainer.new()
-	sub_margin.add_theme_constant_override("margin_left", 24)
-	sub_margin.add_theme_constant_override("margin_top", 18)
-	sub_margin.add_theme_constant_override("margin_right", 24)
-	sub_margin.add_theme_constant_override("margin_bottom", 18)
+	sub_margin.add_theme_constant_override("margin_left", 20)
+	sub_margin.add_theme_constant_override("margin_top", 16)
+	sub_margin.add_theme_constant_override("margin_right", 20)
+	sub_margin.add_theme_constant_override("margin_bottom", 16)
 	_sub_panel.add_child(sub_margin)
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -78,7 +141,7 @@ func _ready() -> void:
 	sub_margin.add_child(scroll)
 	_sub_vbox = VBoxContainer.new()
 	_sub_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_sub_vbox.add_theme_constant_override("separation", 8)
+	_sub_vbox.add_theme_constant_override("separation", 6)
 	scroll.add_child(_sub_vbox)
 	_tail = TailScene.new()
 	_tail.visible = false
@@ -86,13 +149,12 @@ func _ready() -> void:
 	_tail.anchor_right = 0.0
 	_tail.anchor_top = 1.0
 	_tail.anchor_bottom = 1.0
-	_tail.offset_left = 20
-	_tail.offset_right = 80
-	_tail.offset_top = -16
+	_tail.offset_left = 15
+	_tail.offset_right = 70
+	_tail.offset_top = -12
 	_tail.offset_bottom = 4
 	_root.add_child(_tail)
 
-	_create_main_button("Attack", func(): _emit_main("attack", "slash"))
 	_create_main_button("Spells", func(): _open_submenu("spells"))
 	_create_main_button("Items", func(): _open_submenu("items"))
 	_create_main_button("Defend", func(): _emit_main("defend", "defend"))
@@ -101,10 +163,12 @@ func _ready() -> void:
 func _create_main_button(text: String, on_press: Callable) -> void:
 	var b: Button = Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(140, 48)
+	b.flat = true
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	b.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	b.focus_mode = Control.FOCUS_ALL
-	_style_button(b)
+	b.add_theme_color_override("font_color", Color(0,0,0))
+	b.add_theme_font_size_override("font_size", 18)
 	b.pressed.connect(on_press)
 	_main_row.add_child(b)
 	_main_buttons.append(b)

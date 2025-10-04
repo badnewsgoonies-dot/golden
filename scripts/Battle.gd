@@ -233,21 +233,21 @@ func _build_hero_panel() -> void:
 	hero_hud.anchor_bottom = 1.0
 	hero_hud.anchor_right = 0.0
 	hero_hud.anchor_top = 1.0
-	hero_hud.offset_left = 24
-	hero_hud.offset_right = 24 + 360
-	hero_hud.offset_bottom = -16
-	hero_hud.offset_top = -160
+	hero_hud.offset_left = 12
+	hero_hud.offset_right = 12 + 280  # Narrower
+	hero_hud.offset_bottom = -12
+	hero_hud.offset_top = -120  # Shorter
 	cmd_layer.add_child(hero_hud)
 
 	var back := Panel.new()
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.85, 0.92, 0.88)
+	sb.bg_color = Color(0.88, 0.94, 0.90)  # Light greenish tint
 	sb.border_color = Color(0,0,0)
-	sb.set_border_width_all(2)
-	sb.corner_radius_top_left = 28
-	sb.corner_radius_top_right = 28
-	sb.corner_radius_bottom_left = 28
-	sb.corner_radius_bottom_right = 28
+	sb.set_border_width_all(3)
+	sb.corner_radius_top_left = 20
+	sb.corner_radius_top_right = 20
+	sb.corner_radius_bottom_left = 20
+	sb.corner_radius_bottom_right = 20
 	back.add_theme_stylebox_override("panel", sb)
 	back.anchor_right = 1.0
 	back.anchor_bottom = 1.0
@@ -256,22 +256,28 @@ func _build_hero_panel() -> void:
 	hero_hud.add_child(back)
 
 	var m := MarginContainer.new()
-	m.add_theme_constant_override("margin_left", 16)
-	m.add_theme_constant_override("margin_top", 12)
-	m.add_theme_constant_override("margin_right", 16)
-	m.add_theme_constant_override("margin_bottom", 12)
+	m.add_theme_constant_override("margin_left", 12)
+	m.add_theme_constant_override("margin_top", 10)
+	m.add_theme_constant_override("margin_right", 12)
+	m.add_theme_constant_override("margin_bottom", 10)
 	back.add_child(m)
 
 	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 16)
+	h.add_theme_constant_override("separation", 12)
 	m.add_child(h)
 
-	# Portrait frame
+	# Portrait frame (larger, more prominent)
 	var portrait_frame := Panel.new()
-	var s2 := sb.duplicate() as StyleBoxFlat
-	s2.bg_color = Color(0,0,0,0)
+	var s2 := StyleBoxFlat.new()
+	s2.bg_color = Color(0.92, 0.92, 0.88)
+	s2.border_color = Color(0,0,0)
+	s2.set_border_width_all(2)
+	s2.corner_radius_top_left = 8
+	s2.corner_radius_top_right = 8
+	s2.corner_radius_bottom_left = 8
+	s2.corner_radius_bottom_right = 8
 	portrait_frame.add_theme_stylebox_override("panel", s2)
-	portrait_frame.custom_minimum_size = Vector2(120, 120)
+	portrait_frame.custom_minimum_size = Vector2(88, 88)
 	h.add_child(portrait_frame)
 	hero_portrait = TextureRect.new()
 	hero_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -281,19 +287,19 @@ func _build_hero_panel() -> void:
 
 	# Text + bars
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 10)
+	vb.add_theme_constant_override("separation", 6)
 	h.add_child(vb)
 
 	hero_hp_lbl = Label.new()
-	hero_hp_lbl.text = "HP 0/0"
-	hero_hp_lbl.add_theme_color_override("font_color", Color(0.9,0.2,0.2))
+	hero_hp_lbl.text = "HP: 0/0"
+	hero_hp_lbl.add_theme_color_override("font_color", Color(0.9,0.1,0.1))
+	hero_hp_lbl.add_theme_font_size_override("font_size", 14)
 	vb.add_child(hero_hp_lbl)
 
-	var hp_bg := ColorRect.new(); hp_bg.color = Color(0,0,0,0.85); hp_bg.custom_minimum_size = Vector2(180, 12)
-	var hp_stack := Control.new(); hp_stack.custom_minimum_size = Vector2(180, 12)
+	var hp_bg := ColorRect.new(); hp_bg.color = Color(0,0,0,0.85); hp_bg.custom_minimum_size = Vector2(150, 10)
 	var hp_container := MarginContainer.new(); hp_container.add_theme_constant_override("margin_left", 2); hp_container.add_theme_constant_override("margin_top", 2); hp_container.add_theme_constant_override("margin_right", 2); hp_container.add_theme_constant_override("margin_bottom", 2)
-	var hp_holder := Control.new(); hp_holder.custom_minimum_size = Vector2(176, 8)
-	hero_hp_fg = ColorRect.new(); hero_hp_fg.color = Color(0.3,1.0,0.3)
+	var hp_holder := Control.new(); hp_holder.custom_minimum_size = Vector2(146, 6)
+	hero_hp_fg = ColorRect.new(); hero_hp_fg.color = Color(0.2,1.0,0.2)
 	# Assemble hp bar
 	vb.add_child(hp_bg)
 	hp_bg.add_child(hp_container)
@@ -301,14 +307,15 @@ func _build_hero_panel() -> void:
 	hp_holder.add_child(hero_hp_fg)
 
 	hero_mp_lbl = Label.new()
-	hero_mp_lbl.text = "MP 0/0"
-	hero_mp_lbl.add_theme_color_override("font_color", Color(0.2,0.6,1.0))
+	hero_mp_lbl.text = "MP: 0/0"
+	hero_mp_lbl.add_theme_color_override("font_color", Color(0.1,0.5,1.0))
+	hero_mp_lbl.add_theme_font_size_override("font_size", 14)
 	vb.add_child(hero_mp_lbl)
 
-	var mp_bg := ColorRect.new(); mp_bg.color = Color(0,0,0,0.85); mp_bg.custom_minimum_size = Vector2(180, 12)
+	var mp_bg := ColorRect.new(); mp_bg.color = Color(0,0,0,0.85); mp_bg.custom_minimum_size = Vector2(150, 10)
 	var mp_container := MarginContainer.new(); mp_container.add_theme_constant_override("margin_left", 2); mp_container.add_theme_constant_override("margin_top", 2); mp_container.add_theme_constant_override("margin_right", 2); mp_container.add_theme_constant_override("margin_bottom", 2)
-	var mp_holder := Control.new(); mp_holder.custom_minimum_size = Vector2(176, 8)
-	hero_mp_fg = ColorRect.new(); hero_mp_fg.color = Color(0.3,1.0,0.3)
+	var mp_holder := Control.new(); mp_holder.custom_minimum_size = Vector2(146, 6)
+	hero_mp_fg = ColorRect.new(); hero_mp_fg.color = Color(0.3,0.6,1.0)
 	# Assemble mp bar
 	vb.add_child(mp_bg)
 	mp_bg.add_child(mp_container)
@@ -331,8 +338,8 @@ func _update_hero_panel() -> void:
 	hero_mp_lbl.text = "MP: %d/%d" % [mp, max_mp]
 	var hp_w: float = clamp(float(hp)/max(1.0, float(max_hp)), 0.0, 1.0)
 	var mp_w: float = clamp(float(mp)/max(1.0, float(max_mp)), 0.0, 1.0)
-	hero_hp_fg.size = Vector2(176.0*hp_w, 8)
-	hero_mp_fg.size = Vector2(176.0*mp_w, 8)
+	hero_hp_fg.size = Vector2(146.0*hp_w, 6)
+	hero_mp_fg.size = Vector2(146.0*mp_w, 6)
 	if hero_portrait != null:
 		hero_portrait.texture = PortraitLoader.get_portrait_for(name)
 
@@ -360,18 +367,18 @@ func _create_small_party_hud(index: int) -> Dictionary:
 	if is_left:
 		root.anchor_left = 0.0
 		root.anchor_right = 0.0
-		root.offset_left = 16
-		root.offset_right = 16 + 240
+		root.offset_left = 12
+		root.offset_right = 12 + 200  # Smaller width
 	else:
 		root.anchor_left = 1.0
 		root.anchor_right = 1.0
-		root.offset_left = -256
-		root.offset_right = -16
+		root.offset_left = -212
+		root.offset_right = -12
 	
 	root.anchor_top = 0.0
 	root.anchor_bottom = 0.0
-	root.offset_top = 16 + row * 90
-	root.offset_bottom = 16 + row * 90 + 80
+	root.offset_top = 12 + row * 70  # Tighter spacing
+	root.offset_bottom = 12 + row * 70 + 60  # Smaller height
 	
 	# Background panel
 	var back := Panel.new()
@@ -379,34 +386,34 @@ func _create_small_party_hud(index: int) -> Dictionary:
 	sb.bg_color = Color(0.4, 0.75, 0.8, 0.92)  # Cyan-ish matching the screenshot
 	sb.border_color = Color(0,0,0)
 	sb.set_border_width_all(2)
-	sb.corner_radius_top_left = 8
-	sb.corner_radius_top_right = 8
-	sb.corner_radius_bottom_left = 8
-	sb.corner_radius_bottom_right = 8
+	sb.corner_radius_top_left = 6
+	sb.corner_radius_top_right = 6
+	sb.corner_radius_bottom_left = 6
+	sb.corner_radius_bottom_right = 6
 	back.anchor_right = 1.0
 	back.anchor_bottom = 1.0
 	back.add_theme_stylebox_override("panel", sb)
 	root.add_child(back)
 	
 	var m := MarginContainer.new()
-	m.add_theme_constant_override("margin_left", 8)
-	m.add_theme_constant_override("margin_top", 6)
-	m.add_theme_constant_override("margin_right", 8)
-	m.add_theme_constant_override("margin_bottom", 6)
+	m.add_theme_constant_override("margin_left", 6)
+	m.add_theme_constant_override("margin_top", 4)
+	m.add_theme_constant_override("margin_right", 6)
+	m.add_theme_constant_override("margin_bottom", 4)
 	back.add_child(m)
 	
 	var h := HBoxContainer.new()
-	h.add_theme_constant_override("separation", 8)
+	h.add_theme_constant_override("separation", 6)
 	m.add_child(h)
 	
-	# Portrait (smaller)
+	# Portrait (smaller - 48x48)
 	var portrait_frame := Panel.new()
 	var s2 := StyleBoxFlat.new()
-	s2.bg_color = Color(0,0,0,0)
+	s2.bg_color = Color(0.9, 0.9, 0.85)
 	s2.border_color = Color(0,0,0)
 	s2.set_border_width_all(2)
 	portrait_frame.add_theme_stylebox_override("panel", s2)
-	portrait_frame.custom_minimum_size = Vector2(64, 64)
+	portrait_frame.custom_minimum_size = Vector2(48, 48)
 	h.add_child(portrait_frame)
 	
 	var portrait := TextureRect.new()
@@ -418,20 +425,20 @@ func _create_small_party_hud(index: int) -> Dictionary:
 	
 	# Stats column
 	var vb := VBoxContainer.new()
-	vb.add_theme_constant_override("separation", 4)
+	vb.add_theme_constant_override("separation", 2)
 	h.add_child(vb)
 	
 	var hp_lbl := Label.new()
 	hp_lbl.text = "HP: 100/100"
 	hp_lbl.add_theme_color_override("font_color", Color.WHITE)
-	hp_lbl.add_theme_font_size_override("font_size", 14)
+	hp_lbl.add_theme_font_size_override("font_size", 12)
 	vb.add_child(hp_lbl)
 	hud["hp_lbl"] = hp_lbl
 	
 	# HP bar
 	var hp_bg := ColorRect.new()
 	hp_bg.color = Color(0,0,0,0.7)
-	hp_bg.custom_minimum_size = Vector2(140, 10)
+	hp_bg.custom_minimum_size = Vector2(110, 8)
 	vb.add_child(hp_bg)
 	
 	var hp_container := MarginContainer.new()
@@ -442,26 +449,26 @@ func _create_small_party_hud(index: int) -> Dictionary:
 	hp_bg.add_child(hp_container)
 	
 	var hp_holder := Control.new()
-	hp_holder.custom_minimum_size = Vector2(138, 8)
+	hp_holder.custom_minimum_size = Vector2(108, 6)
 	hp_container.add_child(hp_holder)
 	
 	var hp_fg := ColorRect.new()
 	hp_fg.color = Color(0.2, 1.0, 0.3)  # Green
-	hp_fg.size = Vector2(138, 8)
+	hp_fg.size = Vector2(108, 6)
 	hp_holder.add_child(hp_fg)
 	hud["hp_fg"] = hp_fg
 	
 	var mp_lbl := Label.new()
 	mp_lbl.text = "MP: 30/30"
 	mp_lbl.add_theme_color_override("font_color", Color.WHITE)
-	mp_lbl.add_theme_font_size_override("font_size", 14)
+	mp_lbl.add_theme_font_size_override("font_size", 12)
 	vb.add_child(mp_lbl)
 	hud["mp_lbl"] = mp_lbl
 	
 	# MP bar
 	var mp_bg := ColorRect.new()
 	mp_bg.color = Color(0,0,0,0.7)
-	mp_bg.custom_minimum_size = Vector2(140, 10)
+	mp_bg.custom_minimum_size = Vector2(110, 8)
 	vb.add_child(mp_bg)
 	
 	var mp_container := MarginContainer.new()
@@ -472,12 +479,12 @@ func _create_small_party_hud(index: int) -> Dictionary:
 	mp_bg.add_child(mp_container)
 	
 	var mp_holder := Control.new()
-	mp_holder.custom_minimum_size = Vector2(138, 8)
+	mp_holder.custom_minimum_size = Vector2(108, 6)
 	mp_container.add_child(mp_holder)
 	
 	var mp_fg := ColorRect.new()
 	mp_fg.color = Color(0.3, 0.6, 1.0)  # Blue
-	mp_fg.size = Vector2(138, 8)
+	mp_fg.size = Vector2(108, 6)
 	mp_holder.add_child(mp_fg)
 	hud["mp_fg"] = mp_fg
 	
@@ -507,8 +514,8 @@ func _update_party_huds() -> void:
 		var hp_ratio: float = clamp(float(hp) / max(1.0, float(max_hp)), 0.0, 1.0)
 		var mp_ratio: float = clamp(float(mp) / max(1.0, float(max_mp)), 0.0, 1.0)
 		
-		hud["hp_fg"].size = Vector2(138.0 * hp_ratio, 8)
-		hud["mp_fg"].size = Vector2(138.0 * mp_ratio, 8)
+		hud["hp_fg"].size = Vector2(108.0 * hp_ratio, 6)
+		hud["mp_fg"].size = Vector2(108.0 * mp_ratio, 6)
 		
 		if hud.has("portrait"):
 			hud["portrait"].texture = PortraitLoader.get_portrait_for(name)
