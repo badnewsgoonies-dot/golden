@@ -62,6 +62,7 @@ const MAX_LOG := 8
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
+const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
 @onready var cmd: CommandMenu = preload("res://ui/CommandMenu.gd").new()
 
@@ -158,6 +159,14 @@ var queue_root: Control = null
 var queue_box: VBoxContainer = null
 var queue_rows: Array[Label] = []
 
+# Bottom-left hero HUD
+var hero_hud: Control = null
+var hero_hp_fg: ColorRect = null
+var hero_mp_fg: ColorRect = null
+var hero_hp_lbl: Label = null
+var hero_mp_lbl: Label = null
+var hero_portrait: TextureRect = null
+
 func _ready() -> void:
 	randomize()
 
@@ -178,6 +187,7 @@ func _ready() -> void:
 	_build_target_menu()
 	_build_items_menu()
 	_build_queue_panel()
+	_build_hero_panel()
 
 	# New command menu UI
 	cmd.visible = false
@@ -209,6 +219,118 @@ func _ready() -> void:
 
 	_log("Battle start! %s vs %s" % [party[0]["stats"].get("name", "?"), wave[0]["stats"].get("name", "?")])
 	_start_round_declare()
+
+func _build_hero_panel() -> void:
+	if hero_hud != null:
+		return
+	hero_hud = Control.new()
+	hero_hud.name = "HeroHUD"
+	hero_hud.anchor_left = 0.0
+	hero_hud.anchor_bottom = 1.0
+	hero_hud.anchor_right = 0.0
+	hero_hud.anchor_top = 1.0
+	hero_hud.offset_left = 24
+	hero_hud.offset_right = 24 + 360
+	hero_hud.offset_bottom = -16
+	hero_hud.offset_top = -160
+	cmd_layer.add_child(hero_hud)
+
+	var back := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.85, 0.92, 0.88)
+	sb.border_color = Color(0,0,0)
+	sb.set_border_width_all(2)
+	sb.corner_radius_top_left = 28
+	sb.corner_radius_top_right = 28
+	sb.corner_radius_bottom_left = 28
+	sb.corner_radius_bottom_right = 28
+	back.add_theme_stylebox_override("panel", sb)
+	back.anchor_right = 1.0
+	back.anchor_bottom = 1.0
+	back.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	back.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hero_hud.add_child(back)
+
+	var m := MarginContainer.new()
+	m.add_theme_constant_override("margin_left", 16)
+	m.add_theme_constant_override("margin_top", 12)
+	m.add_theme_constant_override("margin_right", 16)
+	m.add_theme_constant_override("margin_bottom", 12)
+	back.add_child(m)
+
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 16)
+	m.add_child(h)
+
+	# Portrait frame
+	var portrait_frame := Panel.new()
+	var s2 := sb.duplicate() as StyleBoxFlat
+	s2.bg_color = Color(0,0,0,0)
+	portrait_frame.add_theme_stylebox_override("panel", s2)
+	portrait_frame.custom_minimum_size = Vector2(120, 120)
+	h.add_child(portrait_frame)
+	hero_portrait = TextureRect.new()
+	hero_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hero_portrait.anchor_right = 1.0
+	hero_portrait.anchor_bottom = 1.0
+	portrait_frame.add_child(hero_portrait)
+
+	# Text + bars
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 10)
+	h.add_child(vb)
+
+	hero_hp_lbl = Label.new()
+	hero_hp_lbl.text = "HP 0/0"
+	hero_hp_lbl.add_theme_color_override("font_color", Color(0.9,0.2,0.2))
+	vb.add_child(hero_hp_lbl)
+
+	var hp_bg := ColorRect.new(); hp_bg.color = Color(0,0,0,0.85); hp_bg.custom_minimum_size = Vector2(180, 12)
+	var hp_stack := Control.new(); hp_stack.custom_minimum_size = Vector2(180, 12)
+	var hp_container := MarginContainer.new(); hp_container.add_theme_constant_override("margin_left", 2); hp_container.add_theme_constant_override("margin_top", 2); hp_container.add_theme_constant_override("margin_right", 2); hp_container.add_theme_constant_override("margin_bottom", 2)
+	var hp_holder := Control.new(); hp_holder.custom_minimum_size = Vector2(176, 8)
+	hero_hp_fg = ColorRect.new(); hero_hp_fg.color = Color(0.3,1.0,0.3)
+	# Assemble hp bar
+	vb.add_child(hp_bg)
+	hp_bg.add_child(hp_container)
+	hp_container.add_child(hp_holder)
+	hp_holder.add_child(hero_hp_fg)
+
+	hero_mp_lbl = Label.new()
+	hero_mp_lbl.text = "MP 0/0"
+	hero_mp_lbl.add_theme_color_override("font_color", Color(0.2,0.6,1.0))
+	vb.add_child(hero_mp_lbl)
+
+	var mp_bg := ColorRect.new(); mp_bg.color = Color(0,0,0,0.85); mp_bg.custom_minimum_size = Vector2(180, 12)
+	var mp_container := MarginContainer.new(); mp_container.add_theme_constant_override("margin_left", 2); mp_container.add_theme_constant_override("margin_top", 2); mp_container.add_theme_constant_override("margin_right", 2); mp_container.add_theme_constant_override("margin_bottom", 2)
+	var mp_holder := Control.new(); mp_holder.custom_minimum_size = Vector2(176, 8)
+	hero_mp_fg = ColorRect.new(); hero_mp_fg.color = Color(0.3,1.0,0.3)
+	# Assemble mp bar
+	vb.add_child(mp_bg)
+	mp_bg.add_child(mp_container)
+	mp_container.add_child(mp_holder)
+	mp_holder.add_child(hero_mp_fg)
+
+	_update_hero_panel()
+
+func _update_hero_panel() -> void:
+	if hero_hud == null:
+		return
+	var hero: Dictionary = party[0]
+	var s: Dictionary = hero.get("stats", {})
+	var name: String = String(s.get("name", "Adept"))
+	var hp: int = int(s.get("hp", 0))
+	var max_hp: int = int(s.get("max_hp", 1))
+	var mp: int = int(s.get("mp", 0))
+	var max_mp: int = int(s.get("max_mp", 1))
+	hero_hp_lbl.text = "HP: %d/%d" % [hp, max_hp]
+	hero_mp_lbl.text = "MP: %d/%d" % [mp, max_mp]
+	var hp_w: float = clamp(float(hp)/max(1.0, float(max_hp)), 0.0, 1.0)
+	var mp_w: float = clamp(float(mp)/max(1.0, float(max_mp)), 0.0, 1.0)
+	hero_hp_fg.size = Vector2(176.0*hp_w, 8)
+	hero_mp_fg.size = Vector2(176.0*mp_w, 8)
+	if hero_portrait != null:
+		hero_portrait.texture = PortraitLoader.get_portrait_for(name)
 
 func _start_round_declare() -> void:
 	planned_actions.clear()
@@ -1347,15 +1469,17 @@ func _recolor_clouds(layer: ParallaxLayer, new_color: Color) -> void:
 func _make_vignette_material() -> ShaderMaterial:
 	var shader := Shader.new()
 	shader.code = """
-        shader_type canvas_item;
-        uniform float strength = 0.45;
-        void fragment() {
-            vec2 uv = SCREEN_UV * 2.0 - 1.0;
-            float d = length(uv);
-            float v = smoothstep(0.7, 1.0, d);
-            vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);
-            COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
-        }
+		shader_type canvas_item;
+		// Godot 4: SCREEN_TEXTURE requires an explicit uniform with hint_screen_texture
+		uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+		uniform float strength = 0.45;
+		void fragment() {
+			vec2 uv = SCREEN_UV * 2.0 - 1.0;
+			float d = length(uv);
+			float v = smoothstep(0.7, 1.0, d);
+			vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);
+			COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
+		}
 	"""
 	var mat := ShaderMaterial.new()
 	mat.shader = shader
@@ -1517,7 +1641,8 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		animated.z_index = 0
 
 		if not animated.has_frames():
-			pivot.remove_child(animated)
+			# Defer removal to avoid 'node is busy adding/removing children' errors
+			pivot.remove_child.call_deferred(animated)
 			animated.queue_free()
 			var sprite := Sprite2D.new()
 			sprite.centered = false
@@ -1567,10 +1692,11 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 			if s != null and is_instance_valid(s) and s.get_parent() != pivot:
 				var old_parent := s.get_parent()
 				if old_parent != null:
-					old_parent.remove_child(s)
-				pivot.add_child(s)
-			var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
-			u["anim"] = ap2
+					# Defer reparenting to avoid modification-during-notification errors
+					old_parent.remove_child.call_deferred(s)
+					pivot.add_child.call_deferred(s)
+				var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
+				u["anim"] = ap2
 
 	if s is AnimatedFrames:
 		(s as AnimatedFrames).set_facing_back(facing > 0)
@@ -1640,17 +1766,9 @@ func _create_unit_overlay(u: Dictionary) -> void:
 		portrait_rect.position = Vector2(-60, -4)
 		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		portrait_rect.z_index = -1
-		# Map character names to portrait names
-		var portrait_name: String = unit_name
-		match unit_name:
-			"adept":
-				portrait_name = "hero"
-			"cleric":
-				portrait_name = "healer"
-			"guard":
-				portrait_name = "mage"
-		var portrait_path := "res://art/portraits/%s_portrait_96.png" % portrait_name
-		var portrait_tex: Texture2D = load(portrait_path)
+		# Prefer alias-based portrait lookup (falls back to name_sanitized)
+		var nice_name := String(stats_dict.get("name", "")).strip_edges()
+		var portrait_tex: Texture2D = PortraitLoader.get_portrait_for(nice_name)
 		if portrait_tex is Texture2D:
 			portrait_rect.texture = portrait_tex
 			root.add_child(portrait_rect)
@@ -1690,6 +1808,7 @@ func _update_all_overlays() -> void:
 		_update_unit_overlay(u)
 	for u in wave:
 		_update_unit_overlay(u)
+	_update_hero_panel()
 
 # Optional: gray out a dead unit
 func _apply_death_visual(u: Dictionary) -> void:

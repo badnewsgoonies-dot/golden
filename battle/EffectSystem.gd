@@ -1,4 +1,4 @@
-﻿class_name EffectSystem
+class_name EffectSystem
 extends RefCounted
 
 const Action := preload("res://battle/models/Action.gd")

@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 func _ready() -> void:
 	print("Boot _ready()")

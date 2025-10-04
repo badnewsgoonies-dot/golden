@@ -261,12 +261,12 @@ static func _make_glow_texture(size_px: int, tint: Color) -> Texture2D:
 
 # Put animation into player regardless of build (direct or via library)
 static func _put_anim(ap: AnimationPlayer, name: String, anim: Animation) -> void:
-	if ap.has_method("add_animation"):
-		ap.add_animation(name, anim)
-		return
+	# Prefer AnimationLibrary in Godot 4.x; avoid get_animation_library when absent to prevent warnings
 	var LIB: StringName = &"code"
-	var lib: AnimationLibrary = ap.get_animation_library(LIB)
-	if lib == null:
+	var lib: AnimationLibrary = null
+	if ap.has_animation_library(LIB):
+		lib = ap.get_animation_library(LIB)
+	else:
 		lib = AnimationLibrary.new()
 		ap.add_animation_library(LIB, lib)
 	lib.add_animation(name, anim)

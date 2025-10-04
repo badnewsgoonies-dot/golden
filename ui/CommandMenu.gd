@@ -7,13 +7,21 @@ var _spells: Array[Dictionary] = []
 var _items: Array[Dictionary] = []
 var _actor_name: String = ""
 
-var _root: Panel
-var _main_vbox: VBoxContainer
+var _root: Control
+var _main_row: HBoxContainer
 var _sub_panel: Panel
 var _sub_vbox: VBoxContainer
 var _cursor_idx := 0
 var _main_buttons: Array[Button] = []
 var _sub_mode := ""
+var _tail: Control
+const TailScene := preload("res://ui/TriangleTail.gd")
+
+const COL_BTN := Color(1.0, 0.9, 0.4) # warm yellow
+const COL_BTN_HOVER := Color(1.0, 0.95, 0.55)
+const COL_BTN_PRESSED := Color(0.95, 0.85, 0.35)
+const COL_BORDER := Color(0,0,0)
+const COL_BUBBLE := Color(0.98, 0.93, 0.70)
 
 func _ready() -> void:
 	name = "CommandMenu"
@@ -22,36 +30,47 @@ func _ready() -> void:
 	anchor_top = 1.0
 	anchor_right = 0.5
 	anchor_bottom = 1.0
-	offset_left = -520
-	offset_right = 520
-	offset_top = -260
-	offset_bottom = -20
-	_root = Panel.new()
+	offset_left = -560
+	offset_right = 560
+	offset_top = -220
+	offset_bottom = -16
+	_root = Control.new()
 	_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_root.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	add_child(_root)
-	var margin: MarginContainer = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_top", 18)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_bottom", 18)
-	_root.add_child(margin)
-	var h: HBoxContainer = HBoxContainer.new()
-	h.add_theme_constant_override("separation", 24)
-	margin.add_child(h)
-	_main_vbox = VBoxContainer.new()
-	_main_vbox.custom_minimum_size = Vector2(360, 180)
-	_main_vbox.add_theme_constant_override("separation", 12)
-	h.add_child(_main_vbox)
+
+	# Bottom button strip (Attack / Spells / Items / Defend)
+	_main_row = HBoxContainer.new()
+	_main_row.anchor_left = 0.0
+	_main_row.anchor_right = 1.0
+	_main_row.anchor_top = 1.0
+	_main_row.anchor_bottom = 1.0
+	_main_row.offset_left = 0
+	_main_row.offset_right = 0
+	_main_row.offset_top = -64
+	_main_row.offset_bottom = 0
+	_main_row.add_theme_constant_override("separation", 12)
+	_root.add_child(_main_row)
+
+	# Submenu bubble (appears above the buttons)
 	_sub_panel = Panel.new()
 	_sub_panel.visible = false
-	_sub_panel.custom_minimum_size = Vector2(520, 180)
-	h.add_child(_sub_panel)
+	_sub_panel.anchor_left = 0.5
+	_sub_panel.anchor_right = 0.5
+	_sub_panel.anchor_top = 1.0
+	_sub_panel.anchor_bottom = 1.0
+	_sub_panel.offset_left = -460
+	_sub_panel.offset_right = 460
+	_sub_panel.offset_top = -200
+	_sub_panel.offset_bottom = -76
+	_style_bubble(_sub_panel)
+	_root.add_child(_sub_panel)
+
 	var sub_margin: MarginContainer = MarginContainer.new()
-	sub_margin.add_theme_constant_override("margin_left", 16)
-	sub_margin.add_theme_constant_override("margin_top", 12)
-	sub_margin.add_theme_constant_override("margin_right", 16)
-	sub_margin.add_theme_constant_override("margin_bottom", 12)
+	sub_margin.add_theme_constant_override("margin_left", 24)
+	sub_margin.add_theme_constant_override("margin_top", 18)
+	sub_margin.add_theme_constant_override("margin_right", 24)
+	sub_margin.add_theme_constant_override("margin_bottom", 18)
 	_sub_panel.add_child(sub_margin)
 	var scroll: ScrollContainer = ScrollContainer.new()
 	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -61,6 +80,18 @@ func _ready() -> void:
 	_sub_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_sub_vbox.add_theme_constant_override("separation", 8)
 	scroll.add_child(_sub_vbox)
+	_tail = TailScene.new()
+	_tail.visible = false
+	_tail.anchor_left = 0.5
+	_tail.anchor_right = 0.5
+	_tail.anchor_top = 1.0
+	_tail.anchor_bottom = 1.0
+	_tail.offset_left = -60
+	_tail.offset_right = 60
+	_tail.offset_top = -76
+	_tail.offset_bottom = -56
+	_root.add_child(_tail)
+
 	_create_main_button("Attack", func(): _emit_main("attack", "slash"))
 	_create_main_button("Spells", func(): _open_submenu("spells"))
 	_create_main_button("Items", func(): _open_submenu("items"))
@@ -70,10 +101,12 @@ func _ready() -> void:
 func _create_main_button(text: String, on_press: Callable) -> void:
 	var b: Button = Button.new()
 	b.text = text
+	b.custom_minimum_size = Vector2(160, 48)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.focus_mode = Control.FOCUS_ALL
+	_style_button(b)
 	b.pressed.connect(on_press)
-	_main_vbox.add_child(b)
+	_main_row.add_child(b)
 	_main_buttons.append(b)
 
 func show_for_actor(actor_name: String, spells: Array, items: Array) -> void:
@@ -88,7 +121,9 @@ func show_for_actor(actor_name: String, spells: Array, items: Array) -> void:
 			_items.append((it as Dictionary).duplicate(true))
 	_sub_mode = ""
 	_sub_panel.visible = false
+	_tail.visible = false
 	visible = true
+	focus_mode = Control.FOCUS_ALL
 	grab_focus()
 	_update_cursor(0)
 
@@ -129,6 +164,7 @@ func _open_submenu(kind: String) -> void:
 			_t = "%s  (%d MP)" % [label, int(mp)]
 		btn.text = _t
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.flat = true
 		btn.pressed.connect(func():
 			var eid: String = String(entry.get("id", label)).to_lower()
 			emit_signal("menu_action", kind, eid)
@@ -136,11 +172,43 @@ func _open_submenu(kind: String) -> void:
 		)
 		_sub_vbox.add_child(btn)
 	_sub_panel.visible = true
+	_tail.visible = true
 
 func _close_submenu() -> void:
 	_sub_mode = ""
 	_sub_panel.visible = false
+	_tail.visible = false
 
 func hide_menu() -> void:
 	visible = false
 	_close_submenu()
+
+func _style_button(b: Button) -> void:
+	var sbn := StyleBoxFlat.new()
+	sbn.bg_color = COL_BTN
+	sbn.border_color = COL_BORDER
+	sbn.set_border_width_all(2)
+	sbn.corner_radius_top_left = 8
+	sbn.corner_radius_top_right = 8
+	sbn.corner_radius_bottom_left = 8
+	sbn.corner_radius_bottom_right = 8
+	var sbh := sbn.duplicate() as StyleBoxFlat
+	sbh.bg_color = COL_BTN_HOVER
+	var sbp := sbn.duplicate() as StyleBoxFlat
+	sbp.bg_color = COL_BTN_PRESSED
+	b.add_theme_stylebox_override("normal", sbn)
+	b.add_theme_stylebox_override("hover", sbh)
+	b.add_theme_stylebox_override("pressed", sbp)
+	b.add_theme_color_override("font_color", Color(0,0,0))
+	b.add_theme_font_size_override("font_size", 22)
+
+func _style_bubble(p: Panel) -> void:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = COL_BUBBLE
+	sb.border_color = COL_BORDER
+	sb.set_border_width_all(2)
+	sb.corner_radius_top_left = 16
+	sb.corner_radius_top_right = 16
+	sb.corner_radius_bottom_left = 16
+	sb.corner_radius_bottom_right = 16
+	p.add_theme_stylebox_override("panel", sb)
