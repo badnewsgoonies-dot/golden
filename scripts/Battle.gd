@@ -1856,6 +1856,7 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		
 		# Force the sprite to be visible and at the correct position
 		animated.position = Vector2.ZERO
+		animated.scale = Vector2(2.5, 2.5)  # Scale up the sprite for better visibility
 		animated.visible = true
 		animated.z_index = 0
 

@@ -11,49 +11,41 @@ const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
 
 const CHARACTER_ART := {
-	# Map character IDs to sprite folder names
-	"adept_pyro": "hero",
-	"gale_rogue": "rogue",
-	"cleric_blue": "cleric_blue",
-	"hero_warrior": "hero_warrior",
-	"mage_red": "mage_red",
-	"knight_armored": "knight_armored",
-	"archer_green": "archer_green",
-	"barbarian": "barbarian",
-	"wizard_elder": "wizard_elder",
-	"werewolf": "werewolf",
+	# Playable characters with proper sprite mappings
+	"Pyro Adept": "hero",
+	"Gale Rogue": "rogue",
+	"Sunlit Cleric": "healer",
+	"Cleric": "healer",
+	"Iron Guard": "hero_warrior",  # Using hero_warrior sprite for guard
+	"Guard": "hero_warrior",
+	"Hero Warrior": "hero_warrior",
+	"Crimson Mage": "mage_red",
+	"Azure Cleric": "cleric_blue",
+	"Armored Knight": "knight_armored",
+	"Forest Archer": "archer_green",
+	"Elder Wizard": "wizard_elder",
+	"Fierce Barbarian": "barbarian",
+	"Primal Werewolf": "werewolf",
 	# Enemy mappings
-	"goblin": "werewolf",  # Using werewolf sprite for goblin
-	"slime": "werewolf",  # Using werewolf as slime sprite fallback
-	"water_slime": "werewolf"  # Using werewolf as water slime sprite fallback
+	"Goblin": "werewolf",
+	"Slime": "werewolf",  # Using werewolf as slime sprite fallback
+	"Water Slime": "werewolf"  # Using werewolf as water slime sprite fallback
 }
 
 @export var keyboard_end_turn_enabled: bool = true
 
-# Top HUD - Party Panel (left) - Updated for multiple heroes
-@onready var hero_portraits: Array[TextureRect] = []
-@onready var hero_labels: Array[Label] = []
-@onready var hero_hp_bars: Array = []
-@onready var hero_mp_bars: Array = []
-@onready var hero_status_containers: Array[HBoxContainer] = []
+# Top HUD - Party Panel (left)
+@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroLabel
+@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroStatus
+@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroHPBar
+@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroMPBar
+@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroPortrait
 
-# Top HUD - Enemy Panel (right) - Updated for multiple enemies
-@onready var enemy_portraits: Array[TextureRect] = []
-@onready var enemy_labels: Array[Label] = []
-@onready var enemy_hp_bars: Array = []
-@onready var enemy_status_containers: Array[HBoxContainer] = []
-
-# Legacy UI references (for compatibility)
-@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/HeroLabel if has_node("UI/HUD/PartyPanel/PartyMargin/HeroLabel") else null
-@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/HeroStatus if has_node("UI/HUD/PartyPanel/PartyMargin/HeroStatus") else null
-@onready var hero_hp_bar = $UI/HUD/PartyPanel/PartyMargin/HeroHPBar if has_node("UI/HUD/PartyPanel/PartyMargin/HeroHPBar") else null
-@onready var hero_mp_bar = $UI/HUD/PartyPanel/PartyMargin/HeroMPBar if has_node("UI/HUD/PartyPanel/PartyMargin/HeroMPBar") else null
-@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/HeroPortrait if has_node("UI/HUD/PartyPanel/PartyMargin/HeroPortrait") else null
-
-@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel") else null
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus") else null
-@onready var enemy_hp_bar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar") else null
-@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait") else null
+# Top HUD - Enemy Panel (right)
+@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyLabel
+@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyStatus
+@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyHPBar
+@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyPortrait
 
 # Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
@@ -114,16 +106,14 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - like traditional JRPGs
 const HERO_POSITIONS := [
 	Vector2(300, 480),  # Bottom-left
+	Vector2(250, 550),  # Front-left
 	Vector2(450, 480),  # Bottom-center-left
-	Vector2(600, 480),  # Bottom-center-right
-	Vector2(750, 480)   # Bottom-right
+	Vector2(400, 550)   # Front-center-left
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(400, 280),  # Top-left
-	Vector2(550, 280),  # Top-center-left
-	Vector2(700, 280),  # Top-center-right
-	Vector2(850, 280)   # Top-right
+	Vector2(850, 480),  # Top-right
+	Vector2(800, 550)   # Front-right
 ]
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
@@ -134,9 +124,6 @@ func _ready() -> void:
 	if !has_node("Stage"):
 		print("ERROR: BattleScene missing required Stage node!")
 		return
-	
-	# Initialize UI arrays for multiple heroes and enemies
-	_initialize_ui_arrays()
 		
 	# Data
 	skill_slash = _fetch_skill("slash")
@@ -157,8 +144,8 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(min(3, enemy_types.size())):
+	var enemy_types := ["goblin", "water_slime"]
+	for i in range(min(2, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
@@ -205,35 +192,30 @@ func _ready() -> void:
 		var unit: Unit = heroes[i]
 		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 		
-		# Create sprite - use character_id for proper folder mapping
-		var hero_folder: String = String(CHARACTER_ART.get(unit.character_id, unit.character_id))
+		# Create sprite
+		var hero_folder: String = String(CHARACTER_ART.get(unit.name, unit.name.to_lower().replace(" ", "_")))
 		var sprite := AnimatedFrames.new()
-		sprite.centered = true  # Center the sprite for better positioning
+		sprite.centered = false
 		sprite.character = hero_folder
 		sprite.set_facing_back(false)  # Heroes face forward
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(6.0, 6.0)  # Scale up significantly for better visibility
+		sprite.scale = Vector2(2.5, 2.5)  # Scale up the sprite for better visibility
 		sprite.visible = true
-		sprite.z_index = 1000 + i  # Very high z-index to ensure visibility
+		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
-		# Debug logging with full details
-		print("✓ Hero sprite #%d: %s (ID: %s) folder='%s' pos=%s scale=%s z=%d visible=%s" % [
-			i, unit.name, unit.character_id, hero_folder, pos, sprite.scale, sprite.z_index, sprite.visible
-		])
-		
-		# Start playing idle animation
-		sprite.play_idle()
+		# Debug logging
+		print("Created hero sprite for %s using folder: %s" % [unit.name, hero_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(0, 40)
-		shadow.scale = Vector2(1.5, 1.0)
+		shadow.position = pos + Vector2(60, 160)  # Adjusted for 2.5x scaled sprite (48*2.5=120, 64*2.5=160)
+		shadow.scale = Vector2(2.0, 1.2)  # Scale shadow to match larger sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 9
 		$Stage.add_child(shadow)
@@ -244,33 +226,30 @@ func _ready() -> void:
 		var unit: Unit = enemies[i]
 		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 		
-		# Create sprite - use character_id for proper folder mapping
-		var enemy_folder: String = String(CHARACTER_ART.get(unit.character_id, unit.character_id))
+		# Create sprite
+		var enemy_folder: String = String(CHARACTER_ART.get(unit.name.split(" ")[0], unit.name.split(" ")[0].to_lower()))
 		var sprite := AnimatedFrames.new()
-		sprite.centered = true  # Center the sprite for better positioning
+		sprite.centered = false
 		sprite.character = enemy_folder
 		sprite.set_facing_back(true)  # Enemies face back
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(6.0, 6.0)  # Scale up significantly for better visibility
+		sprite.scale = Vector2(2.5, 2.5)  # Scale up the sprite for better visibility
 		sprite.visible = true
-		sprite.z_index = 100 + i  # High z-index to ensure visibility above background
+		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created enemy sprite for %s (ID: %s) using folder: %s at position %s with scale 6.0, z_index %d" % [unit.name, unit.character_id, enemy_folder, pos, sprite.z_index])
-		
-		# Start playing idle animation
-		sprite.play_idle()
+		print("Created enemy sprite for %s using folder: %s" % [unit.name, enemy_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(0, 40)
-		shadow.scale = Vector2(1.6, 1.0)
+		shadow.position = pos + Vector2(60, 160)  # Adjusted for 2.5x scaled sprite (48*2.5=120, 64*2.5=160)
+		shadow.scale = Vector2(2.1, 1.2)  # Scale shadow to match larger sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 4
 		$Stage.add_child(shadow)
@@ -589,69 +568,6 @@ func _cancel_target_selection() -> void:
 	selector_arrow.visible = false
 	pending_skill = {}
 
-func _initialize_ui_arrays() -> void:
-	# Initialize hero UI arrays (up to 4 heroes)
-	for i in range(4):
-		var hero_num := i + 1
-		var hero_container = get_node_or_null("UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero%d" % hero_num)
-		if hero_container:
-			var hero_portrait = hero_container.get_node_or_null("HeroPortrait%d" % hero_num)
-			var hero_label = hero_container.get_node_or_null("HeroLabel%d" % hero_num)
-			var hero_hp = hero_container.get_node_or_null("HeroHPBar%d" % hero_num)
-			var hero_mp = hero_container.get_node_or_null("HeroMPBar%d" % hero_num)
-			var hero_status = hero_container.get_node_or_null("HeroStatus%d" % hero_num)
-			
-			hero_portraits.append(hero_portrait)
-			hero_labels.append(hero_label)
-			hero_hp_bars.append(hero_hp)
-			hero_mp_bars.append(hero_mp)
-			hero_status_containers.append(hero_status)
-			
-			print("Hero %d UI elements: Portrait=%s, Label=%s, HP=%s, MP=%s, Status=%s" % [
-				hero_num, 
-				"found" if hero_portrait else "missing",
-				"found" if hero_label else "missing", 
-				"found" if hero_hp else "missing",
-				"found" if hero_mp else "missing",
-				"found" if hero_status else "missing"
-			])
-		else:
-			print("Hero %d container not found" % hero_num)
-			hero_portraits.append(null)
-			hero_labels.append(null)
-			hero_hp_bars.append(null)
-			hero_mp_bars.append(null)
-			hero_status_containers.append(null)
-	
-	# Initialize enemy UI arrays (up to 3 enemies)
-	for i in range(3):
-		var enemy_num := i + 1
-		var enemy_container = get_node_or_null("UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy%d" % enemy_num)
-		if enemy_container:
-			var enemy_portrait = enemy_container.get_node_or_null("EnemyPortrait%d" % enemy_num)
-			var enemy_label = enemy_container.get_node_or_null("EnemyLabel%d" % enemy_num)
-			var enemy_hp = enemy_container.get_node_or_null("EnemyHPBar%d" % enemy_num)
-			var enemy_status = enemy_container.get_node_or_null("EnemyStatus%d" % enemy_num)
-			
-			enemy_portraits.append(enemy_portrait)
-			enemy_labels.append(enemy_label)
-			enemy_hp_bars.append(enemy_hp)
-			enemy_status_containers.append(enemy_status)
-			
-			print("Enemy %d UI elements: Portrait=%s, Label=%s, HP=%s, Status=%s" % [
-				enemy_num,
-				"found" if enemy_portrait else "missing",
-				"found" if enemy_label else "missing",
-				"found" if enemy_hp else "missing", 
-				"found" if enemy_status else "missing"
-			])
-		else:
-			print("Enemy %d container not found" % enemy_num)
-			enemy_portraits.append(null)
-			enemy_labels.append(null)
-			enemy_hp_bars.append(null)
-			enemy_status_containers.append(null)
-
 func _check_end() -> void:
 	if battle_finished:
 		return
@@ -669,86 +585,28 @@ func _check_end() -> void:
 		battle_finished = true
 
 func _update_ui() -> void:
-	# Update all heroes in the party panel
-	for i in range(heroes.size()):
-		if i < hero_portraits.size() and i < hero_labels.size() and i < hero_hp_bars.size() and i < hero_mp_bars.size():
-			var hero: Unit = heroes[i]
-			
-			# Update portrait
-			if hero_portraits[i]:
-				hero_portraits[i].texture = PortraitLoader.get_portrait_for(hero.name)
-				hero_portraits[i].get_parent().visible = true
-				
-			# Update label with name and HP/MP
-			if hero_labels[i]:
-				hero_labels[i].text = "%s\nHP: %d/%d\nMP: %d/%d" % [
-					hero.name, 
-					hero.stats.get("HP", 0), 
-					hero.max_stats.get("HP", 0),
-					hero.stats.get("MP", 0), 
-					hero.max_stats.get("MP", 0)
-				]
-				hero_labels[i].modulate = Color.WHITE if hero.is_alive() else Color(0.6, 0.6, 0.6, 0.8)
-				
-			# Update HP bar
-			if hero_hp_bars[i]:
-				hero_hp_bars[i].max_value = hero.max_stats.get("HP", 0)
-				hero_hp_bars[i].value = hero.stats.get("HP", 0)
-				
-			# Update MP bar  
-			if hero_mp_bars[i]:
-				hero_mp_bars[i].max_value = hero.max_stats.get("MP", 0)
-				hero_mp_bars[i].value = hero.stats.get("MP", 0)
-				
-			# Update status icons
-			if i < hero_status_containers.size() and hero_status_containers[i]:
-				_populate_status_container(hero_status_containers[i], hero)
-	
-	# Hide unused hero slots
-	for i in range(heroes.size(), hero_portraits.size()):
-		if i < hero_portraits.size() and hero_portraits[i]:
-			hero_portraits[i].get_parent().visible = false
-	
-	# Update all enemies in the enemy panel  
-	for i in range(enemies.size()):
-		if i < enemy_portraits.size() and i < enemy_labels.size() and i < enemy_hp_bars.size():
-			var enemy: Unit = enemies[i]
-			
-			# Update portrait
-			if enemy_portraits[i]:
-				enemy_portraits[i].texture = PortraitLoader.get_portrait_for(enemy.name)
-				enemy_portraits[i].get_parent().visible = true
-				
-			# Update label with name and HP
-			if enemy_labels[i]:
-				enemy_labels[i].text = "%s\nHP: %d/%d" % [
-					enemy.name,
-					enemy.stats.get("HP", 0),
-					enemy.max_stats.get("HP", 0)
-				]
-				enemy_labels[i].modulate = Color.WHITE if enemy.is_alive() else Color(0.6, 0.6, 0.6, 0.8)
-				
-			# Update HP bar
-			if enemy_hp_bars[i]:
-				enemy_hp_bars[i].max_value = enemy.max_stats.get("HP", 0)
-				enemy_hp_bars[i].value = enemy.stats.get("HP", 0)
-				
-			# Update status icons
-			if i < enemy_status_containers.size() and enemy_status_containers[i]:
-				_populate_status_container(enemy_status_containers[i], enemy)
-	
-	# Hide unused enemy slots
-	for i in range(enemies.size(), enemy_portraits.size()):
-		if i < enemy_portraits.size() and enemy_portraits[i]:
-			enemy_portraits[i].get_parent().visible = false
-			
-	# Show current hero in active character panel (bottom-left)
+	# Show current hero in active character panel
 	var current_hero: Unit = null
 	if current_acting_hero_index < heroes.size():
 		current_hero = heroes[current_acting_hero_index]
 	elif heroes.size() > 0:
 		current_hero = heroes[0]
 		
+	# Update top panels - show all heroes summary
+	if lbl_hero:
+		var heroes_text := "Heroes: "
+		for h in heroes:
+			if h.is_alive():
+				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
+		lbl_hero.text = heroes_text
+		
+	if lbl_enemy:
+		var enemies_text := "Enemies: "
+		for e in enemies:
+			if e.is_alive():
+				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
+		lbl_enemy.text = enemies_text
+	
 	# Update bottom-left active character panel
 	if current_hero:
 		if active_hp_label:
@@ -764,22 +622,7 @@ func _update_ui() -> void:
 		if active_portrait:
 			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
 			
-	# Legacy compatibility - update old UI elements if they exist
-	if lbl_hero:
-		var heroes_text := "Heroes: "
-		for h in heroes:
-			if h.is_alive():
-				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
-		lbl_hero.text = heroes_text
-		
-	if lbl_enemy:
-		var enemies_text := "Enemies: "
-		for e in enemies:
-			if e.is_alive():
-				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
-		lbl_enemy.text = enemies_text
-	
-	# Update legacy portrait references
+	# Update portraits with first alive hero/enemy
 	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
 	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
 	
@@ -787,7 +630,6 @@ func _update_ui() -> void:
 		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(first_hero.name)
 	if enemy_portrait_rect and first_enemy:
 		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(first_enemy.name)
-		
 	_update_sprites()
 	refresh_status_hud()
 
@@ -803,25 +645,18 @@ func _fetch_skill(id: String) -> Dictionary:
 func _build_unit_from_character(id: String) -> Unit:
 	var def: Dictionary = DataRegistry.characters.get(id, {})
 	if def.is_empty():
-		def = {"id": id, "name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
-	else:
-		# Add the ID to the definition if it's not already there
-		def["id"] = id
+		def = {"name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
 	return _build_unit(def)
 
 func _build_unit_from_enemy(id: String) -> Unit:
 	var def: Dictionary = DataRegistry.enemies.get(id, {})
 	if def.is_empty():
-		def = {"id": id, "name":"Goblin","stats":{"max_hp":70,"max_mp":0,"atk":12,"def":6,"agi":10,"focus":6},"resist":{"fire":1.0,"water":1.0,"earth":1.0,"air":1.0}}
-	else:
-		# Add the ID to the definition if it's not already there
-		def["id"] = id
+		def = {"name":"Goblin","stats":{"max_hp":70,"max_mp":0,"atk":12,"def":6,"agi":10,"focus":6},"resist":{"fire":1.0,"water":1.0,"earth":1.0,"air":1.0}}
 	return _build_unit(def)
 
 func _build_unit(def: Dictionary) -> Unit:
 	var u := Unit.new()
 	u.name = String(def.get("name","Unit"))
-	u.character_id = String(def.get("id", ""))  # Store the character ID for sprite mapping
 	var s: Dictionary = def.get("stats", {})
 	var max_hp: int = int(s.get("max_hp",80))
 	var max_mp: int = int(s.get("max_mp",0))
@@ -841,7 +676,7 @@ func _update_sprites() -> void:
 			hero_sprites[i].set_facing_back(false)  # Heroes face forward
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
-			hero_shadows[i].scale = Vector2(1.5, 1.0)
+			hero_shadows[i].scale = Vector2(2.0, 1.2)  # Adjusted for larger sprites
 			hero_shadows[i].z_index = 9
 			
 	# Update all enemy sprites
@@ -853,7 +688,7 @@ func _update_sprites() -> void:
 			enemy_sprites[i].set_facing_back(true)  # Enemies face back
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
-			enemy_shadows[i].scale = Vector2(1.6, 1.0)
+			enemy_shadows[i].scale = Vector2(2.1, 1.2)  # Adjusted for larger sprites
 			enemy_shadows[i].z_index = 4
 	
 	# Legacy single sprite support
@@ -872,7 +707,8 @@ func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_b
 	var a: AnimatedFrames = AnimatedFrames.new()
 	a.centered = old_sprite.centered
 	a.position = old_sprite.position
-	a.scale = old_sprite.scale
+	# Apply sprite scale if old sprite doesn't have custom scale
+	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(2.5, 2.5)
 	a.z_index = old_sprite.z_index
 	a.flip_h = old_sprite.flip_h
 	a.character = character
@@ -922,10 +758,11 @@ func _origin_for_unit(u: Unit) -> Vector2:
 	return Vector2.ZERO
 
 func _shadow_base_scale(u: Unit) -> Vector2:
-	return Vector2(1.5, 1.0) if u in heroes else Vector2(1.6, 1.0) if u in enemies else Vector2.ONE
+	return Vector2(2.0, 1.2) if u in heroes else Vector2(2.1, 1.2) if u in enemies else Vector2.ONE
 
 func _attack_offset(u: Unit) -> Vector2:
-	return Vector2(90,-18) if u in heroes else Vector2(-90,-12) if u in enemies else Vector2.ZERO
+	# Adjusted offsets for 2.5x scaled sprites
+	return Vector2(225, -45) if u in heroes else Vector2(-225, -30) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
@@ -974,7 +811,7 @@ func _shake_sprite(u: Unit) -> void:
 		return
 	var o: Vector2 = _origin_for_unit(u)
 	var off: Vector2 = Vector2(12,0)
-	if u in enemies:
+	if u==enemy:
 		off.x = -off.x
 	var t: Tween = create_tween()
 	t.tween_property(s, "position", o+off, 0.05)
@@ -983,23 +820,13 @@ func _shake_sprite(u: Unit) -> void:
 	await t.finished
 
 func refresh_status_hud() -> void:
-	# Update status for all heroes
-	for i in range(heroes.size()):
-		if i < hero_status_containers.size() and hero_status_containers[i]:
-			_populate_status_container(hero_status_containers[i], heroes[i])
-	
-	# Update status for all enemies
-	for i in range(enemies.size()):
-		if i < enemy_status_containers.size() and enemy_status_containers[i]:
-			_populate_status_container(enemy_status_containers[i], enemies[i])
-	
-	# Legacy compatibility - show status for first alive hero/enemy
+	# Show status for first alive hero/enemy
 	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
 	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
 	
-	if first_hero and hero_status_container:
+	if first_hero:
 		_populate_status_container(hero_status_container, first_hero)
-	if first_enemy and enemy_status_container:
+	if first_enemy:
 		_populate_status_container(enemy_status_container, first_enemy)
 
 func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
@@ -1085,8 +912,7 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
-	var heroes_alive := heroes.filter(func(h): return h.is_alive())
-	if !heroes_alive.is_empty(): # If victory, go to upgrade selection
+	if hero.is_alive(): # If victory, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
 	else: # If defeat, go back to main menu or game over screen
 		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene
