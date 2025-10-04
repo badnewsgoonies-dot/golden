@@ -24,7 +24,7 @@ var party: Array[Dictionary] = [
 	  ]
 	},
 	{ "stats": {"name":"Rogue","max_hp":80,"hp":80,"atk":18,"def":7,"spd":16,"max_mp":0,"mp":0},
-	  "defending":false, "sprite": null, "art":"rogue:rogue", "spells":[]
+	  "defending":false, "sprite": null, "art":"hero:rogue", "spells":[]
 	},
 	{ "stats": {"name":"Cleric","max_hp":90,"hp":90,"atk":12,"def":9,"spd":10,"max_mp":18,"mp":18},
 	  "defending":false, "sprite": null, "art":"healer:healer",
@@ -62,8 +62,9 @@ const MAX_LOG := 8
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
+const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
-@onready var cmd: CommandMenu = preload("res://ui/CommandMenu.gd").new()
+# CommandMenu and TargetSelector handled by BattleScene
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
@@ -116,14 +117,13 @@ const BIOMES := {
 	}
 }
 
-var cmd_root: Control = null
-var cmd_title: Label = null
-var cmd_char: Label = null
-var btn_attack: Button = null
-var btn_spells: Button = null
-var btn_items:  Button = null
-var btn_defend: Button = null
-var menu_visible: bool = false
+# Map logical enemy kinds to available battler folders with actual sprite frames
+const ART_ALIAS := {
+	"goblin": "werewolf",
+	"water_slime": "mage_red"
+}
+
+# Old command menu variables removed - using BattleScene UI
 
 var spells_root: Control = null
 var spells_list: VBoxContainer = null
@@ -158,6 +158,17 @@ var queue_root: Control = null
 var queue_box: VBoxContainer = null
 var queue_rows: Array[Label] = []
 
+# Bottom-left hero HUD
+var hero_hud: Control = null
+var hero_hp_fg: ColorRect = null
+var hero_mp_fg: ColorRect = null
+var hero_hp_lbl: Label = null
+var hero_mp_lbl: Label = null
+var hero_portrait: TextureRect = null
+
+# Top-corner party member HUDs
+var party_huds: Array[Dictionary] = []  # [{root, hp_fg, mp_fg, hp_lbl, mp_lbl, portrait}, ...]
+
 func _ready() -> void:
 	randomize()
 
@@ -173,16 +184,19 @@ func _ready() -> void:
 	_layout_units()         # spawn sprites & overlays at the desired positions
 	_update_all_overlays()  # set initial HP text/bars
 	add_child(cmd_layer)
-	_build_command_menu()
-	_build_spells_menu()
-	_build_target_menu()
-	_build_items_menu()
-	_build_queue_panel()
-
+	
 	# New command menu UI
+	cmd = CommandMenu.new()
 	cmd.visible = false
 	cmd.menu_action.connect(_on_cmd_action)
+	cmd.attack_requested.connect(_on_attack_requested)
 	cmd_layer.add_child(cmd)
+	
+	# Target selector
+	target_selector.visible = false
+	target_selector.target_selected.connect(_on_target_selected)
+	target_selector.cancelled.connect(_on_target_cancelled)
+	add_child(target_selector)
 
 	if "adept_pyro" in DataRegistry.characters:
 		party[0]["stats"] = DataRegistry.characters["adept_pyro"]["stats"]
@@ -210,19 +224,310 @@ func _ready() -> void:
 	_log("Battle start! %s vs %s" % [party[0]["stats"].get("name", "?"), wave[0]["stats"].get("name", "?")])
 	_start_round_declare()
 
+func _build_hero_panel() -> void:
+	if hero_hud != null:
+		return
+	hero_hud = Control.new()
+	hero_hud.name = "HeroHUD"
+	hero_hud.anchor_left = 0.0
+	hero_hud.anchor_bottom = 1.0
+	hero_hud.anchor_right = 0.0
+	hero_hud.anchor_top = 1.0
+	hero_hud.offset_left = 12
+	hero_hud.offset_right = 12 + 280  # Narrower
+	hero_hud.offset_bottom = -12
+	hero_hud.offset_top = -120  # Shorter
+	cmd_layer.add_child(hero_hud)
+
+	var back := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.88, 0.94, 0.90)  # Light greenish tint
+	sb.border_color = Color(0,0,0)
+	sb.set_border_width_all(3)
+	sb.corner_radius_top_left = 20
+	sb.corner_radius_top_right = 20
+	sb.corner_radius_bottom_left = 20
+	sb.corner_radius_bottom_right = 20
+	back.add_theme_stylebox_override("panel", sb)
+	back.anchor_right = 1.0
+	back.anchor_bottom = 1.0
+	back.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	back.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	hero_hud.add_child(back)
+
+	var m := MarginContainer.new()
+	m.add_theme_constant_override("margin_left", 12)
+	m.add_theme_constant_override("margin_top", 10)
+	m.add_theme_constant_override("margin_right", 12)
+	m.add_theme_constant_override("margin_bottom", 10)
+	back.add_child(m)
+
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 12)
+	m.add_child(h)
+
+	# Portrait frame (larger, more prominent)
+	var portrait_frame := Panel.new()
+	var s2 := StyleBoxFlat.new()
+	s2.bg_color = Color(0.92, 0.92, 0.88)
+	s2.border_color = Color(0,0,0)
+	s2.set_border_width_all(2)
+	s2.corner_radius_top_left = 8
+	s2.corner_radius_top_right = 8
+	s2.corner_radius_bottom_left = 8
+	s2.corner_radius_bottom_right = 8
+	portrait_frame.add_theme_stylebox_override("panel", s2)
+	portrait_frame.custom_minimum_size = Vector2(88, 88)
+	h.add_child(portrait_frame)
+	hero_portrait = TextureRect.new()
+	hero_portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hero_portrait.anchor_right = 1.0
+	hero_portrait.anchor_bottom = 1.0
+	portrait_frame.add_child(hero_portrait)
+
+	# Text + bars
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 6)
+	h.add_child(vb)
+
+	hero_hp_lbl = Label.new()
+	hero_hp_lbl.text = "HP: 0/0"
+	hero_hp_lbl.add_theme_color_override("font_color", Color(0.9,0.1,0.1))
+	hero_hp_lbl.add_theme_font_size_override("font_size", 14)
+	vb.add_child(hero_hp_lbl)
+
+	var hp_bg := ColorRect.new(); hp_bg.color = Color(0,0,0,0.85); hp_bg.custom_minimum_size = Vector2(150, 10)
+	var hp_container := MarginContainer.new(); hp_container.add_theme_constant_override("margin_left", 2); hp_container.add_theme_constant_override("margin_top", 2); hp_container.add_theme_constant_override("margin_right", 2); hp_container.add_theme_constant_override("margin_bottom", 2)
+	var hp_holder := Control.new(); hp_holder.custom_minimum_size = Vector2(146, 6)
+	hero_hp_fg = ColorRect.new(); hero_hp_fg.color = Color(0.2,1.0,0.2)
+	# Assemble hp bar
+	vb.add_child(hp_bg)
+	hp_bg.add_child(hp_container)
+	hp_container.add_child(hp_holder)
+	hp_holder.add_child(hero_hp_fg)
+
+	hero_mp_lbl = Label.new()
+	hero_mp_lbl.text = "MP: 0/0"
+	hero_mp_lbl.add_theme_color_override("font_color", Color(0.1,0.5,1.0))
+	hero_mp_lbl.add_theme_font_size_override("font_size", 14)
+	vb.add_child(hero_mp_lbl)
+
+	var mp_bg := ColorRect.new(); mp_bg.color = Color(0,0,0,0.85); mp_bg.custom_minimum_size = Vector2(150, 10)
+	var mp_container := MarginContainer.new(); mp_container.add_theme_constant_override("margin_left", 2); mp_container.add_theme_constant_override("margin_top", 2); mp_container.add_theme_constant_override("margin_right", 2); mp_container.add_theme_constant_override("margin_bottom", 2)
+	var mp_holder := Control.new(); mp_holder.custom_minimum_size = Vector2(146, 6)
+	hero_mp_fg = ColorRect.new(); hero_mp_fg.color = Color(0.3,0.6,1.0)
+	# Assemble mp bar
+	vb.add_child(mp_bg)
+	mp_bg.add_child(mp_container)
+	mp_container.add_child(mp_holder)
+	mp_holder.add_child(hero_mp_fg)
+
+	_update_hero_panel()
+
+func _update_hero_panel() -> void:
+	if hero_hud == null:
+		return
+	var hero: Dictionary = party[0]
+	var s: Dictionary = hero.get("stats", {})
+	var name: String = String(s.get("name", "Adept"))
+	var hp: int = int(s.get("hp", 0))
+	var max_hp: int = int(s.get("max_hp", 1))
+	var mp: int = int(s.get("mp", 0))
+	var max_mp: int = int(s.get("max_mp", 1))
+	hero_hp_lbl.text = "HP: %d/%d" % [hp, max_hp]
+	hero_mp_lbl.text = "MP: %d/%d" % [mp, max_mp]
+	var hp_w: float = clamp(float(hp)/max(1.0, float(max_hp)), 0.0, 1.0)
+	var mp_w: float = clamp(float(mp)/max(1.0, float(max_mp)), 0.0, 1.0)
+	hero_hp_fg.size = Vector2(146.0*hp_w, 6)
+	hero_mp_fg.size = Vector2(146.0*mp_w, 6)
+	if hero_portrait != null:
+		hero_portrait.texture = PortraitLoader.get_portrait_for(name)
+
+func _build_party_huds() -> void:
+	# Create small portrait boxes for all party members in top corners
+	# Max 4 party members: first 2 on top-left, next 2 on top-right
+	party_huds.clear()
+	
+	for i in range(min(4, party.size())):
+		var hud := _create_small_party_hud(i)
+		party_huds.append(hud)
+		cmd_layer.add_child(hud["root"])
+	
+	_update_party_huds()
+
+func _create_small_party_hud(index: int) -> Dictionary:
+	var hud: Dictionary = {}
+	var root := Control.new()
+	root.name = "PartyHUD_%d" % index
+	
+	# Positioning: 0,1 on left; 2,3 on right
+	var is_left := index < 2
+	var row := index % 2
+	
+	if is_left:
+		root.anchor_left = 0.0
+		root.anchor_right = 0.0
+		root.offset_left = 12
+		root.offset_right = 12 + 200  # Smaller width
+	else:
+		root.anchor_left = 1.0
+		root.anchor_right = 1.0
+		root.offset_left = -212
+		root.offset_right = -12
+	
+	root.anchor_top = 0.0
+	root.anchor_bottom = 0.0
+	root.offset_top = 12 + row * 70  # Tighter spacing
+	root.offset_bottom = 12 + row * 70 + 60  # Smaller height
+	
+	# Background panel
+	var back := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.4, 0.75, 0.8, 0.92)  # Cyan-ish matching the screenshot
+	sb.border_color = Color(0,0,0)
+	sb.set_border_width_all(2)
+	sb.corner_radius_top_left = 6
+	sb.corner_radius_top_right = 6
+	sb.corner_radius_bottom_left = 6
+	sb.corner_radius_bottom_right = 6
+	back.anchor_right = 1.0
+	back.anchor_bottom = 1.0
+	back.add_theme_stylebox_override("panel", sb)
+	root.add_child(back)
+	
+	var m := MarginContainer.new()
+	m.add_theme_constant_override("margin_left", 6)
+	m.add_theme_constant_override("margin_top", 4)
+	m.add_theme_constant_override("margin_right", 6)
+	m.add_theme_constant_override("margin_bottom", 4)
+	back.add_child(m)
+	
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 6)
+	m.add_child(h)
+	
+	# Portrait (smaller - 48x48)
+	var portrait_frame := Panel.new()
+	var s2 := StyleBoxFlat.new()
+	s2.bg_color = Color(0.9, 0.9, 0.85)
+	s2.border_color = Color(0,0,0)
+	s2.set_border_width_all(2)
+	portrait_frame.add_theme_stylebox_override("panel", s2)
+	portrait_frame.custom_minimum_size = Vector2(48, 48)
+	h.add_child(portrait_frame)
+	
+	var portrait := TextureRect.new()
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.anchor_right = 1.0
+	portrait.anchor_bottom = 1.0
+	portrait_frame.add_child(portrait)
+	hud["portrait"] = portrait
+	
+	# Stats column
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 2)
+	h.add_child(vb)
+	
+	var hp_lbl := Label.new()
+	hp_lbl.text = "HP: 100/100"
+	hp_lbl.add_theme_color_override("font_color", Color.WHITE)
+	hp_lbl.add_theme_font_size_override("font_size", 12)
+	vb.add_child(hp_lbl)
+	hud["hp_lbl"] = hp_lbl
+	
+	# HP bar
+	var hp_bg := ColorRect.new()
+	hp_bg.color = Color(0,0,0,0.7)
+	hp_bg.custom_minimum_size = Vector2(110, 8)
+	vb.add_child(hp_bg)
+	
+	var hp_container := MarginContainer.new()
+	hp_container.add_theme_constant_override("margin_left", 1)
+	hp_container.add_theme_constant_override("margin_top", 1)
+	hp_container.add_theme_constant_override("margin_right", 1)
+	hp_container.add_theme_constant_override("margin_bottom", 1)
+	hp_bg.add_child(hp_container)
+	
+	var hp_holder := Control.new()
+	hp_holder.custom_minimum_size = Vector2(108, 6)
+	hp_container.add_child(hp_holder)
+	
+	var hp_fg := ColorRect.new()
+	hp_fg.color = Color(0.2, 1.0, 0.3)  # Green
+	hp_fg.size = Vector2(108, 6)
+	hp_holder.add_child(hp_fg)
+	hud["hp_fg"] = hp_fg
+	
+	var mp_lbl := Label.new()
+	mp_lbl.text = "MP: 30/30"
+	mp_lbl.add_theme_color_override("font_color", Color.WHITE)
+	mp_lbl.add_theme_font_size_override("font_size", 12)
+	vb.add_child(mp_lbl)
+	hud["mp_lbl"] = mp_lbl
+	
+	# MP bar
+	var mp_bg := ColorRect.new()
+	mp_bg.color = Color(0,0,0,0.7)
+	mp_bg.custom_minimum_size = Vector2(110, 8)
+	vb.add_child(mp_bg)
+	
+	var mp_container := MarginContainer.new()
+	mp_container.add_theme_constant_override("margin_left", 1)
+	mp_container.add_theme_constant_override("margin_top", 1)
+	mp_container.add_theme_constant_override("margin_right", 1)
+	mp_container.add_theme_constant_override("margin_bottom", 1)
+	mp_bg.add_child(mp_container)
+	
+	var mp_holder := Control.new()
+	mp_holder.custom_minimum_size = Vector2(108, 6)
+	mp_container.add_child(mp_holder)
+	
+	var mp_fg := ColorRect.new()
+	mp_fg.color = Color(0.3, 0.6, 1.0)  # Blue
+	mp_fg.size = Vector2(108, 6)
+	mp_holder.add_child(mp_fg)
+	hud["mp_fg"] = mp_fg
+	
+	hud["root"] = root
+	hud["index"] = index
+	return hud
+
+func _update_party_huds() -> void:
+	for i in range(party_huds.size()):
+		if i >= party.size():
+			party_huds[i]["root"].visible = false
+			continue
+		
+		var hud: Dictionary = party_huds[i]
+		var member: Dictionary = party[i]
+		var s: Dictionary = member.get("stats", {})
+		
+		var name: String = String(s.get("name", "???"))
+		var hp: int = int(s.get("hp", 0))
+		var max_hp: int = int(s.get("max_hp", 1))
+		var mp: int = int(s.get("mp", 0))
+		var max_mp: int = int(s.get("max_mp", 1))
+		
+		hud["hp_lbl"].text = "HP: %d/%d" % [hp, max_hp]
+		hud["mp_lbl"].text = "MP: %d/%d" % [mp, max_mp]
+		
+		var hp_ratio: float = clamp(float(hp) / max(1.0, float(max_hp)), 0.0, 1.0)
+		var mp_ratio: float = clamp(float(mp) / max(1.0, float(max_mp)), 0.0, 1.0)
+		
+		hud["hp_fg"].size = Vector2(108.0 * hp_ratio, 6)
+		hud["mp_fg"].size = Vector2(108.0 * mp_ratio, 6)
+		
+		if hud.has("portrait"):
+			hud["portrait"].texture = PortraitLoader.get_portrait_for(name)
+		
+		hud["root"].visible = member.get("stats", {}).get("hp", 0) > 0
+
 func _start_round_declare() -> void:
 	planned_actions.clear()
 	declare_allies = _alive(party)
 	declare_index = 0
 	if declare_allies.is_empty():
 		return
-	
-	# Show round start message
-	if round == 1:
-		_log("⚔️ BATTLE BEGINS! ⚔️")
-	else:
-		_log("--- Round %d ---" % round)
-	
 	_prompt_next_actor()
 
 func _prompt_next_actor() -> void:
@@ -230,26 +535,19 @@ func _prompt_next_actor() -> void:
 		_commit_declare_phase()
 		return
 	var a: Dictionary = declare_allies[declare_index]
-	
-	# Only let the first character (player) choose actions
-	# Others will auto-attack
-	if declare_index == 0:
-		# Use new CommandMenu UI for player character
-		var actor_name: String = String(a["stats"].get("name", "Adept"))
-		var spells_arr: Array = a.get("spells", [])
-		# Map to include mp_cost for display if missing
-		var spells_for_menu: Array[Dictionary] = []
-		for s in spells_arr:
-			var sd: Dictionary = (s as Dictionary).duplicate(true)
-			if not sd.has("mp_cost") and sd.has("mp"):
-				sd["mp_cost"] = int(sd.get("mp", 0))
-			spells_for_menu.append(sd)
-		var items_for_menu: Array[Dictionary] = _menu_items_for_actor(a)
-		cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
-		current_actor_index = party.find(a)
-	else:
-		# Auto-attack for other party members
-		_queue_player_action({"kind":"attack"})
+	# Use new CommandMenu UI
+	var actor_name: String = String(a["stats"].get("name", "Adept"))
+	var spells_arr: Array = a.get("spells", [])
+	# Map to include mp_cost for display if missing
+	var spells_for_menu: Array[Dictionary] = []
+	for s in spells_arr:
+		var sd: Dictionary = (s as Dictionary).duplicate(true)
+		if not sd.has("mp_cost") and sd.has("mp"):
+			sd["mp_cost"] = int(sd.get("mp", 0))
+		spells_for_menu.append(sd)
+	var items_for_menu: Array[Dictionary] = _menu_items_for_actor(a)
+	cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
+	current_actor_index = party.find(a)
 
 func _infer_target_mode(kind: String, payload: Dictionary) -> String:
 	# If the payload (spell/item) declares an explicit target, honor it
@@ -776,8 +1074,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 	if kind == "defend":
 		actor["defending"] = true
-		_log("🛡️ %s braces to defend!" % actor["stats"].get("name", "?"))
-		_anim(actor, "guard")
+		_log("%s braces to defend!" % actor["stats"].get("name", "?"))
 		_update_all_overlays()
 		return
 
@@ -786,7 +1083,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 		var mp_cost: int   = int(sp.get("mp", 0))
 		var cur_mp: int    = int(actor["stats"].get("mp", 0))
 		if mp_cost > cur_mp:
-			_log("❌ %s tried %s but lacks MP!" % [actor["stats"].get("name", "?"), String(sp.get("name","Spell"))])
+			_log("%s tried %s but lacks MP." % [actor["stats"].get("name", "?"), String(sp.get("name","Spell"))])
 			return
 		# pay MP
 		actor["stats"]["mp"] = max(0, cur_mp - mp_cost)
@@ -797,13 +1094,8 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var maxhp: int = int(t["stats"]["max_hp"])
 			var amount: int = int(ceil(maxhp * float(sp.get("ratio", 0.30))))
 			t["stats"]["hp"] = min(maxhp, int(t["stats"]["hp"]) + amount)
-			_log("✨ %s casts %s and heals %s for %d!" %
+			_log("%s casts %s and heals %s for %d." %
 				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), t["stats"].get("name", "?"), amount])
-			
-			# Visual effects
-			_show_damage_number(t, amount, true)
-			_anim(t, "hurt")  # Use hurt animation for healing too
-			
 			_update_all_overlays()
 			return
 		else:
@@ -816,14 +1108,9 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var power: float = float(sp.get("power", 2.0))
 			var dmg:int = formula.damage(atk, dfn, power, crit, weak, tgt_def)
 			target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
-			_log("⚡ %s casts %s! %s takes %d damage!" %
+			_log("%s casts %s! %s takes %d." %
 				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), target["stats"].get("name", "?"), dmg])
-			
-			# Visual effects
-			_show_damage_number(target, dmg, false)
 			_anim(target, "hurt")
-			_shake(0.3, 5.0)  # Screen shake for spell damage
-			
 			if int(target["stats"]["hp"]) == 0:
 				await _anim_wait(target, "die")
 				_apply_death_visual(target)
@@ -839,20 +1126,12 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var maxhp: int = int(t["stats"].get("max_hp", 1))
 			var before: int = int(t["stats"].get("hp", 0))
 			t["stats"]["hp"] = min(maxhp, before + amount)
-			_log("💊 %s uses %s on %s for +%d HP!" % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
-			
-			# Visual effects
-			_show_damage_number(t, amount, true)
-			_anim(t, "hurt")
-			
+			_log("%s uses %s on %s for +%d HP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
 		elif itype == "mp":
 			var maxmp: int = int(t["stats"].get("max_mp", 0))
 			var before_mp: int = int(t["stats"].get("mp", 0))
 			t["stats"]["mp"] = min(maxmp, before_mp + amount)
-			_log("🔮 %s uses %s on %s for +%d MP!" % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
-			
-			# Visual effects for MP (blue color)
-			_show_damage_number(t, amount, false, Color.BLUE)
+			_log("%s uses %s on %s for +%d MP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
 
 		# decrement inventory
 		var iid: String = String(it.get("id", ""))
@@ -867,30 +1146,12 @@ func _resolve_action_team(p:Dictionary) -> void:
 	var atk:int = int(actor["stats"].get("atk", 10))
 	var dfn:int = int(target["stats"].get("def", 10))
 	var weak := false
-	var crit := (randi() % 20 == 0)  # 5% crit chance
+	var crit := false
 	var tgt_def := bool(target.get("defending", false))
 	var dmg:int = formula.damage(atk, dfn, 2.0, crit, weak, tgt_def)
 	target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
-	
-	# Log with crit message
-	if crit:
-		_log("%s attacks! CRITICAL HIT! %s takes %d damage!" % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
-	else:
-		_log("%s attacks! %s takes %d damage." % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
-	
-	# Visual effects
-	var damage_color = Color.YELLOW if crit else Color.RED
-	_show_damage_number(target, dmg, false, damage_color)
+	_log("%s attacks! %s takes %d damage." % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
 	_anim(target, "hurt")
-	_jab(actor.get("sprite"), int(actor.get("facing", 1)))
-	_shake(0.2, 3.0)  # Screen shake for physical attacks
-	
-	# Sound effects
-	if crit:
-		AudioService.play_sfx("critical_hit")
-	else:
-		AudioService.play_sfx("hit")
-	
 	if int(target["stats"]["hp"]) == 0:
 		await _anim_wait(target, "die")
 		_apply_death_visual(target)
@@ -898,28 +1159,16 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 func _check_end() -> bool:
 	if _is_team_dead(wave):
-		_log("🎉 VICTORY! All foes defeated! 🎉")
-		_log("Party recovers 15% HP...")
+		_log("Victory! All foes defeated.")
 		# heal +15% party
 		for u in party:
-			var old_hp = int(u["stats"]["hp"])
 			u["stats"]["hp"] = min(int(u["stats"]["max_hp"]),
 				int(u["stats"]["hp"]) + int(u["stats"]["max_hp"] * 0.15))
-			var healed = int(u["stats"]["hp"]) - old_hp
-			if healed > 0:
-				_log("%s recovers %d HP!" % [u["stats"].get("name", "?"), healed])
-		
-		# Wait a moment before transitioning
-		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/Fork.tscn")
 		return true
 
 	if _is_team_dead(party):
-		_log("💀 DEFEAT... Your party falls... 💀")
-		_log("Better luck next time!")
-		
-		# Wait a moment before transitioning
-		await get_tree().create_timer(2.0).timeout
+		_log("Defeatâ€¦ your party falls.")
 		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
 		return true
 
@@ -995,9 +1244,6 @@ func _show_command_menu(for_name: String) -> void:
 	menu_visible = true
 	# focus default button
 	btn_attack.grab_focus()
-	
-	# Show turn indicator
-	_log(">>> %s's turn!" % for_name)
 
 func _hide_command_menu() -> void:
 	cmd_root.visible = false
@@ -1085,7 +1331,7 @@ func _on_spell_chosen(sp: Dictionary) -> void:
 	# Decide valid target mode, then either queue or prompt for targets
 	pending_mode = "spell"
 	pending_spell = sp.duplicate()
-	cmd.hide_menu()
+	_hide_command_menu(); spells_root.visible = false; _hide_items_menu()
 	var mode := _infer_target_mode("skill", pending_spell)
 	match mode:
 		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
@@ -1096,9 +1342,10 @@ func _on_spell_chosen(sp: Dictionary) -> void:
 			_show_target_menu(current_actor_index, _alive(wave))
 
 func _on_item_chosen(it: Dictionary) -> void:
-	cmd.hide_menu()
+	_hide_command_menu(); _hide_spells_menu()
 	pending_mode = "item"
 	pending_item = it.duplicate()
+	items_root.visible = false
 	var mode := _infer_target_mode("item", pending_item)
 	match mode:
 		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
@@ -1113,18 +1360,7 @@ func _on_target_chosen(idx: int) -> void:
 	if idx < 0 or idx >= target_candidates.size():
 		_log("Target selection invalid.")
 		_hide_target_menu()
-		# Return to menu for current actor
-		if current_actor_index >= 0 and current_actor_index < party.size():
-			var a: Dictionary = party[current_actor_index]
-			var an: String = String(a["stats"].get("name", "?"))
-			var spells_arr: Array = a.get("spells", [])
-			var spells_for_menu: Array[Dictionary] = []
-			for s in spells_arr:
-				var sd: Dictionary = (s as Dictionary).duplicate(true)
-				if not sd.has("mp_cost") and sd.has("mp"):
-					sd["mp_cost"] = int(sd.get("mp", 0))
-				spells_for_menu.append(sd)
-			cmd.show_for_actor(an, spells_for_menu, _menu_items_for_actor(a))
+		_show_command_menu(String(party[current_actor_index]["stats"].get("name", "?")))
 		return
 
 	var tgt: Dictionary = target_candidates[idx]
@@ -1141,6 +1377,7 @@ func _on_target_chosen(idx: int) -> void:
 func _on_cmd_action(kind: String, id: String) -> void:
 	match kind:
 		"attack":
+			# This path is no longer used - handled by attack_requested signal
 			cmd.hide_menu()
 			_queue_player_action({"kind":"attack"})
 		"defend":
@@ -1164,6 +1401,32 @@ func _on_cmd_action(kind: String, id: String) -> void:
 		_:
 			pass
 
+func _on_attack_requested() -> void:
+	# Hide the command menu
+	cmd.hide_menu()
+	
+	# Get alive enemies to target
+	var alive_enemies := _alive(wave)
+	if alive_enemies.is_empty():
+		# No enemies to attack, just skip
+		_queue_player_action({"kind":"defend"})
+		return
+	
+	# Show target selector for enemies
+	target_selector.show_for_targets(alive_enemies)
+
+func _on_target_selected(target: Dictionary) -> void:
+	# Player selected a target for attack
+	_queue_player_action({"kind":"attack", "target": target})
+
+func _on_target_cancelled() -> void:
+	# Player cancelled target selection, show command menu again
+	var actor: Dictionary = declare_allies[declare_index]
+	var actor_name: String = String(actor["stats"].get("name", "Adept"))
+	var spells_arr: Array = actor.get("spells", [])
+	var items_arr: Array[Dictionary] = _menu_items_for_actor(actor)
+	cmd.show_for_actor(actor_name, spells_arr, items_arr)
+
 func _menu_items_for_actor(actor: Dictionary) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
 	for k in inventory.keys():
@@ -1184,20 +1447,6 @@ func _queue_player_action(act: Dictionary) -> void:
 		entry["target"] = act["target"]
 	planned_actions.append(entry)
 	declare_index += 1
-	
-	# Log the action for feedback
-	var action_name = "attacks"
-	match act.get("kind", "attack"):
-		"attack":
-			action_name = "attacks"
-		"defend":
-			action_name = "defends"
-		"skill":
-			action_name = "casts " + act.get("skill", {}).get("name", "spell")
-		"item":
-			action_name = "uses " + act.get("item", {}).get("name", "item")
-	
-	_log("%s %s!" % [actor["stats"].get("name", "?"), action_name])
 	_prompt_next_actor()
 
 func _populate_items_list() -> void:
@@ -1345,39 +1594,6 @@ func _anim_wait(u: Dictionary, name: String) -> void:
 	if ap != null:
 		await SpriteAnimator.play_and_wait(ap, name)
 
-func _show_damage_number(target: Dictionary, amount: int, is_heal: bool = false, custom_color: Color = Color.WHITE) -> void:
-	var root: Node2D = target.get("root", null)
-	if root == null:
-		return
-	
-	# Create damage number popup
-	var label := Label.new()
-	label.text = str(amount)
-	label.add_theme_font_size_override("font_size", 24)
-	
-	# Set color
-	if custom_color != Color.WHITE:
-		label.add_theme_color_override("font_color", custom_color)
-	elif is_heal:
-		label.add_theme_color_override("font_color", Color.GREEN)
-	else:
-		label.add_theme_color_override("font_color", Color.RED)
-	
-	# Position above the character
-	var pos := root.global_position + Vector2(0, -60)
-	label.global_position = pos
-	label.z_index = 100
-	
-	# Add to scene
-	get_tree().current_scene.add_child(label)
-	
-	# Animate the damage number
-	var tween := create_tween()
-	tween.parallel().tween_property(label, "global_position", pos + Vector2(0, -30), 1.0)
-	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
-	await tween.finished
-	label.queue_free()
-
 func _make_vertical_gradient(size: Vector2i, top: Color, bottom: Color) -> Texture2D:
 	var img := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
 	for y in range(size.y):
@@ -1470,15 +1686,17 @@ func _recolor_clouds(layer: ParallaxLayer, new_color: Color) -> void:
 func _make_vignette_material() -> ShaderMaterial:
 	var shader := Shader.new()
 	shader.code = """
-        shader_type canvas_item;
-        uniform float strength = 0.45;
-        void fragment() {
-            vec2 uv = SCREEN_UV * 2.0 - 1.0;
-            float d = length(uv);
-            float v = smoothstep(0.7, 1.0, d);
-            vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);
-            COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
-        }
+		shader_type canvas_item;
+		// Godot 4: SCREEN_TEXTURE requires an explicit uniform with hint_screen_texture
+		uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+		uniform float strength = 0.45;
+		void fragment() {
+			vec2 uv = SCREEN_UV * 2.0 - 1.0;
+			float d = length(uv);
+			float v = smoothstep(0.7, 1.0, d);
+			vec4 col = texture(SCREEN_TEXTURE, SCREEN_UV);
+			COLOR = mix(col, vec4(0.0, 0.0, 0.0, 1.0), v * strength);
+		}
 	"""
 	var mat := ShaderMaterial.new()
 	mat.shader = shader
@@ -1612,6 +1830,8 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		u["pivot"] = pivot
 
 		var kind: String = String(u.get("art", ""))
+		if ART_ALIAS.has(kind):
+			kind = String(ART_ALIAS[kind])
 		var character := ""
 		if kind.begins_with("hero:"):
 			character = "hero"  # Always use "hero" for hero folder
@@ -1625,7 +1845,7 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 			character = kind
 
 		var animated: AnimatedFrames = AnimatedFrames.new()
-		animated.centered = true  # Center the sprite for easier positioning
+		animated.centered = false
 		animated.character = character
 		animated.set_facing_back(facing > 0)
 		# Build frames immediately since _ready() hasn't been called yet
@@ -1635,13 +1855,13 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		u["sprite"] = animated
 		
 		# Force the sprite to be visible and at the correct position
-		animated.position = Vector2.ZERO  # Keep at origin since it's centered
+		animated.position = Vector2.ZERO
 		animated.visible = true
-		animated.z_index = 10  # Make sure it's on top
-		animated.scale = Vector2(3, 3)  # Scale up the sprite
+		animated.z_index = 0
 
 		if not animated.has_frames():
-			pivot.remove_child(animated)
+			# Defer removal to avoid 'node is busy adding/removing children' errors
+			pivot.remove_child.call_deferred(animated)
 			animated.queue_free()
 			var sprite := Sprite2D.new()
 			sprite.centered = false
@@ -1691,10 +1911,11 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 			if s != null and is_instance_valid(s) and s.get_parent() != pivot:
 				var old_parent := s.get_parent()
 				if old_parent != null:
-					old_parent.remove_child(s)
-				pivot.add_child(s)
-			var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
-			u["anim"] = ap2
+					# Defer reparenting to avoid modification-during-notification errors
+					old_parent.remove_child.call_deferred(s)
+					pivot.add_child.call_deferred(s)
+				var ap2: AnimationPlayer = SpriteAnimator.attach_to_pivot(pivot, facing)
+				u["anim"] = ap2
 
 	if s is AnimatedFrames:
 		(s as AnimatedFrames).set_facing_back(facing > 0)
@@ -1764,19 +1985,9 @@ func _create_unit_overlay(u: Dictionary) -> void:
 		portrait_rect.position = Vector2(-60, -4)
 		portrait_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		portrait_rect.z_index = -1
-		# Map character names to portrait names
-		var portrait_name: String = unit_name
-		match unit_name:
-			"adept":
-				portrait_name = "hero"
-			"rogue":
-				portrait_name = "rogue"
-			"cleric":
-				portrait_name = "healer"
-			"guard":
-				portrait_name = "mage"
-		var portrait_path := "res://art/portraits/%s_portrait_96.png" % portrait_name
-		var portrait_tex: Texture2D = load(portrait_path)
+		# Prefer alias-based portrait lookup (falls back to name_sanitized)
+		var nice_name := String(stats_dict.get("name", "")).strip_edges()
+		var portrait_tex: Texture2D = PortraitLoader.get_portrait_for(nice_name)
 		if portrait_tex is Texture2D:
 			portrait_rect.texture = portrait_tex
 			root.add_child(portrait_rect)
@@ -1816,6 +2027,8 @@ func _update_all_overlays() -> void:
 		_update_unit_overlay(u)
 	for u in wave:
 		_update_unit_overlay(u)
+	_update_hero_panel()
+	_update_party_huds()
 
 # Optional: gray out a dead unit
 func _apply_death_visual(u: Dictionary) -> void:

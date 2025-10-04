@@ -59,6 +59,28 @@ static func make_status_icon(status: String) -> Texture2D:
 	_outline(img, Color(0, 0, 0, 1))
 	return ImageTexture.create_from_image(img)
 
+static func make_arrow(width: int = 16, height: int = 12, color: Color = Color(1.0, 0.9, 0.3, 1.0)) -> Texture2D:
+    var w: int = max(8, width)
+    var h: int = max(8, height)
+    var img: Image = Image.create(w, h, false, Image.FORMAT_RGBA8)
+    img.fill(Color(0, 0, 0, 0))
+    
+    # Draw downward pointing arrow
+    var cx: int = w / 2
+    var tip_y: int = h - 2
+    var base_y: int = 2
+    
+    # Arrow tip (triangle)
+    for y in range(base_y, tip_y + 1):
+        var progress: float = float(y - base_y) / float(tip_y - base_y)
+        var half_width: int = int((1.0 - progress) * (w / 2 - 2))
+        for x in range(cx - half_width, cx + half_width + 1):
+            if x >= 0 and x < w:
+                _set_px(img, x, y, color)
+    
+    _outline(img, Color(0, 0, 0, 1))
+    return ImageTexture.create_from_image(img)
+
 # Palettes
 static func _role_palette(role: String) -> Dictionary:
 	match role.to_lower():

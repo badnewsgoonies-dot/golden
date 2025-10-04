@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 class_name PortraitLoader
 
 static var _cache: Dictionary = {}

@@ -8,6 +8,7 @@ var enemies: Dictionary = {}
 var skills: Dictionary = {}
 var items: Dictionary = {}
 var encounters: Dictionary = {}
+var upgrades: Dictionary = {} # New: Upgrades data
 
 func _ready() -> void:
     load_all()
@@ -18,6 +19,7 @@ func load_all() -> void:
     skills     = _load_json_dict("res://data/skills.json")
     items      = _load_json_dict("res://data/items.json")
     encounters = _load_json_dict("res://data/encounters.json")
+    upgrades   = _load_json_dict("res://data/upgrades.json") # New: Load upgrades
 
 func _load_json_dict(path: String) -> Dictionary:
     var dict: Dictionary = {}

@@ -36,9 +36,11 @@ func _build_frames() -> void:
 		var textures: Array = []
 		for i in range(frame_count):
 			var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
-			var tex: Texture2D = load(path)
-			if tex is Texture2D:
-				textures.append(tex)
+			# Avoid noisy errors by checking existence before load(); use SpriteFactory fallback later
+			if FileAccess.file_exists(path):
+				var tex: Texture2D = load(path)
+				if tex is Texture2D:
+					textures.append(tex)
 		if textures.is_empty():
 			continue
 		frames.add_animation(anim_name)
@@ -48,14 +50,17 @@ func _build_frames() -> void:
 			frames.add_frame(anim_name, tex)
 			total_frames += 1
 	if total_frames == 0:
-		var placeholder = SpriteFrames.new()
-		placeholder.add_animation(PLACEHOLDER_ANIM)
-		placeholder.set_animation_loop(PLACEHOLDER_ANIM, true)
-		placeholder.set_animation_speed(PLACEHOLDER_ANIM, 1.0)
-		placeholder.add_frame(PLACEHOLDER_ANIM, _make_placeholder_texture())
-		sprite_frames = placeholder
-		_has_frames = false  # Mark as no real frames
-		play(PLACEHOLDER_ANIM)
+		# Build a one-frame procedural fallback via SpriteFactory
+		var fallback_tex: Texture2D = _make_fallback_texture()
+		var frames_fallback := SpriteFrames.new()
+		var idle_name := IDLE_BACK if facing_back else IDLE_FRONT
+		frames_fallback.add_animation(idle_name)
+		frames_fallback.set_animation_loop(idle_name, true)
+		frames_fallback.set_animation_speed(idle_name, 1.0)
+		frames_fallback.add_frame(idle_name, fallback_tex)
+		sprite_frames = frames_fallback
+		_has_frames = true
+		play(idle_name)
 		return
 	sprite_frames = frames
 	_has_frames = true
@@ -67,6 +72,21 @@ func _make_placeholder_texture() -> Texture2D:
 		for x in range(48):
 			img.set_pixel(x, y, Color(0.7, 0.7, 0.8, 1.0))
 	return ImageTexture.create_from_image(img)
+
+func _make_fallback_texture() -> Texture2D:
+	# Prefer a themed procedural sprite when assets are missing
+	var role := character.to_lower()
+	match role:
+		"hero":
+			return SpriteFactory.make_humanoid("adept", 3)
+		"rogue":
+			return SpriteFactory.make_humanoid("rogue", 3)
+		"healer":
+			return SpriteFactory.make_humanoid("cleric", 3)
+		"mage":
+			return SpriteFactory.make_humanoid("guard", 3)
+		_:
+			return SpriteFactory.make_monster(role, 3)
 
 func _apply_orientation() -> void:
 	if sprite_frames == null:

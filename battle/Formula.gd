@@ -1,4 +1,4 @@
-﻿class_name Formula
+class_name Formula
 extends RefCounted
 
 const Unit := preload("res://battle/models/Unit.gd")

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#FFD700">
+    
+    <title>Golden Battle Tower</title>
+    <meta name="description" content="An epic battle tower game">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+    
+    <!-- Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" href="splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="splash/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="splash/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        #loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #333;
+            border-top-color: #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #loading-text {
+            font-size: 18px;
+            color: #FFD700;
+        }
+        
+        #install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FFD700;
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        #install-button:hover {
+            background: #FFC700;
+        }
+        
+        /* Prevent iOS bounce */
+        body {
+            position: fixed;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div id="loading-spinner"></div>
+        <div id="loading-text">Loading Golden Battle Tower...</div>
+    </div>
+    
+    <canvas id="canvas" tabindex="-1"></canvas>
+    <button id="install-button">Install App</button>
+    
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => console.log('ServiceWorker registered'))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
+        }
+        
+        // PWA Install Handler
+        let deferredPrompt;
+        const installButton = document.getElementById('install-button');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+        
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            }
+        });
+        
+        // Handle iOS standalone mode
+        if (window.navigator.standalone) {
+            document.body.classList.add('standalone');
+        }
+        
+        // Prevent pull-to-refresh on mobile
+        document.body.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // Initialize Godot Engine
+        const GODOT_CONFIG = {
+            "args": [],
+            "canvasResizePolicy": 2,
+            "executable": "index",
+            "experimentalVK": false,
+            "focusCanvas": true,
+            "gdnativeLibs": []
+        };
+        
+        const engine = new Engine(GODOT_CONFIG);
+        
+        (function() {
+            const loadingElement = document.getElementById('loading');
+            const statusText = document.getElementById('loading-text');
+            
+            let initializing = true;
+            let statusMode = 'hidden';
+            
+            engine.startGame({
+                'onProgress': function (current, total) {
+                    if (total > 0) {
+                        statusText.textContent = 'Loading: ' + Math.floor(current/total * 100) + '%';
+                    } else {
+                        statusText.textContent = 'Loading...';
+                    }
+                },
+            }).then(() => {
+                loadingElement.style.display = 'none';
+            }, (err) => {
+                console.error('Failed to start:', err);
+                statusText.textContent = 'Error: ' + err.message;
+            });
+        })();
+    </script>
+    <script src="index.js"></script>
+</body>
+</html>

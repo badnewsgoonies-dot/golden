@@ -1,4 +1,4 @@
-﻿class_name Action
+class_name Action
 extends RefCounted
 
 const Unit := preload("res://battle/models/Unit.gd")
