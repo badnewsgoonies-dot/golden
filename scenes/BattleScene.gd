@@ -93,30 +93,30 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(320, 620),
-	Vector2(440, 580),
-	Vector2(560, 630),
-	Vector2(680, 590)
+	Vector2(320, 700),
+	Vector2(440, 660),
+	Vector2(560, 710),
+	Vector2(680, 670)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(940, 380),
-	Vector2(1060, 420),
-	Vector2(1180, 360),
-	Vector2(1000, 470)
+	Vector2(950, 480),
+	Vector2(1070, 520),
+	Vector2(1190, 460),
+	Vector2(1030, 560)
 ]
 
-const HERO_SCALE := Vector2(0.72, 0.72)
+const HERO_SCALE := Vector2(0.74, 0.74)
 const ENEMY_SCALE := Vector2(0.95, 0.95)
 const HERO_SHADOW_SCALE := Vector2(0.44, 0.22)
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(200, 760),
-	Vector2(1180, 760),
-	Vector2(1080, 420),
-	Vector2(300, 420)
+	Vector2(220, 780),
+	Vector2(1200, 780),
+	Vector2(1100, 420),
+	Vector2(340, 420)
 ]
 const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
 
