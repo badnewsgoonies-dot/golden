@@ -167,6 +167,7 @@ func _ready() -> void:
 			floor = Polygon2D.new()
 			floor.name = "BattleFloor"
 			stage.add_child(floor)
+			stage.move_child(floor, 0)  # Move to front of children (rendered first)
 		
 		var pts := PackedVector2Array()
 		for p in FLOOR_POINTS:
@@ -174,7 +175,7 @@ func _ready() -> void:
 		
 		(floor as Polygon2D).polygon = pts
 		(floor as Polygon2D).color = FLOOR_COLOR
-		(floor as Polygon2D).z_index = -10 # Draw behind everything
+		(floor as Polygon2D).z_index = -100 # Draw way behind everything
 	
 	# Create selector arrow (initially hidden)
 	selector_arrow = SelectorArrow.new()
@@ -212,16 +213,16 @@ func _ready() -> void:
 		var hero_folder: String = CHARACTER_ART.get(hero_id, hero_id)
 			
 		var sprite := AnimatedFrames.new()
-		sprite.centered = false
 		sprite.character = hero_folder
 		sprite.set_facing_back(true)  # Heroes face away from camera
+		$Stage.add_child(sprite)
 		sprite._build_frames()
 		sprite._apply_orientation()
+		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
 		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
-		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
 		# Create shadow
@@ -245,16 +246,16 @@ func _ready() -> void:
 		var enemy_folder: String = CHARACTER_ART.get(enemy_id, enemy_id)
 
 		var sprite := AnimatedFrames.new()
-		sprite.centered = false
 		sprite.character = enemy_folder
 		sprite.set_facing_back(false)  # Enemies face camera
+		$Stage.add_child(sprite)
 		sprite._build_frames()
 		sprite._apply_orientation()
+		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
 		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
-		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
 		# Create shadow
