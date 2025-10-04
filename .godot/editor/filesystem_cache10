@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759564905
+::res://::1759565122
 BATTLE_FORMATION_CHANGES.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
 BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759560834::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
@@ -593,11 +593,11 @@ Current_thumb.png::CompressedTexture2D::4900536679010685932::1759558881::1759558
 Desired.png::CompressedTexture2D::6971517926116130680::1759558881::1759558881::1::::<><><>0<>0<>a122f91b51f14a32cf81bafbb3bd0069<>res://.godot/imported/Desired.png-0ed9eb110dbcc48d1a2ede08a847c874.ctex::
 Desired_small.png::CompressedTexture2D::9001073066296482551::1759558881::1759558881::1::::<><><>0<>0<>03f4c90cd138be3e8bc4fde13db9bbbf<>res://.godot/imported/Desired_small.png-27761851f985d56f0eff6a7bd2538d52.ctex::
 Desired_thumb.png::CompressedTexture2D::5772610425224863726::1759558881::1759558881::1::::<><><>0<>0<>eabdc40781de6f5c3bb1deb3f5116618<>res://.godot/imported/Desired_thumb.png-19758cac87701d02da4c2f4c999454dd.ctex::
-::res://scenes/::1759564855
+::res://scenes/::1759565081
 background_dark_fantasy.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 background_meadow.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::4161133067723001155::1759558882::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd<>uid://dlvewljxdg2s7::::res://art/battlers/werewolf/idle_f/3.png<>uid://cr8pdx1ej67qd::::res://art/battlers/hero/idle_b/1.png<>uid://cx8hxm0vfq8n1::::res://art/battlers/mage/idle_b/1.png<>uid://dpsjokc2fqhns::::res://art/battlers/healer/idle_b/1.png
-BattleScene.gd::GDScript::8322624433477628582::1759564855::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759565081::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759562993::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759558882::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759558882::0::1::::<>Control<><>0<>0<><>::
