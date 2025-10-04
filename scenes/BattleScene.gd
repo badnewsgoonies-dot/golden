@@ -187,7 +187,7 @@ func _on_menu_action(kind: String, id: String) -> void:
 			_refresh_plan_label()
 			_refresh_end_turn_button()
 			return
-	_refresh_end_turn_button()
+	_on_end_turn() # Automatically end turn after an action is selected
 
 func _on_attack() -> void:
 	if !battle_finished:
