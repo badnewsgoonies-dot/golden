@@ -316,12 +316,12 @@ func _on_defend_pressed() -> void:
 		_update_ui()
 
 func _on_attack() -> void:
-	if !battle_finished and current_acting_hero_index < heroes.size():
+	if !battle_finished and current_acting_hero_index < heroes.size() and !selecting_target:
 		pending_skill = skill_slash
 		_start_target_selection()
 
 func _on_fireball() -> void:
-	if battle_finished or current_acting_hero_index >= heroes.size():
+	if battle_finished or current_acting_hero_index >= heroes.size() or selecting_target:
 		return
 	var current_hero: Unit = heroes[current_acting_hero_index]
 	var cost: int = int(skill_fireball.get("mp_cost", 0))
@@ -536,6 +536,7 @@ func _update_selector_arrow() -> void:
 		print("DEBUG: No target sprite found - hiding arrow")
 
 func _confirm_target_selection() -> void:
+	print("DEBUG: _confirm_target_selection called, selecting_target = ", selecting_target)
 	if !selecting_target:
 		return
 	
@@ -545,10 +546,12 @@ func _confirm_target_selection() -> void:
 			alive_enemies.append(e)
 	
 	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
+		print("DEBUG: No valid targets, canceling selection")
 		_cancel_target_selection()
 		return
 	
 	var target_enemy: Unit = alive_enemies[selected_enemy_index]
+	print("DEBUG: Confirming target selection for: ", target_enemy.name)
 	selecting_target = false
 	selector_arrow.visible = false
 	
