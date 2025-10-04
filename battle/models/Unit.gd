@@ -16,6 +16,7 @@ var buffs: Dictionary = {
 	"FOCUS": 1.0
 }
 var stunned: bool = false
+var skills: Array[String] = [] # <--- ADD THIS LINE
 
 func is_alive() -> bool:
 	return int(stats.get("HP", 0)) > 0

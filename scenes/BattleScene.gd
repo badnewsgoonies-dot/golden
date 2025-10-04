@@ -93,21 +93,21 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(320, 760),
-	Vector2(440, 720),
-	Vector2(560, 780),
-	Vector2(680, 740)
+	Vector2(800, 700),
+	Vector2(850, 740),
+	Vector2(750, 740),
+	Vector2(825, 780)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(950, 540),
-	Vector2(1070, 580),
-	Vector2(1190, 520),
-	Vector2(1030, 640)
+	Vector2(500, 550),
+	Vector2(550, 590),
+	Vector2(450, 590),
+	Vector2(525, 510)
 ]
 
-const HERO_SCALE := Vector2(0.75, 0.75)
-const ENEMY_SCALE := Vector2(0.95, 0.95)
+const HERO_SCALE := Vector2(0.25, 0.25)
+const ENEMY_SCALE := Vector2(0.3, 0.3)
 const HERO_SHADOW_SCALE := Vector2(0.46, 0.24)
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
