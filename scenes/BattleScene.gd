@@ -23,24 +23,33 @@ const CHARACTER_ART := {
 
 @export var keyboard_end_turn_enabled: bool = true
 
-# HUD
-@onready var lbl_hero: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroLabel
-@onready var hero_status_container: HBoxContainer = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroStatus
-@onready var hero_hp_bar: ProgressBar = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroHPBar
-@onready var hero_mp_bar: ProgressBar = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroText/HeroMPBar
-@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyLabel
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyStatus
-@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyHPBar
-@onready var hero_portrait_rect: TextureRect = $UI/HUD/CommandPanel/Panel/Margin/VBox/HeaderRow/HeroInfo/HeroPortraitFrame/HeroPortrait
-@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/Margin/EnemyRow/EnemyInfo/EnemyPortrait
-@onready var plan_label: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/PlanBubble/PlanMargin/PlanVBox/PlanLabel
-@onready var lbl_queue: Label = $UI/HUD/CommandPanel/Panel/Margin/VBox/PlanBubble/PlanMargin/PlanVBox/TurnOrderLabel
-@onready var log_view: RichTextLabel = $UI/HUD/CommandPanel/Panel/Margin/VBox/Log
-@onready var buttons_row: HBoxContainer = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons
-@onready var btn_attack: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Attack
-@onready var btn_fire: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Fireball
-@onready var btn_potion: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/Potion
-@onready var btn_end: Button = $UI/HUD/CommandPanel/Panel/Margin/VBox/Buttons/EndTurn
+# Top HUD - Party Panel (left)
+@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroLabel
+@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroStatus
+@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroHPBar
+@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroMPBar
+@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroPortrait
+
+# Top HUD - Enemy Panel (right)
+@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyLabel
+@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyStatus
+@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyHPBar
+@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyPortrait
+
+# Bottom HUD - Active Character Panel (left)
+@onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
+@onready var active_hp_label: Label = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
+@onready var active_hp_bar: ProgressBar = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPBar
+@onready var active_mp_label: Label = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel
+@onready var active_mp_bar: ProgressBar = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar
+
+# Bottom HUD - Action Panel (right)
+@onready var btn_attack: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack
+@onready var btn_spells: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells
+@onready var btn_items: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
+@onready var btn_defend: Button = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
+@onready var spell_bubble: PanelContainer = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble
+@onready var spell_list_label: Label = $UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin/SpellList/SpellLabel
 
 # Stage
 @onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
@@ -147,34 +156,45 @@ func _ready() -> void:
 		$Overlay.visible = false
 	if overlay_fade:
 		overlay_fade.modulate.a = 0.0
-	if log_view:
-		log_view.bbcode_enabled = true
 	sfx_streams = {"hit": _make_tone(420.0,0.14,0.35), "crit": _make_tone(660.0,0.2,0.4), "miss": _make_tone(240.0,0.16,0.3)}
 
-	# Debug buttons (hidden)
-	if buttons_row:
-		buttons_row.visible = false
+	# Setup new UI buttons
 	if btn_attack:
 		btn_attack.pressed.connect(_on_attack)
-	if btn_fire:
-		btn_fire.pressed.connect(_on_fireball)
-	if btn_potion:
-		btn_potion.pressed.connect(_on_potion)
-	if btn_end:
-		btn_end.pressed.connect(_on_end_turn)
-		btn_end.disabled = true
+	if btn_spells:
+		btn_spells.pressed.connect(_on_spells_pressed)
+	if btn_items:
+		btn_items.pressed.connect(_on_items_pressed)
+	if btn_defend:
+		btn_defend.pressed.connect(_on_defend_pressed)
+	if spell_bubble:
+		spell_bubble.visible = false
 
 	# Command menu
 	command_menu = CommandMenu.new()
 	$UI.add_child(command_menu)
 	command_menu.menu_action.connect(_on_menu_action)
-	_show_command_menu()
+	command_menu.hide_menu()  # Hide it initially since we're using the new UI
 
 	_log("Battle starts! %s vs %s" % [hero.name, enemy.name])
 	_log("=== TARGET SELECTION SYSTEM LOADED ===")
 	print("=== BATTLE SCENE WITH TARGET SELECTION LOADED ===")
 	_update_ui()
-	_update_turn_order([])
+
+func _on_spells_pressed() -> void:
+	if spell_bubble:
+		spell_bubble.visible = !spell_bubble.visible
+
+func _on_items_pressed() -> void:
+	if !potion_used:
+		_on_potion()
+	else:
+		_log("The potion bottle is empty.")
+
+func _on_defend_pressed() -> void:
+	_log("%s braces for impact (Defend)." % hero.name)
+	planned_actions.clear()
+	_on_end_turn()
 
 func _show_command_menu() -> void:
 	var spells: Array[Dictionary] = []
@@ -252,21 +272,16 @@ func _queue_hero_action(skill: Dictionary) -> void:
 	planned_actions.clear()
 	planned_actions.append(Action.new(hero, skill.duplicate(true), enemy))
 	_log("Planned: %s" % String(skill.get("name","Action")))
-	_refresh_plan_label()
-	_refresh_end_turn_button()
 
 func _on_end_turn() -> void:
 	if battle_finished or !hero.is_alive() or !enemy.is_alive():
 		return
 	if planned_actions.is_empty():
 		planned_actions.append(Action.new(hero, skill_slash, enemy))
-	_refresh_plan_label()
-	_refresh_end_turn_button()
 	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
 	var actions: Array = planned_actions.duplicate()
 	actions.append(enemy_action)
 	actions = turn_engine.build_queue(actions)
-	_update_turn_order(actions)
 	for a in actions:
 		if a.actor == hero:
 			var mp: int = int(a.skill.get("mp_cost",0))
@@ -293,11 +308,6 @@ func _on_end_turn() -> void:
 	planned_actions.clear()
 	_check_end()
 	_update_ui()
-	_update_turn_order([])
-	_refresh_plan_label()
-	_refresh_end_turn_button()
-	if !battle_finished:
-		_show_command_menu()
 
 func _unhandled_input(e: InputEvent) -> void:
 	if battle_finished:
@@ -426,8 +436,6 @@ func _confirm_target_selection() -> void:
 	planned_actions.clear()
 	planned_actions.append(Action.new(hero, pending_skill.duplicate(true), target_enemy))
 	_log("Planned: %s → %s" % [String(pending_skill.get("name","Action")), target_enemy.name])
-	_refresh_plan_label()
-	_refresh_end_turn_button()
 	
 	# Automatically end turn after selecting target
 	_on_end_turn()
@@ -436,7 +444,6 @@ func _cancel_target_selection() -> void:
 	selecting_target = false
 	selector_arrow.visible = false
 	pending_skill = {}
-	_show_command_menu()
 
 func _check_end() -> void:
 	if battle_finished:
@@ -456,8 +463,9 @@ func _disable_inputs() -> void:
 	battle_finished = true
 
 func _update_ui() -> void:
+	# Update top panels
 	if lbl_hero and hero:
-		lbl_hero.text = "%s\nHP %d/%d   MP %d/%d" % [hero.name, hero.stats.get("HP",0), hero.max_stats.get("HP",0), hero.stats.get("MP",0), hero.max_stats.get("MP",0)]
+		lbl_hero.text = "HP: %d/%d" % [hero.stats.get("HP",0), hero.max_stats.get("HP",0)]
 		if hero_hp_bar:
 			hero_hp_bar.max_value = hero.max_stats.get("HP",0)
 			hero_hp_bar.value = hero.stats.get("HP",0)
@@ -465,25 +473,35 @@ func _update_ui() -> void:
 			hero_mp_bar.max_value = hero.max_stats.get("MP",0)
 			hero_mp_bar.value = hero.stats.get("MP",0)
 	if lbl_enemy and enemy:
-		lbl_enemy.text = "%s\nHP %d/%d" % [enemy.name, enemy.stats.get("HP",0), enemy.max_stats.get("HP",0)]
+		lbl_enemy.text = "HP: %d/%d" % [enemy.stats.get("HP",0), enemy.max_stats.get("HP",0)]
 		if enemy_hp_bar:
 			enemy_hp_bar.max_value = enemy.max_stats.get("HP",0)
 			enemy_hp_bar.value = enemy.stats.get("HP",0)
+	
+	# Update bottom-left active character panel
+	if active_hp_label and hero:
+		active_hp_label.text = "HP: %d/%d" % [hero.stats.get("HP",0), hero.max_stats.get("HP",0)]
+	if active_mp_label and hero:
+		active_mp_label.text = "MP: %d/%d" % [hero.stats.get("MP",0), hero.max_stats.get("MP",0)]
+	if active_hp_bar and hero:
+		active_hp_bar.max_value = hero.max_stats.get("HP",0)
+		active_hp_bar.value = hero.stats.get("HP",0)
+	if active_mp_bar and hero:
+		active_mp_bar.max_value = hero.max_stats.get("MP",0)
+		active_mp_bar.value = hero.stats.get("MP",0)
+	if active_portrait and hero:
+		active_portrait.texture = PortraitLoader.get_portrait_for(hero.name)
+	
+	# Update portraits
 	if hero_portrait_rect and hero:
 		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(hero.name)
 	if enemy_portrait_rect and enemy:
 		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(enemy.name)
 	_update_sprites()
 	refresh_status_hud()
-	_refresh_plan_label()
-	_refresh_end_turn_button()
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
-	var line: String = msg
-	if !rich and color != Color(1,1,1):
-		line = "[color=%s]%s[/color]" % [color.to_html(false), msg]
-	log_view.append_text(line+"\n")
-	log_view.scroll_following = true
+	# Log to console only since we removed the log view
 	print(msg)
 
 func _update_turn_order(actions: Array) -> void:
