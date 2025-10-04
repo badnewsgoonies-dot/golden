@@ -64,8 +64,8 @@ const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
-@onready var cmd: CommandMenu = preload("res://ui/CommandMenu.gd").new()
-@onready var target_selector: Control = preload("res://ui/TargetSelector.gd").new()
+@onready var cmd: CommandMenu = CommandMenu.new()
+@onready var target_selector: Control = TargetSelector.new()
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
