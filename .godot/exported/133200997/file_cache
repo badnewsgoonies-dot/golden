@@ -1,0 +1,11 @@
+res://scenes/background_dark_fantasy.tscn::5e1ac334f20d369c6bb39a8e1064dbc9::1759558882::res://.godot/exported/133200997/export-2ea0c221b38e3af1e7685d440cfeaca2-background_dark_fantasy.scn
+res://scenes/Battle.tscn::4a32b7899262ac5cfbda951245f9afd6::1759558882::res://.godot/exported/133200997/export-0a8f00b69e52c00a35e6d2d8ccf8f5fa-Battle.scn
+res://scenes/BattleScene.tscn::9a9772a2c74913969f08581f6b52e352::1759558882::res://.godot/exported/133200997/export-b5f03f2d917d86b69d0a4e5a820f6fda-BattleScene.scn
+res://scenes/Boot.tscn::70eaa8cd2b1e854c861b5a6073eb21d6::1759558882::res://.godot/exported/133200997/export-102cd3dba65fd0ae3d53c527c8b2ae68-Boot.scn
+res://scenes/Fork.tscn::3601fafd2db4086c4bbe316be44e5a55::1759558882::res://.godot/exported/133200997/export-2e6b040a87c6fb92c937731c41a29676-Fork.scn
+res://scenes/Main.tscn::10709d636d7ff244af4a856052ec5f90::1759558882::res://.godot/exported/133200997/export-4a24720ee5e787dbe30abc634fa3679d-Main.scn
+res://scenes/SanityTest.tscn::666423f09d2c965c3adbeda04c43d196::1759558882::res://.godot/exported/133200997/export-81faa7471ed4a9d0a43cbc8f92eab590-SanityTest.scn
+res://scenes/TestBattleFormation.tscn::27329328814af328de97193d438be5ad::1759558882::res://.godot/exported/133200997/export-c869e32b8583ea52f0e619a01a4b1e03-TestBattleFormation.scn
+res://scenes/UpgradeSelection.tscn::44e699559c61f336978bdefd07b6a3f6::1759558882::res://.godot/exported/133200997/export-ebb70f6db5a7225b3bd3c9bcc7e74052-UpgradeSelection.scn
+res://ui/battle_theme.tres::3601b79393f60a0458a0137452c4f81c::1759558882::res://.godot/exported/133200997/export-a140e2777e76deae26a7157b5f133cf0-battle_theme.res
+res://ui/DamagePopup.tscn::d83feec186b7736d060a500342aa04cf::1759558882::res://.godot/exported/133200997/export-7487f56cb9faf44eccdbad84841e77c2-DamagePopup.scn
