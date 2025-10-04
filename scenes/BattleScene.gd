@@ -16,19 +16,19 @@ const CHARACTER_ART := {
 	"Gale Rogue": "rogue",
 	"Sunlit Cleric": "healer",
 	"Cleric": "healer",
-	"Iron Guard": "hero",
-	"Guard": "hero",
-	"Hero Warrior": "hero_warrior",
-	"Crimson Mage": "mage_red",
-	"Azure Cleric": "cleric_blue",
-	"Armored Knight": "knight_armored",
-	"Forest Archer": "archer_green",
-	"Elder Wizard": "wizard_elder",
-	"Fierce Barbarian": "barbarian",
+	"Iron Guard": "mage",  # Using mage sprite for guard
+	"Guard": "mage",
+	"Hero Warrior": "hero",
+	"Crimson Mage": "mage",
+	"Azure Cleric": "healer",
+	"Armored Knight": "hero",
+	"Forest Archer": "rogue",
+	"Elder Wizard": "mage",
+	"Fierce Barbarian": "hero",
 	"Primal Werewolf": "werewolf",
 	# Enemy mappings
 	"Goblin": "werewolf",
-	"Slime": "slime"
+	"Slime": "mage"  # Using mage as slime sprite
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -80,15 +80,21 @@ var enemy_sprite: AnimatedFrames
 # command_menu removed - using built-in UI
 var selector_arrow: SelectorArrow
 
-var hero: Unit
-var enemy: Unit
+var heroes: Array[Unit] = []  # Support for multiple heroes
 var enemies: Array[Unit] = []  # Support for multiple enemies
+var hero_sprites: Array[AnimatedFrames] = []  # Sprites for all heroes
+var enemy_sprites: Array[AnimatedFrames] = []  # Sprites for all enemies
+var hero_shadows: Array[Sprite2D] = []  # Shadows for all heroes
+var enemy_shadows: Array[Sprite2D] = []  # Shadows for all enemies
+
 var planned_actions: Array[Action] = []
 var turn_engine: TurnEngine
 var potion_used := false
 var battle_finished := false
 var selecting_target := false
 var selected_enemy_index := 0
+var selected_hero_index := 0  # For when selecting hero targets
+var current_acting_hero_index := 0  # Which hero is currently acting
 var pending_skill: Dictionary = {}
 
 var skill_slash: Dictionary = {}
@@ -96,10 +102,21 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-var hero_origin := Vector2.ZERO
-var enemy_origin := Vector2.ZERO
-var hero_shadow_base := Vector2.ONE
-var enemy_shadow_base := Vector2.ONE
+# Formation positions - like traditional JRPGs
+const HERO_POSITIONS := [
+	Vector2(300, 480),  # Bottom-left
+	Vector2(450, 480),  # Bottom-center-left
+	Vector2(600, 480),  # Bottom-center-right
+	Vector2(750, 480)   # Bottom-right
+]
+
+const ENEMY_POSITIONS := [
+	Vector2(400, 280),  # Top-left
+	Vector2(550, 280),  # Top-center-left
+	Vector2(700, 280),  # Top-center-right
+	Vector2(850, 280)   # Top-right
+]
+
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
 
@@ -108,14 +125,26 @@ func _ready() -> void:
 	skill_slash = _fetch_skill("slash")
 	skill_fireball = _fetch_skill("fireball")
 	
-	if GameManager.current_hero_unit == null:
-		hero = _build_unit_from_character("adept_pyro")
-		GameManager.current_hero_unit = hero
-	else:
-		hero = GameManager.current_hero_unit
+	# Initialize 4 heroes
+	var hero_characters := ["adept_pyro", "gale_rogue", "cleric_blue", "knight_armored"]
+	for i in range(4):
+		var hero_id: String = hero_characters[min(i, hero_characters.size() - 1)]
+		var unit: Unit = _build_unit_from_character(hero_id)
+		# Names will be loaded from the character data
+		heroes.append(unit)
+	
+	# Initialize main hero reference for compatibility
+	if GameManager.current_hero_unit == null and heroes.size() > 0:
+		GameManager.current_hero_unit = heroes[0]
 		
-	enemy = _build_unit_from_enemy("goblin")
-	enemies.append(enemy)  # Add the enemy to the enemies array
+	# Initialize 3 enemies (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "slime"]
+	for i in range(3):
+		var enemy_id: String = enemy_types[min(i, enemy_types.size() - 1)]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		# Give them distinct names
+		unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+		enemies.append(unit)
 
 	# Engine
 	turn_engine = TurnEngine.new()
@@ -136,39 +165,81 @@ func _ready() -> void:
 	$Stage.add_child(selector_arrow)
 	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 
-	# Swap to AnimatedFrames - positions swapped: enemies in back, allies in front
-	var hero_pos: Vector2 = Vector2(400, 420)  # Allies in front
-	var enemy_pos: Vector2 = Vector2(800, 340)  # Enemies in back
+	# Hide placeholder sprites
 	if hero_sprite_placeholder:
-		hero_pos = hero_sprite_placeholder.position
+		hero_sprite_placeholder.visible = false
 	if enemy_sprite_placeholder:
-		enemy_pos = enemy_sprite_placeholder.position
-	var hero_folder: String = String(CHARACTER_ART.get(hero.name, hero.name.to_lower().replace(" ", "_")))
-	hero_sprite = _swap_for_animated_sprite(hero_sprite_placeholder, hero_folder, false)  # Allies face forward
-	var enemy_folder: String = String(CHARACTER_ART.get(enemy.name, enemy.name.to_lower().replace(" ", "_")))
-	enemy_sprite = _swap_for_animated_sprite(enemy_sprite_placeholder, enemy_folder, true)  # Enemies face back
-	if enemy_sprite:
-		enemy_sprite.flip_h = false  # Don't flip enemies
-
-	# Shadows
+		enemy_sprite_placeholder.visible = false
 	if hero_shadow:
-		hero_shadow.texture = SpriteFactory.make_shadow(80, 24)
-		hero_shadow.centered = true
-		hero_shadow.scale = Vector2(1.5, 1.0)
-		hero_shadow.modulate = Color(0, 0, 0, 0.7)
-		hero_shadow.z_index = 9  # Just below hero sprite
+		hero_shadow.visible = false
 	if enemy_shadow:
-		enemy_shadow.texture = SpriteFactory.make_shadow(80, 24)
-		enemy_shadow.centered = true
-		enemy_shadow.scale = Vector2(1.6, 1.0)
-		enemy_shadow.modulate = Color(0, 0, 0, 0.7)
-		enemy_shadow.z_index = 0  # Just below enemy sprite
+		enemy_shadow.visible = false
 	
-	# Origins
-	hero_origin = hero_sprite.position if hero_sprite else hero_pos
-	enemy_origin = enemy_sprite.position if enemy_sprite else enemy_pos
-	hero_shadow_base = hero_shadow.scale if hero_shadow else Vector2.ONE
-	enemy_shadow_base = enemy_shadow.scale if enemy_shadow else Vector2.ONE
+	# Create sprites for all heroes
+	for i in range(heroes.size()):
+		var unit: Unit = heroes[i]
+		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+		
+		# Create sprite
+		var hero_folder: String = String(CHARACTER_ART.get(unit.name, unit.name.to_lower().replace(" ", "_")))
+		var sprite := AnimatedFrames.new()
+		sprite.centered = false
+		sprite.character = hero_folder
+		sprite.set_facing_back(false)  # Heroes face forward
+		sprite._build_frames()
+		sprite._apply_orientation()
+		sprite.position = pos
+		sprite.visible = true
+		sprite.z_index = 10 + i
+		$Stage.add_child(sprite)
+		hero_sprites.append(sprite)
+		
+		# Create shadow
+		var shadow := Sprite2D.new()
+		shadow.texture = SpriteFactory.make_shadow(80, 24)
+		shadow.centered = true
+		shadow.position = pos + Vector2(0, 40)
+		shadow.scale = Vector2(1.5, 1.0)
+		shadow.modulate = Color(0, 0, 0, 0.5)
+		shadow.z_index = 9
+		$Stage.add_child(shadow)
+		hero_shadows.append(shadow)
+	
+	# Create sprites for all enemies
+	for i in range(enemies.size()):
+		var unit: Unit = enemies[i]
+		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+		
+		# Create sprite
+		var enemy_folder: String = String(CHARACTER_ART.get(unit.name.split(" ")[0], unit.name.split(" ")[0].to_lower()))
+		var sprite := AnimatedFrames.new()
+		sprite.centered = false
+		sprite.character = enemy_folder
+		sprite.set_facing_back(true)  # Enemies face back
+		sprite._build_frames()
+		sprite._apply_orientation()
+		sprite.position = pos
+		sprite.visible = true
+		sprite.z_index = 5 + i
+		$Stage.add_child(sprite)
+		enemy_sprites.append(sprite)
+		
+		# Create shadow
+		var shadow := Sprite2D.new()
+		shadow.texture = SpriteFactory.make_shadow(80, 24)
+		shadow.centered = true
+		shadow.position = pos + Vector2(0, 40)
+		shadow.scale = Vector2(1.6, 1.0)
+		shadow.modulate = Color(0, 0, 0, 0.5)
+		shadow.z_index = 4
+		$Stage.add_child(shadow)
+		enemy_shadows.append(shadow)
+	
+	# For compatibility, set single hero/enemy sprites
+	if hero_sprites.size() > 0:
+		hero_sprite = hero_sprites[0]
+	if enemy_sprites.size() > 0:
+		enemy_sprite = enemy_sprites[0]
 
 	# FX/overlay
 	if has_node("Overlay"):
@@ -191,7 +262,9 @@ func _ready() -> void:
 
 	# Command menu removed - using built-in UI buttons
 
-	_log("Battle starts! %s vs %s" % [hero.name, enemy.name])
+	_log("Battle starts! %d heroes vs %d enemies" % [heroes.size(), enemies.size()])
+	_log("Heroes: " + ", ".join(heroes.map(func(h): return h.name)))
+	_log("Enemies: " + ", ".join(enemies.map(func(e): return e.name)))
 	_log("=== TARGET SELECTION SYSTEM LOADED ===")
 	print("=== BATTLE SCENE WITH TARGET SELECTION LOADED ===")
 	_update_ui()
@@ -207,67 +280,109 @@ func _on_items_pressed() -> void:
 		_log("The potion bottle is empty.")
 
 func _on_defend_pressed() -> void:
-	_log("%s braces for impact (Defend)." % hero.name)
-	planned_actions.clear()
-	_on_end_turn()
+	if current_acting_hero_index >= heroes.size():
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	_log("%s braces for impact (Defend)." % current_hero.name)
+	# Queue defend action
+	var defend_skill := {"id": "defend", "name": "Defend", "type": "defend"}
+	planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
+	# Move to next hero
+	current_acting_hero_index += 1
+	if current_acting_hero_index >= heroes.size():
+		_on_end_turn()
+	else:
+		_log("Now selecting action for %s" % heroes[current_acting_hero_index].name)
+		_update_ui()
 
 func _on_attack() -> void:
-	if !battle_finished:
+	if !battle_finished and current_acting_hero_index < heroes.size():
 		pending_skill = skill_slash
 		_start_target_selection()
 
 func _on_fireball() -> void:
-	if battle_finished:
+	if battle_finished or current_acting_hero_index >= heroes.size():
 		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
 	var cost: int = int(skill_fireball.get("mp_cost", 0))
-	if int(hero.stats.get("MP",0)) >= cost:
+	if int(current_hero.stats.get("MP",0)) >= cost:
 		pending_skill = skill_fireball
 		_start_target_selection()
 	else:
 		_log("Not enough MP for Fireball!")
 
 func _on_potion() -> void:
-	if battle_finished:
+	if battle_finished or current_acting_hero_index >= heroes.size():
 		return
 	if potion_used:
 		_log("The potion bottle is empty.")
 		return
-	var cur: int = int(hero.stats.get("HP",0))
-	var max: int = int(hero.max_stats.get("HP",cur))
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	var cur: int = int(current_hero.stats.get("HP",0))
+	var max: int = int(current_hero.max_stats.get("HP",cur))
 	if cur >= max:
 		_log("HP is already full!")
 		return
-	var healed: int = hero.heal(int(ceil(max * POTION_HEAL_PCT)))
+	var healed: int = current_hero.heal(int(ceil(max * POTION_HEAL_PCT)))
 	potion_used = true
-	_log("Hero uses Potion and heals %d HP." % healed)
+	_log("%s uses Potion and heals %d HP." % [current_hero.name, healed])
 	_update_ui()
+	# Move to next hero
+	current_acting_hero_index += 1
+	if current_acting_hero_index >= heroes.size():
+		_on_end_turn()
 
-func _queue_hero_action(skill: Dictionary) -> void:
-	planned_actions.clear()
-	planned_actions.append(Action.new(hero, skill.duplicate(true), enemy))
-	_log("Planned: %s" % String(skill.get("name","Action")))
+func _queue_hero_action(skill: Dictionary, target: Unit) -> void:
+	if current_acting_hero_index >= heroes.size():
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	planned_actions.append(Action.new(current_hero, skill.duplicate(true), target))
+	_log("Planned: %s uses %s on %s" % [current_hero.name, String(skill.get("name","Action")), target.name])
 
 func _on_end_turn() -> void:
-	if battle_finished or !hero.is_alive() or !enemy.is_alive():
+	if battle_finished:
 		return
-	if planned_actions.is_empty():
-		planned_actions.append(Action.new(hero, skill_slash, enemy))
-	var enemy_action: Action = Action.new(enemy, skill_slash.duplicate(true), hero)
-	var actions: Array = planned_actions.duplicate()
-	actions.append(enemy_action)
-	actions = turn_engine.build_queue(actions)
+	
+	# Check if any units are still alive
+	var heroes_alive := heroes.filter(func(h): return h.is_alive())
+	var enemies_alive := enemies.filter(func(e): return e.is_alive())
+	if heroes_alive.is_empty() or enemies_alive.is_empty():
+		_check_end()
+		return
+	
+	# Fill in any missing hero actions with basic attacks
+	for i in range(heroes.size()):
+		var h: Unit = heroes[i]
+		if h.is_alive() and not planned_actions.any(func(a): return a.actor == h):
+			# Default to attacking a random enemy
+			var target: Unit = enemies_alive[randi() % enemies_alive.size()]
+			planned_actions.append(Action.new(h, skill_slash.duplicate(true), target))
+	
+	# Add enemy actions
+	for e in enemies:
+		if e.is_alive():
+			# Enemies target random alive heroes
+			var target: Unit = heroes_alive[randi() % heroes_alive.size()]
+			planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
+	
+	# Build and execute turn queue
+	var actions: Array = turn_engine.build_queue(planned_actions)
+	
+	# Deduct MP costs
 	for a in actions:
-		if a.actor == hero:
-			var mp: int = int(a.skill.get("mp_cost",0))
-			if mp>0:
-				hero.spend_mp(mp)
+		if a.actor in heroes:
+			var mp: int = int(a.skill.get("mp_cost", 0))
+			if mp > 0:
+				a.actor.spend_mp(mp)
+	
+	# Execute actions
 	for a in actions:
-		if a.actor==null or a.target==null or !a.actor.is_alive():
+		if a.actor == null or a.target == null or !a.actor.is_alive() or !a.target.is_alive():
 			continue
 		var res: Dictionary = turn_engine.execute(a)
 		if res.get("hit", false):
-			var dmg: int = int(res.get("damage",0))
-			var crit: bool = bool(res.get("crit",false))
+			var dmg: int = int(res.get("damage", 0))
+			var crit: bool = bool(res.get("crit", false))
 			play_sfx("crit" if crit else "hit")
 			spawn_damage_popup(_sprite_for_unit(a.target), dmg, crit, false)
 			if _sprite_for_unit(a.target) is AnimatedFrames:
@@ -277,9 +392,16 @@ func _on_end_turn() -> void:
 			spawn_damage_popup(_sprite_for_unit(a.target), 0, false, true)
 		await _play_attack_animation(a, res)
 		_update_ui()
-	for line in turn_engine.end_of_round_tick([hero, enemy]):
+		
+	# End of round
+	var all_units: Array = []
+	all_units.append_array(heroes)
+	all_units.append_array(enemies)
+	for line in turn_engine.end_of_round_tick(all_units):
 		_log(line)
+		
 	planned_actions.clear()
+	current_acting_hero_index = 0  # Reset for next round
 	_check_end()
 	_update_ui()
 
@@ -404,12 +526,15 @@ func _confirm_target_selection() -> void:
 	selector_arrow.visible = false
 	
 	# Queue the action with the selected target
-	planned_actions.clear()
-	planned_actions.append(Action.new(hero, pending_skill.duplicate(true), target_enemy))
-	_log("Planned: %s → %s" % [String(pending_skill.get("name","Action")), target_enemy.name])
+	_queue_hero_action(pending_skill, target_enemy)
 	
-	# Automatically end turn after selecting target
-	_on_end_turn()
+	# Move to next hero or end turn
+	current_acting_hero_index += 1
+	if current_acting_hero_index >= heroes.size():
+		_on_end_turn()
+	else:
+		_log("Now selecting action for %s" % heroes[current_acting_hero_index].name)
+		_update_ui()
 
 func _cancel_target_selection() -> void:
 	selecting_target = false
@@ -419,48 +544,65 @@ func _cancel_target_selection() -> void:
 func _check_end() -> void:
 	if battle_finished:
 		return
-	if !enemy.is_alive():
-		_log("Victory! %s is defeated." % enemy.name)
-		show_battle_result(true,0,[])
-	elif !hero.is_alive():
-		_log("Defeat... The hero falls.")
+	
+	var heroes_alive := heroes.filter(func(h): return h.is_alive())
+	var enemies_alive := enemies.filter(func(e): return e.is_alive())
+	
+	if enemies_alive.is_empty():
+		_log("Victory! All enemies defeated.")
+		show_battle_result(true, 0, [])
+		battle_finished = true
+	elif heroes_alive.is_empty():
+		_log("Defeat... All heroes have fallen.")
 		show_battle_result(false)
+		battle_finished = true
 
 func _update_ui() -> void:
-	# Update top panels
-	if lbl_hero and hero:
-		lbl_hero.text = "HP: %d/%d" % [hero.stats.get("HP",0), hero.max_stats.get("HP",0)]
-		if hero_hp_bar:
-			hero_hp_bar.max_value = hero.max_stats.get("HP",0)
-			hero_hp_bar.value = hero.stats.get("HP",0)
-		if hero_mp_bar:
-			hero_mp_bar.max_value = hero.max_stats.get("MP",0)
-			hero_mp_bar.value = hero.stats.get("MP",0)
-	if lbl_enemy and enemy:
-		lbl_enemy.text = "HP: %d/%d" % [enemy.stats.get("HP",0), enemy.max_stats.get("HP",0)]
-		if enemy_hp_bar:
-			enemy_hp_bar.max_value = enemy.max_stats.get("HP",0)
-			enemy_hp_bar.value = enemy.stats.get("HP",0)
+	# Show current hero in active character panel
+	var current_hero: Unit = null
+	if current_acting_hero_index < heroes.size():
+		current_hero = heroes[current_acting_hero_index]
+	elif heroes.size() > 0:
+		current_hero = heroes[0]
+		
+	# Update top panels - show all heroes summary
+	if lbl_hero:
+		var heroes_text := "Heroes: "
+		for h in heroes:
+			if h.is_alive():
+				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
+		lbl_hero.text = heroes_text
+		
+	if lbl_enemy:
+		var enemies_text := "Enemies: "
+		for e in enemies:
+			if e.is_alive():
+				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
+		lbl_enemy.text = enemies_text
 	
 	# Update bottom-left active character panel
-	if active_hp_label and hero:
-		active_hp_label.text = "HP: %d/%d" % [hero.stats.get("HP",0), hero.max_stats.get("HP",0)]
-	if active_mp_label and hero:
-		active_mp_label.text = "MP: %d/%d" % [hero.stats.get("MP",0), hero.max_stats.get("MP",0)]
-	if active_hp_bar and hero:
-		active_hp_bar.max_value = hero.max_stats.get("HP",0)
-		active_hp_bar.value = hero.stats.get("HP",0)
-	if active_mp_bar and hero:
-		active_mp_bar.max_value = hero.max_stats.get("MP",0)
-		active_mp_bar.value = hero.stats.get("MP",0)
-	if active_portrait and hero:
-		active_portrait.texture = PortraitLoader.get_portrait_for(hero.name)
+	if current_hero:
+		if active_hp_label:
+			active_hp_label.text = "HP: %d/%d" % [current_hero.stats.get("HP",0), current_hero.max_stats.get("HP",0)]
+		if active_mp_label:
+			active_mp_label.text = "MP: %d/%d" % [current_hero.stats.get("MP",0), current_hero.max_stats.get("MP",0)]
+		if active_hp_bar:
+			active_hp_bar.max_value = current_hero.max_stats.get("HP",0)
+			active_hp_bar.value = current_hero.stats.get("HP",0)
+		if active_mp_bar:
+			active_mp_bar.max_value = current_hero.max_stats.get("MP",0)
+			active_mp_bar.value = current_hero.stats.get("MP",0)
+		if active_portrait:
+			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
+			
+	# Update portraits with first alive hero/enemy
+	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
+	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
 	
-	# Update portraits
-	if hero_portrait_rect and hero:
-		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(hero.name)
-	if enemy_portrait_rect and enemy:
-		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(enemy.name)
+	if hero_portrait_rect and first_hero:
+		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(first_hero.name)
+	if enemy_portrait_rect and first_enemy:
+		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(first_enemy.name)
 	_update_sprites()
 	refresh_status_hud()
 
@@ -498,24 +640,35 @@ func _build_unit(def: Dictionary) -> Unit:
 	return u
 
 func _update_sprites() -> void:
-	if hero_sprite:
-		hero_sprite.modulate = _base_modulate_for(hero)
-		hero_sprite.position = hero_origin
-		hero_sprite.z_index = 10  # Higher z-index for allies (front)
-		hero_sprite.set_facing_back(false)  # Allies face forward
-	if enemy_sprite:
-		enemy_sprite.modulate = _base_modulate_for(enemy)
-		enemy_sprite.position = enemy_origin
-		enemy_sprite.z_index = 1  # Lower z-index for enemies (back)
-		enemy_sprite.set_facing_back(true)  # Enemies face backward
-	if hero_shadow:
-		hero_shadow.modulate = _shadow_color_for(hero)
-		hero_shadow.scale = hero_shadow_base
-		hero_shadow.z_index = 9  # Maintain z-index
-	if enemy_shadow:
-		enemy_shadow.modulate = _shadow_color_for(enemy)
-		enemy_shadow.scale = enemy_shadow_base
-		enemy_shadow.z_index = 0  # Maintain z-index
+	# Update all hero sprites
+	for i in range(heroes.size()):
+		if i < hero_sprites.size() and hero_sprites[i]:
+			hero_sprites[i].modulate = _base_modulate_for(heroes[i])
+			hero_sprites[i].position = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+			hero_sprites[i].z_index = 10 + i
+			hero_sprites[i].set_facing_back(false)  # Heroes face forward
+		if i < hero_shadows.size() and hero_shadows[i]:
+			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
+			hero_shadows[i].scale = Vector2(1.5, 1.0)
+			hero_shadows[i].z_index = 9
+			
+	# Update all enemy sprites
+	for i in range(enemies.size()):
+		if i < enemy_sprites.size() and enemy_sprites[i]:
+			enemy_sprites[i].modulate = _base_modulate_for(enemies[i])
+			enemy_sprites[i].position = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+			enemy_sprites[i].z_index = 5 + i
+			enemy_sprites[i].set_facing_back(true)  # Enemies face back
+		if i < enemy_shadows.size() and enemy_shadows[i]:
+			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
+			enemy_shadows[i].scale = Vector2(1.6, 1.0)
+			enemy_shadows[i].z_index = 4
+	
+	# Legacy single sprite support
+	if hero_sprite and heroes.size() > 0:
+		hero_sprite.modulate = _base_modulate_for(heroes[0])
+	if enemy_sprite and enemies.size() > 0:
+		enemy_sprite.modulate = _base_modulate_for(enemies[0])
 
 func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
 	if old_sprite == null:
@@ -540,19 +693,47 @@ func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_b
 	return a
 
 func _sprite_for_unit(u: Unit) -> AnimatedFrames:
-	return hero_sprite if u==hero else enemy_sprite if u==enemy else null
+	# Find sprite for this unit
+	var idx: int = heroes.find(u)
+	if idx >= 0 and idx < hero_sprites.size():
+		return hero_sprites[idx]
+	
+	idx = enemies.find(u)
+	if idx >= 0 and idx < enemy_sprites.size():
+		return enemy_sprites[idx]
+	
+	# Fallback for compatibility
+	return hero_sprite if u in heroes else enemy_sprite if u in enemies else null
 
 func _shadow_for_unit(u: Unit) -> Sprite2D:
-	return hero_shadow if u==hero else enemy_shadow if u==enemy else null
+	# Find shadow for this unit
+	var idx: int = heroes.find(u)
+	if idx >= 0 and idx < hero_shadows.size():
+		return hero_shadows[idx]
+	
+	idx = enemies.find(u)
+	if idx >= 0 and idx < enemy_shadows.size():
+		return enemy_shadows[idx]
+		
+	return null
 
 func _origin_for_unit(u: Unit) -> Vector2:
-	return hero_origin if u==hero else enemy_origin if u==enemy else Vector2.ZERO
+	# Get original position for this unit
+	var sprite: AnimatedFrames = _sprite_for_unit(u)
+	if sprite:
+		var idx: int = heroes.find(u)
+		if idx >= 0 and idx < HERO_POSITIONS.size():
+			return HERO_POSITIONS[idx]
+		idx = enemies.find(u)
+		if idx >= 0 and idx < ENEMY_POSITIONS.size():
+			return ENEMY_POSITIONS[idx]
+	return Vector2.ZERO
 
 func _shadow_base_scale(u: Unit) -> Vector2:
-	return hero_shadow_base if u==hero else enemy_shadow_base if u==enemy else Vector2.ONE
+	return Vector2(1.5, 1.0) if u in heroes else Vector2(1.6, 1.0) if u in enemies else Vector2.ONE
 
 func _attack_offset(u: Unit) -> Vector2:
-	return Vector2(90,-18) if u==hero else Vector2(-90,-12) if u==enemy else Vector2.ZERO
+	return Vector2(90,-18) if u in heroes else Vector2(-90,-12) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
@@ -610,8 +791,14 @@ func _shake_sprite(u: Unit) -> void:
 	await t.finished
 
 func refresh_status_hud() -> void:
-	_populate_status_container(hero_status_container, hero)
-	_populate_status_container(enemy_status_container, enemy)
+	# Show status for first alive hero/enemy
+	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
+	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
+	
+	if first_hero:
+		_populate_status_container(hero_status_container, first_hero)
+	if first_enemy:
+		_populate_status_container(enemy_status_container, first_enemy)
 
 func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
 	if container==null:
