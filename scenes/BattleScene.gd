@@ -912,7 +912,7 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
-	if hero.is_alive(): # If victory, go to upgrade selection
+	if victory and heroes.any(func(h): return h.is_alive()): # If victory and any hero alive, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
-	else: # If defeat, go back to main menu or game over screen
-		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene
+	else: # If defeat or all heroes dead, go back to main menu or game over screen
+		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
