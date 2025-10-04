@@ -55,16 +55,17 @@ func _ready() -> void:
 	_update_panels()
 	_start_round()
 
+
 func _build_units() -> void:
 	var hero_ids = ["barbarian", "cleric_blue", "mage_red", "barbarian"]
-	for i in hero_ids.size():
+	for i in range(hero_ids.size()):
 		var def := DataRegistry.characters.get(hero_ids[i], {})
 		var u := _make_unit_from_def(def)
 		if hero_ids.count(hero_ids[i]) > 1:
 			u.name = "%s %s" % [u.name, String.chr(65 + i)]
 		heroes.append(u)
 	var enemy_ids = ["werewolf", "werewolf"]
-	for i in enemy_ids.size():
+	for i in range(enemy_ids.size()):
 		var def_e := DataRegistry.enemies.get(enemy_ids[i], {})
 		var e := _make_unit_from_def(def_e)
 		e.name = "%s %s" % [e.name, String.chr(65 + i)]
@@ -87,7 +88,7 @@ func _make_unit_from_def(def: Dictionary) -> Unit:
 func _build_sprites() -> void:
 	if !has_node("Stage"): return
 	var stage := $Stage
-	for i in heroes.size():
+	for i in range(heroes.size()):
 		var spr := AnimatedFrames.new()
 		spr.character = CHARACTER_ART.get("barbarian", "barbarian")
 		spr.set_facing_back(true)
@@ -98,7 +99,7 @@ func _build_sprites() -> void:
 		spr.z_index = int(spr.position.y)
 		hero_sprites.append(spr)
 		sprite_to_unit[spr] = heroes[i]
-	for i in enemies.size():
+	for i in range(enemies.size()):
 		var spr_e := AnimatedFrames.new()
 		spr_e.character = CHARACTER_ART.get("werewolf", "werewolf")
 		spr_e.set_facing_back(false)
@@ -319,8 +320,8 @@ func _check_battle_end() -> bool:
 func _show_result(victory: bool) -> void:
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.6
-	overlay_title.text = victory ? "Victory!" : "Defeat"
-	overlay_subtitle.text = victory ? "XP +0\nLoot: --" : "You fall in battle."
+	overlay_title.text = "Victory!" if victory else "Defeat"
+	overlay_subtitle.text = ("XP +0\nLoot: --" if victory else "You fall in battle.")
 	_log("Battle concluded: %s" % ("Victory" if victory else "Defeat"))
 
 func _log(msg: String) -> void:
