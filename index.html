@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art RPG Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Battle Scene -->
+        <div class="battle-scene">
+            <div class="enemy-area">
+                <div class="character enemy" id="enemy">
+                    <canvas id="enemy-sprite" width="64" height="64"></canvas>
+                </div>
+            </div>
+            <div class="party-area">
+                <div class="character hero" id="hero">
+                    <canvas id="hero-sprite" width="64" height="64"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- UI Panel -->
+        <div class="ui-panel">
+            <!-- Character Status -->
+            <div class="status-box">
+                <div class="portrait-frame">
+                    <canvas id="hero-portrait" width="80" height="80"></canvas>
+                </div>
+                <div class="status-info">
+                    <div class="character-name">Hero</div>
+                    <div class="hp-container">
+                        <span class="hp-label">HP: <span id="current-hp">90</span>/90</span>
+                        <div class="hp-bar">
+                            <div class="hp-fill" id="hp-bar"></div>
+                        </div>
+                    </div>
+                    <div class="mp-container">
+                        <span class="mp-label">MP: <span id="current-mp">40</span>/40</span>
+                        <div class="mp-bar">
+                            <div class="mp-fill" id="mp-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn" onclick="performAttack()">Attack</button>
+                <button class="action-btn" onclick="useSkill()">Skill</button>
+                <button class="action-btn" onclick="useItem()">Item</button>
+                <button class="action-btn" onclick="flee()">Run</button>
+            </div>
+        </div>
+
+        <!-- Message Box -->
+        <div class="message-box" id="message-box">
+            <p id="message-text">A wild creature appears!</p>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
