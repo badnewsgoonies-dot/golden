@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759549408
+::res://::1759549665
 ::res://art/::1759546640
 portrait_alias.json::JSON::-1::1759546640::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759546640::0::1::::SpriteFactory<>Node<><>0<>0<><>::
@@ -581,12 +581,12 @@ UpgradeSelection.tscn::PackedScene::4011143118926452549::1759546640::0::1::::<><
 ::res://scenes/FX/::1759546640
 damage_number.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::
 selector_arrow.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::
-::res://scripts/::1759549396
+::res://scripts/::1759549411
 ActionQueue.gd::GDScript::2185839688817861664::1759546640::0::1::::<>Node<><>0<>0<><>::
 AIController.gd::GDScript::70837940992478045::1759546640::0::1::::<>Node<><>0<>0<><>::
 AnimatedFrames.gd::GDScript::8422127605135520097::1759547196::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::103620466065294098::1759546640::0::1::::<>EditorScript<><>0<>1<><>::
-Battle.gd::GDScript::4670700875644173182::1759549396::0::1::::<>Node2D<><>0<>0<><>::
+Battle.gd::GDScript::4670700875644173182::1759549411::0::1::::<>Node2D<><>0<>0<><>::
 BattleState.gd::GDScript::2582550453894339558::1759546640::0::1::::<>Node<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759547196::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759546640::0::1::::<>Node<><>0<>0<><>::
@@ -599,10 +599,10 @@ TurnController.gd::GDScript::6297705614612741337::1759546640::0::1::::<>Node<><>
 TurnEngine.gd::GDScript::6229571860048936110::1759546640::0::1::::<>Node<><>0<>0<><>::
 ::res://tools/::1759546640
 PortraitPacker.gd::GDScript::5548992340685240776::1759546640::0::1::::<>EditorScript<><>0<>1<><>::
-::res://ui/::1759549396
+::res://ui/::1759549644
 battle_theme.tres::Theme::-1::1759546640::0::1::::<><><>0<>0<><>::
 CommandMenu.gd::GDScript::6169794612215573323::1759549241::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759546640::0::1::::<>Label<><>0<>0<><>::
 DamagePopup.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::res://ui/DamagePopup.gd
-TargetSelector.gd::GDScript::308375213718999042::1759549396::0::1::::TargetSelector<>Control<><>0<>0<><>::
+TargetSelector.gd::GDScript::308375213718999042::1759549644::0::1::::TargetSelector<>Control<><>0<>0<><>::
 TriangleTail.gd::GDScript::6608720511667477273::1759547196::0::1::::TriangleTail<>Control<><>0<>0<><>::
