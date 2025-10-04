@@ -8,6 +8,7 @@ const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 const CommandMenu := preload("res://ui/CommandMenu.gd")
+const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
 
 const CHARACTER_ART := {
 	"Pyro Adept": "hero",
@@ -58,13 +59,18 @@ const CHARACTER_ART := {
 var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
 var command_menu: CommandMenu
+var selector_arrow: SelectorArrow
 
 var hero: Unit
 var enemy: Unit
+var enemies: Array[Unit] = []  # Support for multiple enemies
 var planned_actions: Array[Action] = []
 var turn_engine: TurnEngine
 var potion_used := false
 var battle_finished := false
+var selecting_target := false
+var selected_enemy_index := 0
+var pending_skill: Dictionary = {}
 
 var skill_slash: Dictionary = {}
 var skill_fireball: Dictionary = {}
@@ -90,10 +96,18 @@ func _ready() -> void:
 		hero = GameManager.current_hero_unit
 		
 	enemy = _build_unit_from_enemy("goblin")
+	enemies.append(enemy)  # Add the enemy to the enemies array
 
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
+	
+	# Create selector arrow (initially hidden)
+	selector_arrow = SelectorArrow.new()
+	selector_arrow.texture = SpriteFactory.make_arrow(16, 12, Color(1.0, 0.9, 0.3))
+	selector_arrow.visible = false
+	selector_arrow.z_index = 100
+	$Stage.add_child(selector_arrow)
 
 	# Swap to AnimatedFrames
 	var hero_pos: Vector2 = Vector2(780, 396)
@@ -170,7 +184,9 @@ func _on_menu_action(kind: String, id: String) -> void:
 		return
 	match kind:
 		"attack":
-			_queue_hero_action(skill_slash)
+			# Start target selection instead of immediately queueing
+			pending_skill = skill_slash
+			_start_target_selection()
 		"spells":
 			if id == "fireball":
 				_on_fireball()
@@ -187,7 +203,9 @@ func _on_menu_action(kind: String, id: String) -> void:
 			_refresh_plan_label()
 			_refresh_end_turn_button()
 			return
-	_on_end_turn() # Automatically end turn after an action is selected
+	# Don't auto-end turn if we're selecting a target
+	if kind != "attack":
+		_on_end_turn()
 
 func _on_attack() -> void:
 	if !battle_finished:
@@ -274,6 +292,24 @@ func _on_end_turn() -> void:
 func _unhandled_input(e: InputEvent) -> void:
 	if battle_finished:
 		return
+	
+	# Handle target selection input
+	if selecting_target:
+		if e.is_action_pressed("ui_left") or e.is_action_pressed("ui_up"):
+			_change_target_selection(-1)
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_right") or e.is_action_pressed("ui_down"):
+			_change_target_selection(1)
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_accept") or e.is_action_pressed("ui_action_1"):
+			_confirm_target_selection()
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_cancel"):
+			_cancel_target_selection()
+			get_viewport().set_input_as_handled()
+		return
+	
+	# Normal input handling when not selecting target
 	if e.is_action_pressed("ui_action_1"):
 		_on_attack()
 	elif e.is_action_pressed("ui_action_2"):
@@ -282,6 +318,99 @@ func _unhandled_input(e: InputEvent) -> void:
 		_on_potion()
 	elif e.is_action_pressed("ui_action_4") and keyboard_end_turn_enabled:
 		_on_end_turn()
+
+func _start_target_selection() -> void:
+	# Hide the command menu
+	if command_menu:
+		command_menu.hide_menu()
+	
+	# Filter out dead enemies
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty():
+		_log("No targets available!")
+		_show_command_menu()
+		return
+	
+	selecting_target = true
+	selected_enemy_index = 0
+	_update_selector_arrow()
+
+func _change_target_selection(direction: int) -> void:
+	if !selecting_target:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty():
+		return
+	
+	selected_enemy_index = (selected_enemy_index + direction) % alive_enemies.size()
+	if selected_enemy_index < 0:
+		selected_enemy_index = alive_enemies.size() - 1
+	
+	_update_selector_arrow()
+
+func _update_selector_arrow() -> void:
+	if !selector_arrow:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
+		selector_arrow.visible = false
+		return
+	
+	var target_enemy: Unit = alive_enemies[selected_enemy_index]
+	var target_sprite: AnimatedFrames = _sprite_for_unit(target_enemy)
+	
+	if target_sprite:
+		selector_arrow.visible = true
+		selector_arrow.position = target_sprite.position + Vector2(0, -60)
+	else:
+		selector_arrow.visible = false
+
+func _confirm_target_selection() -> void:
+	if !selecting_target:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
+		_cancel_target_selection()
+		return
+	
+	var target_enemy: Unit = alive_enemies[selected_enemy_index]
+	selecting_target = false
+	selector_arrow.visible = false
+	
+	# Queue the action with the selected target
+	planned_actions.clear()
+	planned_actions.append(Action.new(hero, pending_skill.duplicate(true), target_enemy))
+	_log("Planned: %s → %s" % [String(pending_skill.get("name","Action")), target_enemy.name])
+	_refresh_plan_label()
+	_refresh_end_turn_button()
+	
+	# Automatically end turn after selecting target
+	_on_end_turn()
+
+func _cancel_target_selection() -> void:
+	selecting_target = false
+	selector_arrow.visible = false
+	pending_skill = {}
+	_show_command_menu()
 
 func _check_end() -> void:
 	if battle_finished:
