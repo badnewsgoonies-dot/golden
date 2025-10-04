@@ -64,8 +64,7 @@ const SpriteAnimator := preload("res://fx/SpriteAnimator.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
-@onready var cmd: CommandMenu = CommandMenu.new()
-@onready var target_selector: Control = TargetSelector.new()
+# CommandMenu and TargetSelector handled by BattleScene
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
@@ -124,14 +123,7 @@ const ART_ALIAS := {
 	"water_slime": "mage_red"
 }
 
-var cmd_root: Control = null
-var cmd_title: Label = null
-var cmd_char: Label = null
-var btn_attack: Button = null
-var btn_spells: Button = null
-var btn_items:  Button = null
-var btn_defend: Button = null
-var menu_visible: bool = false
+# Old command menu variables removed - using BattleScene UI
 
 var spells_root: Control = null
 var spells_list: VBoxContainer = null
@@ -192,15 +184,9 @@ func _ready() -> void:
 	_layout_units()         # spawn sprites & overlays at the desired positions
 	_update_all_overlays()  # set initial HP text/bars
 	add_child(cmd_layer)
-	_build_command_menu()
-	_build_spells_menu()
-	_build_target_menu()
-	_build_items_menu()
-	_build_queue_panel()
-	_build_hero_panel()
-	_build_party_huds()
-
+	
 	# New command menu UI
+	cmd = CommandMenu.new()
 	cmd.visible = false
 	cmd.menu_action.connect(_on_cmd_action)
 	cmd.attack_requested.connect(_on_attack_requested)

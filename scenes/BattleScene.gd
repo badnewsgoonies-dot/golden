@@ -7,7 +7,7 @@ const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
-const CommandMenu := preload("res://ui/CommandMenu.gd")
+# CommandMenu removed - using built-in UI
 const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
 
 const CHARACTER_ART := {
@@ -77,7 +77,7 @@ const CHARACTER_ART := {
 # Runtime objects
 var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
-var command_menu: CommandMenu
+# command_menu removed - using built-in UI
 var selector_arrow: SelectorArrow
 
 var hero: Unit
@@ -189,11 +189,7 @@ func _ready() -> void:
 	if spell_bubble:
 		spell_bubble.visible = false
 
-	# Command menu
-	command_menu = CommandMenu.new()
-	$UI.add_child(command_menu)
-	command_menu.menu_action.connect(_on_menu_action)
-	command_menu.hide_menu()  # Hide it initially since we're using the new UI
+	# Command menu removed - using built-in UI buttons
 
 	_log("Battle starts! %s vs %s" % [hero.name, enemy.name])
 	_log("=== TARGET SELECTION SYSTEM LOADED ===")
@@ -320,10 +316,7 @@ func _unhandled_input(e: InputEvent) -> void:
 func _start_target_selection() -> void:
 	print("DEBUG: _start_target_selection called")
 	_log("[color=lime]→ Select your target! Use arrow keys, press Enter to confirm.[/color]", Color.WHITE, true)
-	# Hide the command menu
-	if command_menu:
-		command_menu.hide_menu()
-		print("DEBUG: Command menu hidden")
+	# Command menu handling removed - using built-in UI
 	
 	# Filter out dead enemies
 	var alive_enemies: Array[Unit] = []
@@ -335,7 +328,7 @@ func _start_target_selection() -> void:
 	
 	if alive_enemies.is_empty():
 		_log("No targets available!")
-		_show_command_menu()
+		# Show built-in UI buttons instead
 		return
 	
 	selecting_target = true

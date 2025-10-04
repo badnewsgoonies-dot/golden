@@ -25,4 +25,4 @@ func _ready() -> void:
 			print("Error: No hero unit found in GameManager to apply upgrade.")
 		
 	# After selection (or simulation), transition back to the Battle scene
-	get_tree().change_scene_to_file("res://scenes/Battle.tscn")
+	get_tree().change_scene_to_file("res://scenes/BattleScene.tscn")
