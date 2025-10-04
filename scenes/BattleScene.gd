@@ -17,8 +17,18 @@ const CHARACTER_ART := {
 	"Cleric": "healer",
 	"Iron Guard": "hero",
 	"Guard": "hero",
-	"Goblin": "goblin",
-	"Slime": "slime"
+	# Map enemy names to available art folders to avoid placeholders
+	"Goblin": "werewolf",
+	"Slime": "slime",
+	# Additional playable/NPC name mappings for richer art coverage
+	"Hero Warrior": "hero_warrior",
+	"Crimson Mage": "mage_red",
+	"Azure Cleric": "cleric_blue",
+	"Armored Knight": "knight_armored",
+	"Forest Archer": "archer_green",
+	"Elder Wizard": "wizard_elder",
+	"Fierce Barbarian": "barbarian",
+	"Primal Werewolf": "werewolf"
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -114,7 +124,12 @@ func _ready() -> void:
 	# Create selector arrow (initially hidden)
 	print("DEBUG: Creating selector arrow")
 	selector_arrow = SelectorArrow.new()
-	selector_arrow.texture = SpriteFactory.make_arrow(32, 24, Color(1.0, 1.0, 0.0))
+	# Prefer authored UI arrow asset; fallback to procedural if missing
+	var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
+	if FileAccess.file_exists(ui_arrow_path):
+		selector_arrow.texture = load(ui_arrow_path)
+	else:
+		selector_arrow.texture = SpriteFactory.make_arrow(32, 24, Color(1.0, 1.0, 0.0))
 	selector_arrow.visible = false
 	selector_arrow.z_index = 1000
 	selector_arrow.scale = Vector2(2.0, 2.0)
