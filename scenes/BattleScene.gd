@@ -811,7 +811,7 @@ func _shake_sprite(u: Unit) -> void:
 		return
 	var o: Vector2 = _origin_for_unit(u)
 	var off: Vector2 = Vector2(12,0)
-	if u==enemy:
+	if u in enemies:
 		off.x = -off.x
 	var t: Tween = create_tween()
 	t.tween_property(s, "position", o+off, 0.05)
