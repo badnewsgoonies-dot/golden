@@ -106,16 +106,14 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - like traditional JRPGs
 const HERO_POSITIONS := [
 	Vector2(300, 480),  # Bottom-left
+	Vector2(250, 550),  # Front-left
 	Vector2(450, 480),  # Bottom-center-left
-	Vector2(600, 480),  # Bottom-center-right
-	Vector2(750, 480)   # Bottom-right
+	Vector2(400, 550)   # Front-center-left
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(400, 280),  # Top-left
-	Vector2(550, 280),  # Top-center-left
-	Vector2(700, 280),  # Top-center-right
-	Vector2(850, 280)   # Top-right
+	Vector2(850, 480),  # Top-right
+	Vector2(800, 550)   # Front-right
 ]
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
@@ -146,8 +144,8 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(min(3, enemy_types.size())):
+	var enemy_types := ["goblin", "water_slime"]
+	for i in range(min(2, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
