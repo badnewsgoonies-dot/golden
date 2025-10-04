@@ -21,11 +21,11 @@ var _sub_mode := ""
 var _tail: Control
 const TailScene := preload("res://ui/TriangleTail.gd")
 
-const COL_BTN := Color(1.0, 0.9, 0.4) # warm yellow
-const COL_BTN_HOVER := Color(1.0, 0.95, 0.55)
-const COL_BTN_PRESSED := Color(0.95, 0.85, 0.35)
-const COL_BORDER := Color(0,0,0)
-const COL_BUBBLE := Color(0.98, 0.93, 0.70)
+const COL_BTN := Color(0.95, 0.85, 0.45) # golden yellow
+const COL_BTN_HOVER := Color(1.0, 0.90, 0.55)
+const COL_BTN_PRESSED := Color(0.85, 0.75, 0.35)
+const COL_BORDER := Color(0.65, 0.55, 0.25)
+const COL_BUBBLE := Color(0.95, 0.85, 0.45)
 
 func _ready() -> void:
 	name = "CommandMenu"
