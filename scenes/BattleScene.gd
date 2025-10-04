@@ -225,7 +225,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(1.0, 1.0)  # Original sprite size for classic look
+		sprite.scale = Vector2(0.4, 0.4)
 		sprite.visible = true
 		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
@@ -238,8 +238,8 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(16, 40)  # Adjusted for original sprite size
-		shadow.scale = Vector2(1.0, 0.6)  # Scale shadow to match original sprite
+		shadow.position = pos + Vector2(0, 20)
+		shadow.scale = Vector2(0.4, 0.2)
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 9
 		$Stage.add_child(shadow)
@@ -260,7 +260,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(1.0, 1.0)  # Original sprite size for classic look
+		sprite.scale = Vector2(0.4, 0.4)
 		sprite.visible = true
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
@@ -273,8 +273,8 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(16, 40)  # Adjusted for original sprite size
-		shadow.scale = Vector2(1.1, 0.6)  # Scale shadow to match original sprite
+		shadow.position = pos + Vector2(0, 20)
+		shadow.scale = Vector2(0.4, 0.2)
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 4
 		$Stage.add_child(shadow)
