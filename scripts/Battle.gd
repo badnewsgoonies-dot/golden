@@ -184,8 +184,9 @@ func _ready() -> void:
 	_layout_units()         # spawn sprites & overlays at the desired positions
 	_update_all_overlays()  # set initial HP text/bars
 	add_child(cmd_layer)
-
+	
 	# New command menu UI
+	cmd = CommandMenu.new()
 	cmd.visible = false
 	cmd.menu_action.connect(_on_cmd_action)
 	cmd.attack_requested.connect(_on_attack_requested)
