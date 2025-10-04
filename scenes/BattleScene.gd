@@ -201,7 +201,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(1.5, 1.5)  # Scale sprites to a reasonable size
+		sprite.scale = Vector2(1.0, 1.0)  # Original sprite size for classic look
 		sprite.visible = true
 		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
@@ -214,8 +214,8 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(24, 64)  # Adjusted for 1.5x scaled sprite
-		shadow.scale = Vector2(1.2, 0.8)  # Scale shadow to match smaller sprite
+		shadow.position = pos + Vector2(16, 40)  # Adjusted for original sprite size
+		shadow.scale = Vector2(1.0, 0.6)  # Scale shadow to match original sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 9
 		$Stage.add_child(shadow)
@@ -235,7 +235,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(1.5, 1.5)  # Scale sprites to a reasonable size
+		sprite.scale = Vector2(1.0, 1.0)  # Original sprite size for classic look
 		sprite.visible = true
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
@@ -248,8 +248,8 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(24, 64)  # Adjusted for 1.5x scaled sprite
-		shadow.scale = Vector2(1.3, 0.8)  # Scale shadow to match smaller sprite
+		shadow.position = pos + Vector2(16, 40)  # Adjusted for original sprite size
+		shadow.scale = Vector2(1.1, 0.6)  # Scale shadow to match original sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 4
 		$Stage.add_child(shadow)
@@ -679,7 +679,7 @@ func _update_sprites() -> void:
 			hero_sprites[i].set_facing_back(false)  # Heroes face forward
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
-			hero_shadows[i].scale = Vector2(1.2, 0.8)  # Adjusted for smaller sprites
+			hero_shadows[i].scale = Vector2(1.0, 0.6)  # Adjusted for original sprites
 			hero_shadows[i].z_index = 9
 			
 	# Update all enemy sprites
@@ -691,7 +691,7 @@ func _update_sprites() -> void:
 			enemy_sprites[i].set_facing_back(true)  # Enemies face back
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
-			enemy_shadows[i].scale = Vector2(1.3, 0.8)  # Adjusted for smaller sprites
+			enemy_shadows[i].scale = Vector2(1.1, 0.6)  # Adjusted for original sprites
 			enemy_shadows[i].z_index = 4
 	
 	# Legacy single sprite support
@@ -711,7 +711,7 @@ func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_b
 	a.centered = old_sprite.centered
 	a.position = old_sprite.position
 	# Apply sprite scale if old sprite doesn't have custom scale
-	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(1.5, 1.5)
+	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(1.0, 1.0)
 	a.z_index = old_sprite.z_index
 	a.flip_h = old_sprite.flip_h
 	a.character = character
@@ -761,11 +761,11 @@ func _origin_for_unit(u: Unit) -> Vector2:
 	return Vector2.ZERO
 
 func _shadow_base_scale(u: Unit) -> Vector2:
-	return Vector2(1.2, 0.8) if u in heroes else Vector2(1.3, 0.8) if u in enemies else Vector2.ONE
+	return Vector2(1.0, 0.6) if u in heroes else Vector2(1.1, 0.6) if u in enemies else Vector2.ONE
 
 func _attack_offset(u: Unit) -> Vector2:
-	# Adjusted offsets for 1.5x scaled sprites
-	return Vector2(135, -27) if u in heroes else Vector2(-135, -18) if u in enemies else Vector2.ZERO
+	# Adjusted offsets for original sprite size
+	return Vector2(90, -18) if u in heroes else Vector2(-90, -12) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
