@@ -201,7 +201,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(2.5, 2.5)  # Scale up the sprite for better visibility
+		sprite.scale = Vector2(6.0, 6.0)  # Scale up the sprite for better visibility
 		sprite.visible = true
 		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
@@ -235,7 +235,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(2.5, 2.5)  # Scale up the sprite for better visibility
+		sprite.scale = Vector2(6.0, 6.0)  # Scale up the sprite for better visibility
 		sprite.visible = true
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
@@ -711,7 +711,7 @@ func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_b
 	a.centered = old_sprite.centered
 	a.position = old_sprite.position
 	# Apply sprite scale if old sprite doesn't have custom scale
-	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(2.5, 2.5)
+	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(6.0, 6.0)
 	a.z_index = old_sprite.z_index
 	a.flip_h = old_sprite.flip_h
 	a.character = character
