@@ -1,6 +1,10 @@
 extends Node2D
 
-# This script orchestrates the entire battle sequence, from setup to conclusion.
+# This script # Top HUD - Party Panel (top right)
+@onready var hero_info_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyHBox
+
+# Top HUD - Enemy Panel (top left)
+@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBoxstrates the entire battle sequence, from setup to conclusion.
 # It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
 
 # --- CONFIGURATION ---
@@ -596,8 +600,8 @@ func _update_ui() -> void:
 		current_hero = heroes[0]
 		
 	# Update top panels - hero and enemy info
-	#_update_info_panel(hero_info_container, heroes, "Hero")
-	#_update_info_panel(enemy_info_container, enemies, "Enemy")
+	_update_info_panel(hero_info_container, heroes, "Hero")
+	_update_info_panel(enemy_info_container, enemies, "Enemy")
 	
 	# Update bottom-left active character panel
 	if current_hero:

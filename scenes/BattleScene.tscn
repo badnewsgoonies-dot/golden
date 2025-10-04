@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://babrnsnp1bvug"]
+[gd_scene load_steps=13 format=3 uid="uid://buekoq2w3lgrh"]
 
 [ext_resource type="Script" uid="uid://dqtsn5gpp5v15" path="res://scenes/BattleScene.gd" id="1"]
 [ext_resource type="Script" uid="uid://bgycgebbvpb63" path="res://scripts/FX.gd" id="2"]
