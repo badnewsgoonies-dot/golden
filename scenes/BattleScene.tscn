@@ -144,16 +144,16 @@ default_color = Color(0.3, 0.25, 0.4, 0.6)
 z_index = -1
 
 [node name="HeroShadow" type="Sprite2D" parent="Stage"]
-position = Vector2(800, 460)
+position = Vector2(400, 460)
 
 [node name="EnemyShadow" type="Sprite2D" parent="Stage"]
-position = Vector2(400, 380)
+position = Vector2(800, 380)
 
 [node name="HeroSprite" type="Sprite2D" parent="Stage"]
-position = Vector2(800, 420)
+position = Vector2(400, 420)
 
 [node name="EnemySprite" type="Sprite2D" parent="Stage"]
-position = Vector2(400, 340)
+position = Vector2(800, 340)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
