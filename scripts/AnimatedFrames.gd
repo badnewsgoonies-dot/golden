@@ -37,7 +37,7 @@ func _build_frames() -> void:
 			continue
 		var textures: Array[Texture2D] = []
 		for i in range(frame_count):
-									var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
+			var path = "res://art/battlers/%s/%s/%s_%s_%d.png" % [character, anim_name, character, anim_name, i]
 			if FileAccess.file_exists(path):
 				var tex: Texture2D = load(path)
 				if tex is Texture2D:

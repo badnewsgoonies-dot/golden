@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759595791
+::res://::1759596235
 BATTLE_FORMATION_CHANGES.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
 BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759560834::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
@@ -588,10 +588,10 @@ UpgradeSelection.tscn::PackedScene::4011143118926452549::1759558882::0::1::::<><
 ::res://scenes/FX/::1759558882
 damage_number.tscn::PackedScene::6732924379923752084::1759593617::0::1::::<><><>0<>0<><>::res://scripts/FXDamageNumber.gd
 selector_arrow.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
-::res://scripts/::1759593356
+::res://scripts/::1759595809
 ActionQueue.gd::GDScript::2185839688817861664::1759593617::0::1::::<>Node<><>0<>0<><>::
 AIController.gd::GDScript::70837940992478045::1759558882::0::1::::<>Node<><>0<>0<><>::
-AnimatedFrames.gd::GDScript::8422127605135520097::1759594409::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
+AnimatedFrames.gd::GDScript::8422127605135520097::1759596205::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
 AssetValidator.gd::GDScript::103620466065294098::1759593617::0::1::::<>EditorScript<><>0<>1<><>::
 BattleState.gd::GDScript::2582550453894339558::1759593617::0::1::::<>Node<><>0<>0<><>::
 Boot.gd::GDScript::5733614598153260337::1759558882::0::1::::<>Node<><>0<>0<><>::
@@ -600,7 +600,7 @@ Formula.gd::GDScript::7123728041291322933::1759558882::0::1::::<>Node<><>0<>0<><
 FX.gd::GDScript::2857231172079987558::1759558882::0::1::::<>Node<><>0<>0<><>::
 FXDamageNumber.gd::GDScript::5790063536421429034::1759593617::0::1::::<>Node2D<><>0<>0<><>::
 PortraitLoader.gd::GDScript::8626782880797348315::1759592076::0::1::::PortraitLoader<>Node<><>0<>0<><>::
-SelectorArrow.gd::GDScript::5445884318294594554::1759593617::0::1::::SelectorArrow<>Sprite2D<><>0<>0<><>::
+SelectorArrow.gd::GDScript::5445884318294594554::1759595809::0::1::::SelectorArrow<>Sprite2D<><>0<>0<><>::
 TurnController.gd::GDScript::6297705614612741337::1759558882::0::1::::<>Node<><>0<>0<><>::
 TurnEngine.gd::GDScript::6229571860048936110::1759558882::0::1::::<>Node<><>0<>0<><>::
 ::res://tools/::1759558882
