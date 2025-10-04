@@ -998,7 +998,11 @@ func _hide_target_menu() -> void:
 # --- Menu callbacks ---
 func _on_menu_attack() -> void:
 	_hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
-	_queue_player_action({"kind":"attack"})
+	# Show target selection for attack instead of auto-queueing
+	pending_mode = "attack"
+	pending_spell.clear()
+	pending_item.clear()
+	_show_target_menu(TM_ENEMY_ONE)
 
 func _on_menu_defend() -> void:
 	_hide_command_menu(); _hide_spells_menu(); _hide_items_menu();
@@ -1058,8 +1062,10 @@ func _on_target_chosen(idx: int) -> void:
 			_queue_player_action({"kind":"skill", "skill": pending_spell, "target": tgt})
 		"item":
 			_queue_player_action({"kind":"item", "item": pending_item, "target": tgt})
+		"attack":
+			_queue_player_action({"kind":"attack", "target": tgt})
 		_:
-			_queue_player_action({"kind":"attack"})
+			_queue_player_action({"kind":"attack", "target": tgt})
 
 # --- New CommandMenu wiring ---
 func _on_cmd_action(kind: String, id: String) -> void:
