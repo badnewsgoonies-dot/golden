@@ -1,13 +1,7 @@
 extends Node2D
 
-# --- UI NODE REFERENCES ---
-# `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
+extends Node2D
 
-# Top HUD - Party Panel (top right)
-@onready var hero_info_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyHBox
-
-# Top HUD - Enemy Panel (top left)
-@onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox
 # It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
 
 # --- CONFIGURATION ---
@@ -42,6 +36,34 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # Top HUD - Enemy Panel (top left)
 @onready var enemy_info_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox
+
+# Bottom HUD - Active Character Panel (left)
+@onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
+@onready var active_hp_label: Label = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
+
+# --- CONFIGURATION ---
+# Set to true to allow ending the turn with a keyboard key (e.g., 'E')
+var keyboard_end_turn_enabled := true
+
+# --- ART ASSETS MAPPING ---
+# Maps character/enemy IDs to their corresponding folder names in `art/battlers/`
+# This allows using different art for units with the same name (e.g., color variations).
+const CHARACTER_ART := {
+	"barbarian": "barbarian",
+	"cleric_blue": "cleric_blue",
+	"mage_red": "mage_red",
+	"werewolf": "werewolf",
+	# Add other character mappings here
+}
+
+# --- PRELOAD SCRIPT CLASSES ---
+const Unit = preload("res://battle/models/Unit.gd")
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const Action = preload("res://battle/models/Action.gd")
+const TurnEngine = preload("res://battle/TurnEngine.gd")
+const SpriteFactory = preload("res://art/SpriteFactory.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
