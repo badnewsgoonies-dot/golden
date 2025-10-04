@@ -103,11 +103,13 @@ func _ready() -> void:
 	add_child(turn_engine)
 	
 	# Create selector arrow (initially hidden)
+	print("DEBUG: Creating selector arrow")
 	selector_arrow = SelectorArrow.new()
 	selector_arrow.texture = SpriteFactory.make_arrow(16, 12, Color(1.0, 0.9, 0.3))
 	selector_arrow.visible = false
 	selector_arrow.z_index = 100
 	$Stage.add_child(selector_arrow)
+	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 
 	# Swap to AnimatedFrames
 	var hero_pos: Vector2 = Vector2(780, 396)
@@ -182,9 +184,11 @@ func _show_command_menu() -> void:
 func _on_menu_action(kind: String, id: String) -> void:
 	if battle_finished:
 		return
+	print("DEBUG: Menu action called - kind: ", kind, " id: ", id)
 	match kind:
 		"attack":
 			# Start target selection instead of immediately queueing
+			print("DEBUG: Starting target selection")
 			pending_skill = skill_slash
 			_start_target_selection()
 		"spells":
@@ -320,15 +324,19 @@ func _unhandled_input(e: InputEvent) -> void:
 		_on_end_turn()
 
 func _start_target_selection() -> void:
+	print("DEBUG: _start_target_selection called")
 	# Hide the command menu
 	if command_menu:
 		command_menu.hide_menu()
+		print("DEBUG: Command menu hidden")
 	
 	# Filter out dead enemies
 	var alive_enemies: Array[Unit] = []
 	for e in enemies:
 		if e.is_alive():
 			alive_enemies.append(e)
+	
+	print("DEBUG: Alive enemies count: ", alive_enemies.size())
 	
 	if alive_enemies.is_empty():
 		_log("No targets available!")
@@ -337,6 +345,7 @@ func _start_target_selection() -> void:
 	
 	selecting_target = true
 	selected_enemy_index = 0
+	print("DEBUG: Target selection started. selecting_target = ", selecting_target)
 	_update_selector_arrow()
 
 func _change_target_selection(direction: int) -> void:
@@ -359,6 +368,7 @@ func _change_target_selection(direction: int) -> void:
 
 func _update_selector_arrow() -> void:
 	if !selector_arrow:
+		print("DEBUG: selector_arrow is null!")
 		return
 	
 	var alive_enemies: Array[Unit] = []
@@ -366,18 +376,26 @@ func _update_selector_arrow() -> void:
 		if e.is_alive():
 			alive_enemies.append(e)
 	
+	print("DEBUG: _update_selector_arrow - alive enemies: ", alive_enemies.size())
+	
 	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
 		selector_arrow.visible = false
+		print("DEBUG: Hiding arrow - no enemies or invalid index")
 		return
 	
 	var target_enemy: Unit = alive_enemies[selected_enemy_index]
 	var target_sprite: AnimatedFrames = _sprite_for_unit(target_enemy)
 	
+	print("DEBUG: Target enemy: ", target_enemy.name if target_enemy else "null")
+	print("DEBUG: Target sprite: ", target_sprite)
+	
 	if target_sprite:
 		selector_arrow.visible = true
 		selector_arrow.position = target_sprite.position + Vector2(0, -60)
+		print("DEBUG: Arrow positioned at: ", selector_arrow.position, " visible: ", selector_arrow.visible)
 	else:
 		selector_arrow.visible = false
+		print("DEBUG: No target sprite found - hiding arrow")
 
 func _confirm_target_selection() -> void:
 	if !selecting_target:
