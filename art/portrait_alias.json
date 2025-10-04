@@ -1,5 +1,6 @@
 ﻿{
   "pyro adept": "res://art/portraits/hero_portrait_96.png",
   "gale rogue": "res://art/portraits/rogue_portrait_96.png",
-  "sunlit cleric": "res://art/portraits/healer_portrait_96.png"
+  "sunlit cleric": "res://art/portraits/healer_portrait_96.png",
+  "goblin": "res://art/portraits/goblin_portrait_96.png"
 }

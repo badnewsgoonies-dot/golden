@@ -1,2 +1,2 @@
-res://scripts/AnimatedFrames.gd
-res://scripts/Battle.gd
+res://scenes/BattleScene.gd
+res://ui/CommandMenu.gd

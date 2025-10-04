@@ -13,6 +13,7 @@ static func _ensure_loaded() -> void:
 		var txt := FileAccess.get_file_as_string(path)
 		var parsed = JSON.parse_string(txt)
 		if typeof(parsed) == TYPE_DICTIONARY:
+			# Normalize keys to lowercase
 			for k in parsed.keys():
 				_alias[String(k).to_lower()] = String(parsed[k])
 	_loaded = true
@@ -25,11 +26,14 @@ static func get_portrait_for(name: String) -> Texture2D:
 	if _cache.has(key):
 		return _cache[key]
 	var tex: Texture2D = null
+	# 1) alias lookup
 	if _alias.has(key):
 		tex = _try_load_texture(_alias[key])
+	# 2) direct filename using snake case
 	if tex == null:
 		var snake := key.replace(" ", "_")
 		tex = _try_load_texture("res://art/portraits/%s_portrait_96.png" % snake)
+	# 3) fallback
 	_cache[key] = tex
 	return tex
 

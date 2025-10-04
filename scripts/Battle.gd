@@ -24,7 +24,7 @@ var party: Array[Dictionary] = [
 	  ]
 	},
 	{ "stats": {"name":"Rogue","max_hp":80,"hp":80,"atk":18,"def":7,"spd":16,"max_mp":0,"mp":0},
-	  "defending":false, "sprite": null, "art":"hero:rogue", "spells":[]
+	  "defending":false, "sprite": null, "art":"rogue:rogue", "spells":[]
 	},
 	{ "stats": {"name":"Cleric","max_hp":90,"hp":90,"atk":12,"def":9,"spd":10,"max_mp":18,"mp":18},
 	  "defending":false, "sprite": null, "art":"healer:healer",
@@ -216,6 +216,13 @@ func _start_round_declare() -> void:
 	declare_index = 0
 	if declare_allies.is_empty():
 		return
+	
+	# Show round start message
+	if round == 1:
+		_log("⚔️ BATTLE BEGINS! ⚔️")
+	else:
+		_log("--- Round %d ---" % round)
+	
 	_prompt_next_actor()
 
 func _prompt_next_actor() -> void:
@@ -223,19 +230,26 @@ func _prompt_next_actor() -> void:
 		_commit_declare_phase()
 		return
 	var a: Dictionary = declare_allies[declare_index]
-	# Use new CommandMenu UI
-	var actor_name: String = String(a["stats"].get("name", "Adept"))
-	var spells_arr: Array = a.get("spells", [])
-	# Map to include mp_cost for display if missing
-	var spells_for_menu: Array[Dictionary] = []
-	for s in spells_arr:
-		var sd: Dictionary = (s as Dictionary).duplicate(true)
-		if not sd.has("mp_cost") and sd.has("mp"):
-			sd["mp_cost"] = int(sd.get("mp", 0))
-		spells_for_menu.append(sd)
-	var items_for_menu: Array[Dictionary] = _menu_items_for_actor(a)
-	cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
-	current_actor_index = party.find(a)
+	
+	# Only let the first character (player) choose actions
+	# Others will auto-attack
+	if declare_index == 0:
+		# Use new CommandMenu UI for player character
+		var actor_name: String = String(a["stats"].get("name", "Adept"))
+		var spells_arr: Array = a.get("spells", [])
+		# Map to include mp_cost for display if missing
+		var spells_for_menu: Array[Dictionary] = []
+		for s in spells_arr:
+			var sd: Dictionary = (s as Dictionary).duplicate(true)
+			if not sd.has("mp_cost") and sd.has("mp"):
+				sd["mp_cost"] = int(sd.get("mp", 0))
+			spells_for_menu.append(sd)
+		var items_for_menu: Array[Dictionary] = _menu_items_for_actor(a)
+		cmd.show_for_actor(actor_name, spells_for_menu, items_for_menu)
+		current_actor_index = party.find(a)
+	else:
+		# Auto-attack for other party members
+		_queue_player_action({"kind":"attack"})
 
 func _infer_target_mode(kind: String, payload: Dictionary) -> String:
 	# If the payload (spell/item) declares an explicit target, honor it
@@ -762,7 +776,8 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 	if kind == "defend":
 		actor["defending"] = true
-		_log("%s braces to defend!" % actor["stats"].get("name", "?"))
+		_log("🛡️ %s braces to defend!" % actor["stats"].get("name", "?"))
+		_anim(actor, "guard")
 		_update_all_overlays()
 		return
 
@@ -771,7 +786,7 @@ func _resolve_action_team(p:Dictionary) -> void:
 		var mp_cost: int   = int(sp.get("mp", 0))
 		var cur_mp: int    = int(actor["stats"].get("mp", 0))
 		if mp_cost > cur_mp:
-			_log("%s tried %s but lacks MP." % [actor["stats"].get("name", "?"), String(sp.get("name","Spell"))])
+			_log("❌ %s tried %s but lacks MP!" % [actor["stats"].get("name", "?"), String(sp.get("name","Spell"))])
 			return
 		# pay MP
 		actor["stats"]["mp"] = max(0, cur_mp - mp_cost)
@@ -782,8 +797,13 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var maxhp: int = int(t["stats"]["max_hp"])
 			var amount: int = int(ceil(maxhp * float(sp.get("ratio", 0.30))))
 			t["stats"]["hp"] = min(maxhp, int(t["stats"]["hp"]) + amount)
-			_log("%s casts %s and heals %s for %d." %
+			_log("✨ %s casts %s and heals %s for %d!" %
 				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), t["stats"].get("name", "?"), amount])
+			
+			# Visual effects
+			_show_damage_number(t, amount, true)
+			_anim(t, "hurt")  # Use hurt animation for healing too
+			
 			_update_all_overlays()
 			return
 		else:
@@ -796,9 +816,14 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var power: float = float(sp.get("power", 2.0))
 			var dmg:int = formula.damage(atk, dfn, power, crit, weak, tgt_def)
 			target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
-			_log("%s casts %s! %s takes %d." %
+			_log("⚡ %s casts %s! %s takes %d damage!" %
 				[actor["stats"].get("name", "?"), String(sp.get("name","Spell")), target["stats"].get("name", "?"), dmg])
+			
+			# Visual effects
+			_show_damage_number(target, dmg, false)
 			_anim(target, "hurt")
+			_shake(0.3, 5.0)  # Screen shake for spell damage
+			
 			if int(target["stats"]["hp"]) == 0:
 				await _anim_wait(target, "die")
 				_apply_death_visual(target)
@@ -814,12 +839,20 @@ func _resolve_action_team(p:Dictionary) -> void:
 			var maxhp: int = int(t["stats"].get("max_hp", 1))
 			var before: int = int(t["stats"].get("hp", 0))
 			t["stats"]["hp"] = min(maxhp, before + amount)
-			_log("%s uses %s on %s for +%d HP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
+			_log("💊 %s uses %s on %s for +%d HP!" % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
+			
+			# Visual effects
+			_show_damage_number(t, amount, true)
+			_anim(t, "hurt")
+			
 		elif itype == "mp":
 			var maxmp: int = int(t["stats"].get("max_mp", 0))
 			var before_mp: int = int(t["stats"].get("mp", 0))
 			t["stats"]["mp"] = min(maxmp, before_mp + amount)
-			_log("%s uses %s on %s for +%d MP." % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
+			_log("🔮 %s uses %s on %s for +%d MP!" % [actor["stats"].get("name", "?"), String(it.get("name","Item")), t["stats"].get("name", "?"), amount])
+			
+			# Visual effects for MP (blue color)
+			_show_damage_number(t, amount, false, Color.BLUE)
 
 		# decrement inventory
 		var iid: String = String(it.get("id", ""))
@@ -834,12 +867,30 @@ func _resolve_action_team(p:Dictionary) -> void:
 	var atk:int = int(actor["stats"].get("atk", 10))
 	var dfn:int = int(target["stats"].get("def", 10))
 	var weak := false
-	var crit := false
+	var crit := (randi() % 20 == 0)  # 5% crit chance
 	var tgt_def := bool(target.get("defending", false))
 	var dmg:int = formula.damage(atk, dfn, 2.0, crit, weak, tgt_def)
 	target["stats"]["hp"] = max(0, int(target["stats"]["hp"]) - dmg)
-	_log("%s attacks! %s takes %d damage." % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
+	
+	# Log with crit message
+	if crit:
+		_log("%s attacks! CRITICAL HIT! %s takes %d damage!" % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
+	else:
+		_log("%s attacks! %s takes %d damage." % [actor["stats"].get("name", "?"), target["stats"].get("name", "?"), dmg])
+	
+	# Visual effects
+	var damage_color = Color.YELLOW if crit else Color.RED
+	_show_damage_number(target, dmg, false, damage_color)
 	_anim(target, "hurt")
+	_jab(actor.get("sprite"), int(actor.get("facing", 1)))
+	_shake(0.2, 3.0)  # Screen shake for physical attacks
+	
+	# Sound effects
+	if crit:
+		AudioService.play_sfx("critical_hit")
+	else:
+		AudioService.play_sfx("hit")
+	
 	if int(target["stats"]["hp"]) == 0:
 		await _anim_wait(target, "die")
 		_apply_death_visual(target)
@@ -847,16 +898,28 @@ func _resolve_action_team(p:Dictionary) -> void:
 
 func _check_end() -> bool:
 	if _is_team_dead(wave):
-		_log("Victory! All foes defeated.")
+		_log("🎉 VICTORY! All foes defeated! 🎉")
+		_log("Party recovers 15% HP...")
 		# heal +15% party
 		for u in party:
+			var old_hp = int(u["stats"]["hp"])
 			u["stats"]["hp"] = min(int(u["stats"]["max_hp"]),
 				int(u["stats"]["hp"]) + int(u["stats"]["max_hp"] * 0.15))
+			var healed = int(u["stats"]["hp"]) - old_hp
+			if healed > 0:
+				_log("%s recovers %d HP!" % [u["stats"].get("name", "?"), healed])
+		
+		# Wait a moment before transitioning
+		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/Fork.tscn")
 		return true
 
 	if _is_team_dead(party):
-		_log("Defeatâ€¦ your party falls.")
+		_log("💀 DEFEAT... Your party falls... 💀")
+		_log("Better luck next time!")
+		
+		# Wait a moment before transitioning
+		await get_tree().create_timer(2.0).timeout
 		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
 		return true
 
@@ -932,6 +995,9 @@ func _show_command_menu(for_name: String) -> void:
 	menu_visible = true
 	# focus default button
 	btn_attack.grab_focus()
+	
+	# Show turn indicator
+	_log(">>> %s's turn!" % for_name)
 
 func _hide_command_menu() -> void:
 	cmd_root.visible = false
@@ -1019,7 +1085,7 @@ func _on_spell_chosen(sp: Dictionary) -> void:
 	# Decide valid target mode, then either queue or prompt for targets
 	pending_mode = "spell"
 	pending_spell = sp.duplicate()
-	_hide_command_menu(); spells_root.visible = false; _hide_items_menu()
+	cmd.hide_menu()
 	var mode := _infer_target_mode("skill", pending_spell)
 	match mode:
 		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
@@ -1030,10 +1096,9 @@ func _on_spell_chosen(sp: Dictionary) -> void:
 			_show_target_menu(current_actor_index, _alive(wave))
 
 func _on_item_chosen(it: Dictionary) -> void:
-	_hide_command_menu(); _hide_spells_menu()
+	cmd.hide_menu()
 	pending_mode = "item"
 	pending_item = it.duplicate()
-	items_root.visible = false
 	var mode := _infer_target_mode("item", pending_item)
 	match mode:
 		TM_ENEMY_ALL, TM_ALLY_ALL, TM_SELF:
@@ -1048,7 +1113,18 @@ func _on_target_chosen(idx: int) -> void:
 	if idx < 0 or idx >= target_candidates.size():
 		_log("Target selection invalid.")
 		_hide_target_menu()
-		_show_command_menu(String(party[current_actor_index]["stats"].get("name", "?")))
+		# Return to menu for current actor
+		if current_actor_index >= 0 and current_actor_index < party.size():
+			var a: Dictionary = party[current_actor_index]
+			var an: String = String(a["stats"].get("name", "?"))
+			var spells_arr: Array = a.get("spells", [])
+			var spells_for_menu: Array[Dictionary] = []
+			for s in spells_arr:
+				var sd: Dictionary = (s as Dictionary).duplicate(true)
+				if not sd.has("mp_cost") and sd.has("mp"):
+					sd["mp_cost"] = int(sd.get("mp", 0))
+				spells_for_menu.append(sd)
+			cmd.show_for_actor(an, spells_for_menu, _menu_items_for_actor(a))
 		return
 
 	var tgt: Dictionary = target_candidates[idx]
@@ -1108,6 +1184,20 @@ func _queue_player_action(act: Dictionary) -> void:
 		entry["target"] = act["target"]
 	planned_actions.append(entry)
 	declare_index += 1
+	
+	# Log the action for feedback
+	var action_name = "attacks"
+	match act.get("kind", "attack"):
+		"attack":
+			action_name = "attacks"
+		"defend":
+			action_name = "defends"
+		"skill":
+			action_name = "casts " + act.get("skill", {}).get("name", "spell")
+		"item":
+			action_name = "uses " + act.get("item", {}).get("name", "item")
+	
+	_log("%s %s!" % [actor["stats"].get("name", "?"), action_name])
 	_prompt_next_actor()
 
 func _populate_items_list() -> void:
@@ -1254,6 +1344,39 @@ func _anim_wait(u: Dictionary, name: String) -> void:
 	var ap: AnimationPlayer = u.get("anim", null)
 	if ap != null:
 		await SpriteAnimator.play_and_wait(ap, name)
+
+func _show_damage_number(target: Dictionary, amount: int, is_heal: bool = false, custom_color: Color = Color.WHITE) -> void:
+	var root: Node2D = target.get("root", null)
+	if root == null:
+		return
+	
+	# Create damage number popup
+	var label := Label.new()
+	label.text = str(amount)
+	label.add_theme_font_size_override("font_size", 24)
+	
+	# Set color
+	if custom_color != Color.WHITE:
+		label.add_theme_color_override("font_color", custom_color)
+	elif is_heal:
+		label.add_theme_color_override("font_color", Color.GREEN)
+	else:
+		label.add_theme_color_override("font_color", Color.RED)
+	
+	# Position above the character
+	var pos := root.global_position + Vector2(0, -60)
+	label.global_position = pos
+	label.z_index = 100
+	
+	# Add to scene
+	get_tree().current_scene.add_child(label)
+	
+	# Animate the damage number
+	var tween := create_tween()
+	tween.parallel().tween_property(label, "global_position", pos + Vector2(0, -30), 1.0)
+	tween.parallel().tween_property(label, "modulate:a", 0.0, 1.0)
+	await tween.finished
+	label.queue_free()
 
 func _make_vertical_gradient(size: Vector2i, top: Color, bottom: Color) -> Texture2D:
 	var img := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
@@ -1502,7 +1625,7 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 			character = kind
 
 		var animated: AnimatedFrames = AnimatedFrames.new()
-		animated.centered = false
+		animated.centered = true  # Center the sprite for easier positioning
 		animated.character = character
 		animated.set_facing_back(facing > 0)
 		# Build frames immediately since _ready() hasn't been called yet
@@ -1512,9 +1635,10 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		u["sprite"] = animated
 		
 		# Force the sprite to be visible and at the correct position
-		animated.position = Vector2.ZERO
+		animated.position = Vector2.ZERO  # Keep at origin since it's centered
 		animated.visible = true
-		animated.z_index = 0
+		animated.z_index = 10  # Make sure it's on top
+		animated.scale = Vector2(3, 3)  # Scale up the sprite
 
 		if not animated.has_frames():
 			pivot.remove_child(animated)
@@ -1645,6 +1769,8 @@ func _create_unit_overlay(u: Dictionary) -> void:
 		match unit_name:
 			"adept":
 				portrait_name = "hero"
+			"rogue":
+				portrait_name = "rogue"
 			"cleric":
 				portrait_name = "healer"
 			"guard":

@@ -1,4 +1,4 @@
 ﻿extends Node
 
 func _ready() -> void:
-	get_tree().change_scene_to_file("res://scenes/Battle.tscn")
+	get_tree().change_scene_to_file("res://scenes/BattleScene.tscn")
