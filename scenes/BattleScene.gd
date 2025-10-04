@@ -105,9 +105,10 @@ func _ready() -> void:
 	# Create selector arrow (initially hidden)
 	print("DEBUG: Creating selector arrow")
 	selector_arrow = SelectorArrow.new()
-	selector_arrow.texture = SpriteFactory.make_arrow(16, 12, Color(1.0, 0.9, 0.3))
+	selector_arrow.texture = SpriteFactory.make_arrow(32, 24, Color(1.0, 1.0, 0.0))
 	selector_arrow.visible = false
-	selector_arrow.z_index = 100
+	selector_arrow.z_index = 1000
+	selector_arrow.scale = Vector2(2.0, 2.0)
 	$Stage.add_child(selector_arrow)
 	print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 
@@ -170,6 +171,8 @@ func _ready() -> void:
 	_show_command_menu()
 
 	_log("Battle starts! %s vs %s" % [hero.name, enemy.name])
+	_log("=== TARGET SELECTION SYSTEM LOADED ===")
+	print("=== BATTLE SCENE WITH TARGET SELECTION LOADED ===")
 	_update_ui()
 	_update_turn_order([])
 
@@ -185,12 +188,15 @@ func _on_menu_action(kind: String, id: String) -> void:
 	if battle_finished:
 		return
 	print("DEBUG: Menu action called - kind: ", kind, " id: ", id)
+	_log("[color=yellow]Menu action: %s[/color]" % kind, Color.WHITE, true)
 	match kind:
 		"attack":
 			# Start target selection instead of immediately queueing
 			print("DEBUG: Starting target selection")
+			_log("[color=cyan]ENTERING TARGET SELECTION MODE[/color]", Color.WHITE, true)
 			pending_skill = skill_slash
 			_start_target_selection()
+			return  # Important: return early to prevent _on_end_turn()
 		"spells":
 			if id == "fireball":
 				_on_fireball()
@@ -325,6 +331,7 @@ func _unhandled_input(e: InputEvent) -> void:
 
 func _start_target_selection() -> void:
 	print("DEBUG: _start_target_selection called")
+	_log("[color=lime]→ Select your target! Use arrow keys, press Enter to confirm.[/color]", Color.WHITE, true)
 	# Hide the command menu
 	if command_menu:
 		command_menu.hide_menu()
@@ -391,8 +398,9 @@ func _update_selector_arrow() -> void:
 	
 	if target_sprite:
 		selector_arrow.visible = true
-		selector_arrow.position = target_sprite.position + Vector2(0, -60)
+		selector_arrow.position = target_sprite.position + Vector2(0, -80)
 		print("DEBUG: Arrow positioned at: ", selector_arrow.position, " visible: ", selector_arrow.visible)
+		_log("[color=yellow]Targeting: %s[/color]" % target_enemy.name, Color.WHITE, true)
 	else:
 		selector_arrow.visible = false
 		print("DEBUG: No target sprite found - hiding arrow")
