@@ -164,28 +164,32 @@ anchor_bottom = 1.0
 [node name="PartyPanel" type="PanelContainer" parent="UI/HUD"]
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 176.0
-offset_bottom = 160.0
+offset_right = 780.0
+offset_bottom = 180.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="PartyMargin" type="MarginContainer" parent="UI/HUD/PartyPanel"]
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
-[node name="PartyVBox" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin"]
+[node name="PartyHBox" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin"]
+theme_override_constants/separation = 16
+
+[node name="Hero1" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
 theme_override_constants/separation = 4
 
-[node name="HeroPortrait" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyVBox"]
+[node name="HeroPortrait1" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(64, 64)
 stretch_mode = 6
 
-[node name="HeroLabel" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyVBox"]
-text = "HP: 100/100"
+[node name="HeroLabel1" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+text = "Hero 1"
 modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
 
-[node name="HeroHPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyVBox"]
+[node name="HeroHPBar1" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(140, 12)
 max_value = 100.0
 step = 1.0
@@ -193,7 +197,7 @@ show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
-[node name="HeroMPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyVBox"]
+[node name="HeroMPBar1" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(140, 12)
 max_value = 40.0
 step = 1.0
@@ -201,53 +205,216 @@ show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
-[node name="HeroStatus" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyVBox"]
+[node name="HeroStatus1" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 theme_override_constants/separation = 4
+
+[node name="Hero2" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+theme_override_constants/separation = 4
+
+[node name="HeroPortrait2" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 6
+
+[node name="HeroLabel2" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+text = "Hero 2"
+modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
+
+[node name="HeroHPBar2" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 100.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar2" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 40.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="HeroStatus2" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+theme_override_constants/separation = 4
+
+[node name="Hero3" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+theme_override_constants/separation = 4
+
+[node name="HeroPortrait3" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 6
+
+[node name="HeroLabel3" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+text = "Hero 3"
+modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
+
+[node name="HeroHPBar3" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 100.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar3" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 40.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="HeroStatus3" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+theme_override_constants/separation = 4
+
+[node name="Hero4" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+theme_override_constants/separation = 4
+
+[node name="HeroPortrait4" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 6
+
+[node name="HeroLabel4" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+text = "Hero 4"
+modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
+
+[node name="HeroHPBar4" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 100.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar4" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(140, 12)
+max_value = 40.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="HeroStatus4" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+theme_override_constants/separation = 4
+
+[node name="HeroLabel" type="Label" parent="UI/HUD/PartyPanel/PartyMargin"]
+text = "DEPRECATED"
+visible = false
+
+[node name="HeroHPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin"]
+visible = false
+
+[node name="HeroMPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin"]
+visible = false
+
+[node name="HeroStatus" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin"]
+visible = false
 
 [node name="EnemyPanel" type="PanelContainer" parent="UI/HUD"]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -196.0
+offset_left = -420.0
 offset_top = 16.0
 offset_right = -16.0
-offset_bottom = 160.0
+offset_bottom = 180.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="EnemyMargin" type="MarginContainer" parent="UI/HUD/EnemyPanel"]
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
-[node name="EnemyVBox" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+[node name="EnemyHBox" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+theme_override_constants/separation = 16
+
+[node name="Enemy1" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
 theme_override_constants/separation = 4
 
-[node name="EnemyPortrait" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox"]
+[node name="EnemyPortrait1" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
 custom_minimum_size = Vector2(64, 64)
 stretch_mode = 6
 
-[node name="EnemyLabel" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox"]
-text = "HP: 100/100"
+[node name="EnemyLabel1" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+text = "Enemy 1"
 modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
 
-[node name="EnemyHPBar" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox"]
-custom_minimum_size = Vector2(140, 12)
+[node name="EnemyHPBar1" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+custom_minimum_size = Vector2(120, 12)
 max_value = 70.0
 step = 1.0
 show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
-[node name="EnemyMPBar" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox"]
-custom_minimum_size = Vector2(140, 12)
-max_value = 40.0
+[node name="EnemyStatus1" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+theme_override_constants/separation = 4
+
+[node name="Enemy2" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
+theme_override_constants/separation = 4
+
+[node name="EnemyPortrait2" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 6
+
+[node name="EnemyLabel2" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+text = "Enemy 2"
+modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
+
+[node name="EnemyHPBar2" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+custom_minimum_size = Vector2(120, 12)
+max_value = 70.0
 step = 1.0
 show_percentage = false
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
-[node name="EnemyStatus" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox"]
+[node name="EnemyStatus2" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
 theme_override_constants/separation = 4
+
+[node name="Enemy3" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
+theme_override_constants/separation = 4
+
+[node name="EnemyPortrait3" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 6
+
+[node name="EnemyLabel3" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+text = "Enemy 3"
+modulate = Color(0.9, 0.9, 0.95, 1)
+horizontal_alignment = 1
+
+[node name="EnemyHPBar3" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+custom_minimum_size = Vector2(120, 12)
+max_value = 70.0
+step = 1.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="EnemyStatus3" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+theme_override_constants/separation = 4
+
+[node name="EnemyLabel" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+text = "DEPRECATED"
+visible = false
+
+[node name="EnemyHPBar" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+text = "DEPRECATED"
+visible = false
+
+[node name="EnemyMPBar" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+text = "DEPRECATED"
+visible = false
+
+[node name="EnemyStatus" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+visible = false
 
 [node name="ActiveCharacterPanel" type="PanelContainer" parent="UI/HUD"]
 anchor_top = 1.0
