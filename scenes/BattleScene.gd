@@ -891,10 +891,13 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 	w.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	return w
 
+var battle_victory: bool = false  # Store victory state
+
 func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	if battle_finished:
 		return
 	battle_finished = true
+	battle_victory = victory  # Store the victory state
 	planned_actions.clear()
 	refresh_status_hud()
 	$Overlay.visible = true
@@ -912,7 +915,7 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
-	if victory and heroes.any(func(h): return h.is_alive()): # If victory and any hero alive, go to upgrade selection
+	if battle_victory and heroes.any(func(h): return h.is_alive()): # If victory and any hero alive, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
 	else: # If defeat or all heroes dead, go back to main menu or game over screen
 		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
