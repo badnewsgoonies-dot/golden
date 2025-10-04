@@ -120,8 +120,8 @@ const BIOMES := {
 
 # Map logical enemy kinds to available battler folders with actual sprite frames
 const ART_ALIAS := {
-    "goblin": "werewolf",
-    "water_slime": "mage_red"
+	"goblin": "werewolf",
+	"water_slime": "mage_red"
 }
 
 var cmd_root: Control = null
@@ -1843,9 +1843,9 @@ func _spawn_unit_sprite(u: Dictionary, pos: Vector2, facing: int) -> void:
 		root.add_child(pivot)
 		u["pivot"] = pivot
 
-        var kind: String = String(u.get("art", ""))
-        if ART_ALIAS.has(kind):
-            kind = String(ART_ALIAS[kind])
+		var kind: String = String(u.get("art", ""))
+		if ART_ALIAS.has(kind):
+			kind = String(ART_ALIAS[kind])
 		var character := ""
 		if kind.begins_with("hero:"):
 			character = "hero"  # Always use "hero" for hero folder

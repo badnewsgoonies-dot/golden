@@ -55,7 +55,7 @@ func _update_selectors() -> void:
 		if sprite_node is Node2D:
 			target_pos = (sprite_node as Node2D).global_position
 		
-    	# Create selector arrow sprite
+		# Create selector arrow sprite
 		var selector := Sprite2D.new()
 		selector.texture = _get_arrow_texture()
 		selector.global_position = target_pos + Vector2(0, -60)  # Above the target
@@ -100,12 +100,12 @@ func _create_arrow_texture() -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 func _get_arrow_texture() -> Texture2D:
-    var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
-    if FileAccess.file_exists(ui_arrow_path):
-        var tex = load(ui_arrow_path)
-        if tex is Texture2D:
-            return tex
-    return _create_arrow_texture()
+	var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
+	if FileAccess.file_exists(ui_arrow_path):
+		var tex = load(ui_arrow_path)
+		if tex is Texture2D:
+			return tex
+	return _create_arrow_texture()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible or _targets.is_empty():
