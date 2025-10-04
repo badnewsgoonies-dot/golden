@@ -214,14 +214,14 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(2.0, 2.0)  # Scale up for better visibility
+		sprite.scale = Vector2(4.0, 4.0)  # Scale up significantly for better visibility
 		sprite.visible = true
 		sprite.z_index = 10 + i
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created hero sprite for %s (ID: %s) using folder: %s" % [unit.name, unit.character_id, hero_folder])
+		print("Created hero sprite for %s (ID: %s) using folder: %s at position %s with scale 4.0" % [unit.name, unit.character_id, hero_folder, pos])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -248,14 +248,14 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(2.0, 2.0)  # Scale up for better visibility
+		sprite.scale = Vector2(4.0, 4.0)  # Scale up significantly for better visibility
 		sprite.visible = true
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
 		# Debug logging
-		print("Created enemy sprite for %s (ID: %s) using folder: %s" % [unit.name, unit.character_id, enemy_folder])
+		print("Created enemy sprite for %s (ID: %s) using folder: %s at position %s with scale 4.0" % [unit.name, unit.character_id, enemy_folder, pos])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
