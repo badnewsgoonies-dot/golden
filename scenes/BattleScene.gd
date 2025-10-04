@@ -196,57 +196,18 @@ func _on_defend_pressed() -> void:
 	planned_actions.clear()
 	_on_end_turn()
 
-func _show_command_menu() -> void:
-	var spells: Array[Dictionary] = []
-	spells.append({"id":"fireball","name":String(skill_fireball.get("name","Fireball")),"mp_cost":int(skill_fireball.get("mp_cost",0))})
-	var items: Array[Dictionary] = []
-	if !potion_used:
-		items.append({"id":"potion","name":"Potion"})
-	command_menu.show_for_actor(hero.name, spells, items)
-
-func _on_menu_action(kind: String, id: String) -> void:
-	if battle_finished:
-		return
-	print("DEBUG: Menu action called - kind: ", kind, " id: ", id)
-	_log("[color=yellow]Menu action: %s[/color]" % kind, Color.WHITE, true)
-	match kind:
-		"attack":
-			# Start target selection instead of immediately queueing
-			print("DEBUG: Starting target selection")
-			_log("[color=cyan]ENTERING TARGET SELECTION MODE[/color]", Color.WHITE, true)
-			pending_skill = skill_slash
-			_start_target_selection()
-			return  # Important: return early to prevent _on_end_turn()
-		"spells":
-			if id == "fireball":
-				_on_fireball()
-			else:
-				_log("Unknown spell: %s" % id)
-		"items":
-			if id == "potion":
-				_on_potion()
-			else:
-				_log("Unknown item: %s" % id)
-		"defend":
-			_log("%s braces for impact (Defend)." % hero.name)
-			planned_actions.clear()
-			_refresh_plan_label()
-			_refresh_end_turn_button()
-			return
-	# Don't auto-end turn if we're selecting a target
-	if kind != "attack":
-		_on_end_turn()
-
 func _on_attack() -> void:
 	if !battle_finished:
-		_queue_hero_action(skill_slash)
+		pending_skill = skill_slash
+		_start_target_selection()
 
 func _on_fireball() -> void:
 	if battle_finished:
 		return
 	var cost: int = int(skill_fireball.get("mp_cost", 0))
 	if int(hero.stats.get("MP",0)) >= cost:
-		_queue_hero_action(skill_fireball)
+		pending_skill = skill_fireball
+		_start_target_selection()
 	else:
 		_log("Not enough MP for Fireball!")
 
@@ -265,8 +226,6 @@ func _on_potion() -> void:
 	potion_used = true
 	_log("Hero uses Potion and heals %d HP." % healed)
 	_update_ui()
-	_refresh_end_turn_button()
-	_show_command_menu()
 
 func _queue_hero_action(skill: Dictionary) -> void:
 	planned_actions.clear()
@@ -455,13 +414,6 @@ func _check_end() -> void:
 		_log("Defeat... The hero falls.")
 		show_battle_result(false)
 
-func _disable_inputs() -> void:
-	btn_attack.disabled = true
-	btn_fire.disabled = true
-	btn_potion.disabled = true
-	btn_end.disabled = true
-	battle_finished = true
-
 func _update_ui() -> void:
 	# Update top panels
 	if lbl_hero and hero:
@@ -503,20 +455,6 @@ func _update_ui() -> void:
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	# Log to console only since we removed the log view
 	print(msg)
-
-func _update_turn_order(actions: Array) -> void:
-	if actions.is_empty():
-		lbl_queue.text = "Turn order: --"
-		return
-	var parts: Array[String] = []
-	for item in actions:
-		var act: Action = item as Action
-		if act==null:
-			continue
-		var actor_name: String = act.actor.name if act.actor else "?"
-		var skill_name: String = String(act.skill.get("name","Action"))
-		parts.append("%s (%s)" % [actor_name, skill_name])
-	lbl_queue.text = "Turn order: "+" -> ".join(parts)
 
 func _fetch_skill(id: String) -> Dictionary:
 	if DataRegistry.skills.has(id):
@@ -657,15 +595,6 @@ func _shake_sprite(u: Unit) -> void:
 	t.tween_property(s, "position", o, 0.08)
 	await t.finished
 
-func _refresh_plan_label() -> void:
-	if plan_label==null:
-		return
-	plan_label.text = "Planned: --" if battle_finished or planned_actions.is_empty() else "Planned: %s" % String(planned_actions[0].skill.get("name","Action"))
-
-func _refresh_end_turn_button() -> void:
-	if btn_end:
-		btn_end.disabled = battle_finished or planned_actions.is_empty()
-
 func refresh_status_hud() -> void:
 	_populate_status_container(hero_status_container, hero)
 	_populate_status_container(enemy_status_container, enemy)
@@ -735,10 +664,8 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	if battle_finished:
 		return
-	_disable_inputs()
+	battle_finished = true
 	planned_actions.clear()
-	_refresh_plan_label()
-	_refresh_end_turn_button()
 	refresh_status_hud()
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
