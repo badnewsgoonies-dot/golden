@@ -105,15 +105,15 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - centered like classic JRPG layout
 const HERO_POSITIONS := [
-	Vector2(520, 440),  # Left
-	Vector2(600, 440),  # Mid-left
-	Vector2(680, 440),  # Mid-right
-	Vector2(760, 440)   # Right
+	Vector2(650, 460),  # Front center (leader)
+	Vector2(600, 410),  # Back-left
+	Vector2(700, 410),  # Back-right
+	Vector2(760, 425)   # Far-right back
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(840, 280),  # Upper-right
-	Vector2(650, 250)   # Upper-mid
+	Vector2(520, 300),  # Upper-left
+	Vector2(880, 290)   # Upper-right
 ]
 
 # Battle floor (blue diamond) configuration
