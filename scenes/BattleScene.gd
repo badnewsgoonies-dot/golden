@@ -26,10 +26,10 @@ const CHARACTER_ART := {
 	"Elder Wizard": "wizard_elder",
 	"Fierce Barbarian": "barbarian",
 	"Primal Werewolf": "werewolf",
-	# Enemy mappings
-	"Goblin": "goblin",
-	"Slime": "slime",
-	"Water Slime": "slime" 
+	# Enemy mappings - using available placeholders
+	"Goblin": "werewolf",
+	"Slime": "mage_red",
+	"Water Slime": "mage_red" 
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -103,17 +103,18 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - centered like classic JRPG layout
+# Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(650, 460),  # Front center (leader)
-	Vector2(600, 410),  # Back-left
-	Vector2(700, 410),  # Back-right
-	Vector2(760, 425)   # Far-right back
+	Vector2(900, 350),
+	Vector2(950, 450),
+	Vector2(850, 500),
+	Vector2(920, 580)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(520, 300),  # Upper-left
-	Vector2(880, 290)   # Upper-right
+	Vector2(300, 300),
+	Vector2(350, 400),
+	Vector2(280, 500)
 ]
 
 # Battle floor (blue diamond) configuration
