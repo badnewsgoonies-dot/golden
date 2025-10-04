@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759549904
+::res://::1759550429
 ::res://art/::1759546640
 portrait_alias.json::JSON::-1::1759546640::0::1::::<><><>0<>0<><>::
 SpriteFactory.gd::GDScript::6545000406659124052::1759546640::0::1::::SpriteFactory<>Node<><>0<>0<><>::
@@ -564,11 +564,18 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759547196::0::1::::SpriteAnim
 8078c11f-21de-4e7d-852d-5766d9234731.png::CompressedTexture2D::1601733822705907496::1759546640::1759546695::1::::<><><>0<>0<>10aa50f1edfe730992341ebdeaff0c0f<>res://.godot/imported/8078c11f-21de-4e7d-852d-5766d9234731.png-11f8988e6bc14cb4054be053811f0da4.ctex::
 a712ee61-806f-49f6-9608-45b9fd6959b2.png::CompressedTexture2D::6544871841151166593::1759546640::1759546695::1::::<><><>0<>0<>9a25968da9625659b439bb86f9c6ce47<>res://.godot/imported/a712ee61-806f-49f6-9608-45b9fd6959b2.png-fb8ba0ae4fa4096fdaa1f293baa6af6e.ctex::
 b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3403586726018460945::1759546640::1759546695::1::::<><><>0<>0<>94669af87436d58f0cc9a3ba29ca93d8<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-ccde70bf42811fa196955fcbd283fcbe.ctex::
-::res://scenes/::1759549396
+::res://PIC BEFORE AND AFTER/::1759550422
+Current.png::CompressedTexture2D::3256508529062772865::1759550153::1759550430::1::::<><><>0<>0<>ab00ac02ea9432b353720b8d488dad0d<>res://.godot/imported/Current.png-15090ff9c8df6139b7420aae0900f749.ctex::
+Current_small.png::CompressedTexture2D::8785884572401327205::1759550422::1759550430::1::::<><><>0<>0<>ebc11da194449d679c8c6d2833b57928<>res://.godot/imported/Current_small.png-937324a042a8463a69ab3fef2b0413a7.ctex::
+Current_thumb.png::CompressedTexture2D::4900536679010685932::1759550422::1759550430::1::::<><><>0<>0<>2c2be129f04e7fb54a6976cc2a180573<>res://.godot/imported/Current_thumb.png-c5c9b3225e5f7b3ea5be774b51dd0b8c.ctex::
+Desired.png::CompressedTexture2D::6971517926116130680::1759550153::1759550430::1::::<><><>0<>0<>8913ef5c63ddde1cd17470baec55126e<>res://.godot/imported/Desired.png-0ed9eb110dbcc48d1a2ede08a847c874.ctex::
+Desired_small.png::CompressedTexture2D::9001073066296482551::1759550422::1759550430::1::::<><><>0<>0<>d454e3e9c00d05707a3291e60c0e5e8a<>res://.godot/imported/Desired_small.png-27761851f985d56f0eff6a7bd2538d52.ctex::
+Desired_thumb.png::CompressedTexture2D::5772610425224863726::1759550422::1759550430::1::::<><><>0<>0<>3daa0388790718927392957eb1f7d05a<>res://.godot/imported/Desired_thumb.png-19758cac87701d02da4c2f4c999454dd.ctex::
+::res://scenes/::1759550422
 background_meadow.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd
 BattleScene.gd::GDScript::8322624433477628582::1759549396::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
+BattleScene.tscn::PackedScene::-1::1759550422::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_meadow.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759546640::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759546640::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
@@ -599,9 +606,9 @@ TurnController.gd::GDScript::6297705614612741337::1759546640::0::1::::<>Node<><>
 TurnEngine.gd::GDScript::6229571860048936110::1759546640::0::1::::<>Node<><>0<>0<><>::
 ::res://tools/::1759546640
 PortraitPacker.gd::GDScript::5548992340685240776::1759546640::0::1::::<>EditorScript<><>0<>1<><>::
-::res://ui/::1759549896
-battle_theme.tres::Theme::-1::1759546640::0::1::::<><><>0<>0<><>::
-CommandMenu.gd::GDScript::6169794612215573323::1759549241::0::1::::CommandMenu<>Control<><>0<>0<><>::
+::res://ui/::1759550422
+battle_theme.tres::Theme::-1::1759550422::0::1::::<><><>0<>0<><>::
+CommandMenu.gd::GDScript::6169794612215573323::1759550422::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759546640::0::1::::<>Label<><>0<>0<><>::
 DamagePopup.tscn::PackedScene::-1::1759546640::0::1::::<><><>0<>0<><>::res://ui/DamagePopup.gd
 TargetSelector.gd::GDScript::308375213718999042::1759549896::0::1::::TargetSelector<>Control<><>0<>0<><>::
