@@ -65,6 +65,7 @@ const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
 const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
 
 @onready var cmd: CommandMenu = preload("res://ui/CommandMenu.gd").new()
+@onready var target_selector: Control = preload("res://ui/TargetSelector.gd").new()
 
 # --- layout (tuned for 1152x648 window) ---
 const ENEMY_SLOTS := [Vector2(420, 180), Vector2(730, 180)]
@@ -196,7 +197,14 @@ func _ready() -> void:
 	# New command menu UI
 	cmd.visible = false
 	cmd.menu_action.connect(_on_cmd_action)
+	cmd.attack_requested.connect(_on_attack_requested)
 	cmd_layer.add_child(cmd)
+	
+	# Target selector
+	target_selector.visible = false
+	target_selector.target_selected.connect(_on_target_selected)
+	target_selector.cancelled.connect(_on_target_cancelled)
+	add_child(target_selector)
 
 	if "adept_pyro" in DataRegistry.characters:
 		party[0]["stats"] = DataRegistry.characters["adept_pyro"]["stats"]
@@ -1377,6 +1385,7 @@ func _on_target_chosen(idx: int) -> void:
 func _on_cmd_action(kind: String, id: String) -> void:
 	match kind:
 		"attack":
+			# This path is no longer used - handled by attack_requested signal
 			cmd.hide_menu()
 			_queue_player_action({"kind":"attack"})
 		"defend":
@@ -1399,6 +1408,32 @@ func _on_cmd_action(kind: String, id: String) -> void:
 					break
 		_:
 			pass
+
+func _on_attack_requested() -> void:
+	# Hide the command menu
+	cmd.hide_menu()
+	
+	# Get alive enemies to target
+	var alive_enemies := _alive(wave)
+	if alive_enemies.is_empty():
+		# No enemies to attack, just skip
+		_queue_player_action({"kind":"defend"})
+		return
+	
+	# Show target selector for enemies
+	target_selector.show_for_targets(alive_enemies)
+
+func _on_target_selected(target: Dictionary) -> void:
+	# Player selected a target for attack
+	_queue_player_action({"kind":"attack", "target": target})
+
+func _on_target_cancelled() -> void:
+	# Player cancelled target selection, show command menu again
+	var actor: Dictionary = declare_allies[declare_index]
+	var actor_name: String = String(actor["stats"].get("name", "Adept"))
+	var spells_arr: Array = actor.get("spells", [])
+	var items_arr: Array[Dictionary] = _menu_items_for_actor(actor)
+	cmd.show_for_actor(actor_name, spells_arr, items_arr)
 
 func _menu_items_for_actor(actor: Dictionary) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []

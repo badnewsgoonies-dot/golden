@@ -2,6 +2,7 @@ extends Control
 class_name CommandMenu
 
 signal menu_action(kind: String, id: String)
+signal attack_requested()  # New signal for when attack needs target selection
 
 var _spells: Array[Dictionary] = []
 var _items: Array[Dictionary] = []
@@ -77,7 +78,7 @@ func _ready() -> void:
 	_attack_button.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_attack_button.add_theme_color_override("font_color", Color(0,0,0))
 	_attack_button.add_theme_font_size_override("font_size", 18)
-	_attack_button.pressed.connect(func(): _emit_main("attack", "slash"))
+	_attack_button.pressed.connect(func(): emit_signal("attack_requested"))
 	attack_margin.add_child(_attack_button)
 
 	# Main box for Spells/Items/Defend (right side)
