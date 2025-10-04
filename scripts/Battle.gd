@@ -167,6 +167,9 @@ var hero_hp_lbl: Label = null
 var hero_mp_lbl: Label = null
 var hero_portrait: TextureRect = null
 
+# Top-corner party member HUDs
+var party_huds: Array[Dictionary] = []  # [{root, hp_fg, mp_fg, hp_lbl, mp_lbl, portrait}, ...]
+
 func _ready() -> void:
 	randomize()
 
@@ -188,6 +191,7 @@ func _ready() -> void:
 	_build_items_menu()
 	_build_queue_panel()
 	_build_hero_panel()
+	_build_party_huds()
 
 	# New command menu UI
 	cmd.visible = false
@@ -331,6 +335,185 @@ func _update_hero_panel() -> void:
 	hero_mp_fg.size = Vector2(176.0*mp_w, 8)
 	if hero_portrait != null:
 		hero_portrait.texture = PortraitLoader.get_portrait_for(name)
+
+func _build_party_huds() -> void:
+	# Create small portrait boxes for all party members in top corners
+	# Max 4 party members: first 2 on top-left, next 2 on top-right
+	party_huds.clear()
+	
+	for i in range(min(4, party.size())):
+		var hud := _create_small_party_hud(i)
+		party_huds.append(hud)
+		cmd_layer.add_child(hud["root"])
+	
+	_update_party_huds()
+
+func _create_small_party_hud(index: int) -> Dictionary:
+	var hud: Dictionary = {}
+	var root := Control.new()
+	root.name = "PartyHUD_%d" % index
+	
+	# Positioning: 0,1 on left; 2,3 on right
+	var is_left := index < 2
+	var row := index % 2
+	
+	if is_left:
+		root.anchor_left = 0.0
+		root.anchor_right = 0.0
+		root.offset_left = 16
+		root.offset_right = 16 + 240
+	else:
+		root.anchor_left = 1.0
+		root.anchor_right = 1.0
+		root.offset_left = -256
+		root.offset_right = -16
+	
+	root.anchor_top = 0.0
+	root.anchor_bottom = 0.0
+	root.offset_top = 16 + row * 90
+	root.offset_bottom = 16 + row * 90 + 80
+	
+	# Background panel
+	var back := Panel.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.4, 0.75, 0.8, 0.92)  # Cyan-ish matching the screenshot
+	sb.border_color = Color(0,0,0)
+	sb.set_border_width_all(2)
+	sb.corner_radius_top_left = 8
+	sb.corner_radius_top_right = 8
+	sb.corner_radius_bottom_left = 8
+	sb.corner_radius_bottom_right = 8
+	back.anchor_right = 1.0
+	back.anchor_bottom = 1.0
+	back.add_theme_stylebox_override("panel", sb)
+	root.add_child(back)
+	
+	var m := MarginContainer.new()
+	m.add_theme_constant_override("margin_left", 8)
+	m.add_theme_constant_override("margin_top", 6)
+	m.add_theme_constant_override("margin_right", 8)
+	m.add_theme_constant_override("margin_bottom", 6)
+	back.add_child(m)
+	
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 8)
+	m.add_child(h)
+	
+	# Portrait (smaller)
+	var portrait_frame := Panel.new()
+	var s2 := StyleBoxFlat.new()
+	s2.bg_color = Color(0,0,0,0)
+	s2.border_color = Color(0,0,0)
+	s2.set_border_width_all(2)
+	portrait_frame.add_theme_stylebox_override("panel", s2)
+	portrait_frame.custom_minimum_size = Vector2(64, 64)
+	h.add_child(portrait_frame)
+	
+	var portrait := TextureRect.new()
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.anchor_right = 1.0
+	portrait.anchor_bottom = 1.0
+	portrait_frame.add_child(portrait)
+	hud["portrait"] = portrait
+	
+	# Stats column
+	var vb := VBoxContainer.new()
+	vb.add_theme_constant_override("separation", 4)
+	h.add_child(vb)
+	
+	var hp_lbl := Label.new()
+	hp_lbl.text = "HP: 100/100"
+	hp_lbl.add_theme_color_override("font_color", Color.WHITE)
+	hp_lbl.add_theme_font_size_override("font_size", 14)
+	vb.add_child(hp_lbl)
+	hud["hp_lbl"] = hp_lbl
+	
+	# HP bar
+	var hp_bg := ColorRect.new()
+	hp_bg.color = Color(0,0,0,0.7)
+	hp_bg.custom_minimum_size = Vector2(140, 10)
+	vb.add_child(hp_bg)
+	
+	var hp_container := MarginContainer.new()
+	hp_container.add_theme_constant_override("margin_left", 1)
+	hp_container.add_theme_constant_override("margin_top", 1)
+	hp_container.add_theme_constant_override("margin_right", 1)
+	hp_container.add_theme_constant_override("margin_bottom", 1)
+	hp_bg.add_child(hp_container)
+	
+	var hp_holder := Control.new()
+	hp_holder.custom_minimum_size = Vector2(138, 8)
+	hp_container.add_child(hp_holder)
+	
+	var hp_fg := ColorRect.new()
+	hp_fg.color = Color(0.2, 1.0, 0.3)  # Green
+	hp_fg.size = Vector2(138, 8)
+	hp_holder.add_child(hp_fg)
+	hud["hp_fg"] = hp_fg
+	
+	var mp_lbl := Label.new()
+	mp_lbl.text = "MP: 30/30"
+	mp_lbl.add_theme_color_override("font_color", Color.WHITE)
+	mp_lbl.add_theme_font_size_override("font_size", 14)
+	vb.add_child(mp_lbl)
+	hud["mp_lbl"] = mp_lbl
+	
+	# MP bar
+	var mp_bg := ColorRect.new()
+	mp_bg.color = Color(0,0,0,0.7)
+	mp_bg.custom_minimum_size = Vector2(140, 10)
+	vb.add_child(mp_bg)
+	
+	var mp_container := MarginContainer.new()
+	mp_container.add_theme_constant_override("margin_left", 1)
+	mp_container.add_theme_constant_override("margin_top", 1)
+	mp_container.add_theme_constant_override("margin_right", 1)
+	mp_container.add_theme_constant_override("margin_bottom", 1)
+	mp_bg.add_child(mp_container)
+	
+	var mp_holder := Control.new()
+	mp_holder.custom_minimum_size = Vector2(138, 8)
+	mp_container.add_child(mp_holder)
+	
+	var mp_fg := ColorRect.new()
+	mp_fg.color = Color(0.3, 0.6, 1.0)  # Blue
+	mp_fg.size = Vector2(138, 8)
+	mp_holder.add_child(mp_fg)
+	hud["mp_fg"] = mp_fg
+	
+	hud["root"] = root
+	hud["index"] = index
+	return hud
+
+func _update_party_huds() -> void:
+	for i in range(party_huds.size()):
+		if i >= party.size():
+			party_huds[i]["root"].visible = false
+			continue
+		
+		var hud: Dictionary = party_huds[i]
+		var member: Dictionary = party[i]
+		var s: Dictionary = member.get("stats", {})
+		
+		var name: String = String(s.get("name", "???"))
+		var hp: int = int(s.get("hp", 0))
+		var max_hp: int = int(s.get("max_hp", 1))
+		var mp: int = int(s.get("mp", 0))
+		var max_mp: int = int(s.get("max_mp", 1))
+		
+		hud["hp_lbl"].text = "HP: %d/%d" % [hp, max_hp]
+		hud["mp_lbl"].text = "MP: %d/%d" % [mp, max_mp]
+		
+		var hp_ratio: float = clamp(float(hp) / max(1.0, float(max_hp)), 0.0, 1.0)
+		var mp_ratio: float = clamp(float(mp) / max(1.0, float(max_mp)), 0.0, 1.0)
+		
+		hud["hp_fg"].size = Vector2(138.0 * hp_ratio, 8)
+		hud["mp_fg"].size = Vector2(138.0 * mp_ratio, 8)
+		
+		if hud.has("portrait"):
+			hud["portrait"].texture = PortraitLoader.get_portrait_for(name)
+		
+		hud["root"].visible = member.get("stats", {}).get("hp", 0) > 0
 
 func _start_round_declare() -> void:
 	planned_actions.clear()
@@ -1809,6 +1992,7 @@ func _update_all_overlays() -> void:
 	for u in wave:
 		_update_unit_overlay(u)
 	_update_hero_panel()
+	_update_party_huds()
 
 # Optional: gray out a dead unit
 func _apply_death_visual(u: Dictionary) -> void:

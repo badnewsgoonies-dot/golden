@@ -26,14 +26,14 @@ const COL_BUBBLE := Color(0.98, 0.93, 0.70)
 func _ready() -> void:
 	name = "CommandMenu"
 	mouse_filter = Control.MOUSE_FILTER_PASS
-	anchor_left = 0.5
+	anchor_left = 1.0
 	anchor_top = 1.0
-	anchor_right = 0.5
+	anchor_right = 1.0
 	anchor_bottom = 1.0
-	offset_left = -560
-	offset_right = 560
-	offset_top = -220
-	offset_bottom = -16
+	offset_left = -680  # Position on the right side
+	offset_right = -20
+	offset_top = -100
+	offset_bottom = -20
 	_root = Control.new()
 	_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_root.size_flags_vertical = Control.SIZE_SHRINK_CENTER
@@ -49,20 +49,20 @@ func _ready() -> void:
 	_main_row.offset_right = 0
 	_main_row.offset_top = -64
 	_main_row.offset_bottom = 0
-	_main_row.add_theme_constant_override("separation", 12)
+	_main_row.add_theme_constant_override("separation", 8)
 	_root.add_child(_main_row)
 
-	# Submenu bubble (appears above the buttons)
+	# Submenu bubble (appears above the buttons) - styled as yellow speech bubble
 	_sub_panel = Panel.new()
 	_sub_panel.visible = false
-	_sub_panel.anchor_left = 0.5
-	_sub_panel.anchor_right = 0.5
+	_sub_panel.anchor_left = 1.0
+	_sub_panel.anchor_right = 1.0
 	_sub_panel.anchor_top = 1.0
 	_sub_panel.anchor_bottom = 1.0
-	_sub_panel.offset_left = -460
-	_sub_panel.offset_right = 460
-	_sub_panel.offset_top = -200
-	_sub_panel.offset_bottom = -76
+	_sub_panel.offset_left = -440
+	_sub_panel.offset_right = -20
+	_sub_panel.offset_top = -320
+	_sub_panel.offset_bottom = -100
 	_style_bubble(_sub_panel)
 	_root.add_child(_sub_panel)
 
@@ -82,14 +82,14 @@ func _ready() -> void:
 	scroll.add_child(_sub_vbox)
 	_tail = TailScene.new()
 	_tail.visible = false
-	_tail.anchor_left = 0.5
-	_tail.anchor_right = 0.5
+	_tail.anchor_left = 0.0
+	_tail.anchor_right = 0.0
 	_tail.anchor_top = 1.0
 	_tail.anchor_bottom = 1.0
-	_tail.offset_left = -60
-	_tail.offset_right = 60
-	_tail.offset_top = -76
-	_tail.offset_bottom = -56
+	_tail.offset_left = 20
+	_tail.offset_right = 80
+	_tail.offset_top = -16
+	_tail.offset_bottom = 4
 	_root.add_child(_tail)
 
 	_create_main_button("Attack", func(): _emit_main("attack", "slash"))
@@ -101,7 +101,7 @@ func _ready() -> void:
 func _create_main_button(text: String, on_press: Callable) -> void:
 	var b: Button = Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(160, 48)
+	b.custom_minimum_size = Vector2(140, 48)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.focus_mode = Control.FOCUS_ALL
 	_style_button(b)
@@ -158,19 +158,30 @@ func _open_submenu(kind: String) -> void:
 	for entry in list:
 		var label: String = entry.get("name", entry.get("id", "?"))
 		var mp: Variant = entry.get("mp_cost", null)
-		var btn: Button = Button.new()
-		var _t: String = label
+		
+		# Create label with dash prefix like in the screenshot
+		var item_label := Label.new()
+		var _t: String = "- " + label
 		if mp != null:
-			_t = "%s  (%d MP)" % [label, int(mp)]
-		btn.text = _t
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.flat = true
-		btn.pressed.connect(func():
+			_t = "- %s" % label  # MP cost shown separately if needed
+		item_label.text = _t
+		item_label.add_theme_color_override("font_color", Color(0, 0, 0))
+		item_label.add_theme_font_size_override("font_size", 18)
+		item_label.mouse_filter = Control.MOUSE_FILTER_PASS
+		
+		# Make it clickable
+		var btn_container := Button.new()
+		btn_container.flat = true
+		btn_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn_container.custom_minimum_size = Vector2(0, 32)
+		btn_container.add_child(item_label)
+		
+		btn_container.pressed.connect(func():
 			var eid: String = String(entry.get("id", label)).to_lower()
 			emit_signal("menu_action", kind, eid)
 			visible = false
 		)
-		_sub_vbox.add_child(btn)
+		_sub_vbox.add_child(btn_container)
 	_sub_panel.visible = true
 	_tail.visible = true
 
