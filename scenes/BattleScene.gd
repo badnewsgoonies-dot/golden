@@ -103,18 +103,24 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - moved higher to avoid UI overlap
+# Formation positions - centered like classic JRPG layout
 const HERO_POSITIONS := [
-	Vector2(300, 280),  # Left-back
-	Vector2(250, 350),  # Left-front
-	Vector2(450, 280),  # Center-back
-	Vector2(400, 350)   # Center-front
+	Vector2(520, 420),  # Left
+	Vector2(600, 420),  # Mid-left
+	Vector2(680, 420),  # Mid-right
+	Vector2(760, 420)   # Right
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(850, 280),  # Right-back
-	Vector2(800, 350)   # Right-front
+	Vector2(900, 300),  # Upper-right
+	Vector2(780, 260)   # Upper-mid
 ]
+
+# Battle floor (blue diamond) configuration
+const FLOOR_CENTER := Vector2(640, 360)
+const FLOOR_HALF_WIDTH := 520.0
+const FLOOR_HALF_HEIGHT := 240.0
+const FLOOR_COLOR := Color(0.28, 0.72, 1.0, 0.85)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -158,6 +164,23 @@ func _ready() -> void:
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
+
+	# Create battle floor (blue diamond) under Stage once
+	if has_node("Stage"):
+		var stage := $Stage
+		if stage.get_node_or_null("BattleFloor") == null:
+			var floor := Polygon2D.new()
+			floor.name = "BattleFloor"
+			var pts := PackedVector2Array([
+				FLOOR_CENTER + Vector2(0, -FLOOR_HALF_HEIGHT),
+				FLOOR_CENTER + Vector2(FLOOR_HALF_WIDTH, 0),
+				FLOOR_CENTER + Vector2(0, FLOOR_HALF_HEIGHT),
+				FLOOR_CENTER + Vector2(-FLOOR_HALF_WIDTH, 0)
+			])
+			floor.polygon = pts
+			floor.color = FLOOR_COLOR
+			floor.z_index = -10
+			stage.add_child(floor)
 	
 	# Create selector arrow (initially hidden)
 	print("DEBUG: Creating selector arrow")
