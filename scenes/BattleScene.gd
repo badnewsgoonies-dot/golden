@@ -226,7 +226,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(4.0, 4.0) # Increased scale for visibility
+		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)
@@ -259,7 +259,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(4.0, 4.0) # Increased scale for visibility
+		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)

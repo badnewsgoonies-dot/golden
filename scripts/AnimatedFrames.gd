@@ -48,7 +48,7 @@ func _build_frames() -> void:
 					print("ERROR: Failed to load texture at path: %s" % path)
 			else:
 				# Add explicit logging for missing files
-				print("ERROR: Texture file not found at path: %s" % path)
+				print("INFO: Texture file not found at path: %s" % path)
 		if textures.is_empty():
 			print("WARNING: No textures loaded for animation '%s' for character '%s'." % [anim_name, character])
 			continue
