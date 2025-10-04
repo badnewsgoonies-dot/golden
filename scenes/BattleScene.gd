@@ -184,7 +184,6 @@ func _ready() -> void:
 			stage.add_child(floor)
 	
 	# Create selector arrow (initially hidden)
-	print("DEBUG: Creating selector arrow")
 	selector_arrow = SelectorArrow.new()
 	# Prefer authored UI arrow asset; fallback to procedural if missing
 	var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
@@ -197,7 +196,6 @@ func _ready() -> void:
 	selector_arrow.scale = Vector2(2.0, 2.0)
 	if has_node("Stage"):
 		$Stage.add_child(selector_arrow)
-		print("DEBUG: Selector arrow created and added to Stage. Texture: ", selector_arrow.texture)
 	else:
 		print("ERROR: Stage node not found, cannot add selector arrow!")
 
@@ -231,9 +229,6 @@ func _ready() -> void:
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
-		# Debug logging
-		print("Created hero sprite for %s using folder: %s" % [unit.name, hero_folder])
-		
 		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
@@ -265,9 +260,6 @@ func _ready() -> void:
 		sprite.z_index = 5 + i
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
-		
-		# Debug logging
-		print("Created enemy sprite for %s using folder: %s" % [unit.name, enemy_folder])
 		
 		# Create shadow
 		var shadow := Sprite2D.new()
@@ -311,7 +303,6 @@ func _ready() -> void:
 	_log("Heroes: " + ", ".join(heroes.map(func(h): return h.name)))
 	_log("Enemies: " + ", ".join(enemies.map(func(e): return e.name)))
 	_log("=== TARGET SELECTION SYSTEM LOADED ===")
-	print("=== BATTLE SCENE WITH TARGET SELECTION LOADED ===")
 	_update_ui()
 
 func _on_spells_pressed() -> void:
@@ -488,7 +479,6 @@ func _unhandled_input(e: InputEvent) -> void:
 		_on_end_turn()
 
 func _start_target_selection() -> void:
-	print("DEBUG: _start_target_selection called")
 	_log("[color=lime]→ Select your target! Use arrow keys, press Enter to confirm.[/color]", Color.WHITE, true)
 	# Command menu handling removed - using built-in UI
 	
@@ -498,8 +488,6 @@ func _start_target_selection() -> void:
 		if e.is_alive():
 			alive_enemies.append(e)
 	
-	print("DEBUG: Alive enemies count: ", alive_enemies.size())
-	
 	if alive_enemies.is_empty():
 		_log("No targets available!")
 		# Show built-in UI buttons instead
@@ -507,7 +495,6 @@ func _start_target_selection() -> void:
 	
 	selecting_target = true
 	selected_enemy_index = 0
-	print("DEBUG: Target selection started. selecting_target = ", selecting_target)
 	_update_selector_arrow()
 
 func _change_target_selection(direction: int) -> void:
@@ -530,7 +517,6 @@ func _change_target_selection(direction: int) -> void:
 
 func _update_selector_arrow() -> void:
 	if !selector_arrow:
-		print("DEBUG: selector_arrow is null!")
 		return
 	
 	var alive_enemies: Array[Unit] = []
@@ -538,30 +524,21 @@ func _update_selector_arrow() -> void:
 		if e.is_alive():
 			alive_enemies.append(e)
 	
-	print("DEBUG: _update_selector_arrow - alive enemies: ", alive_enemies.size())
-	
 	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
 		selector_arrow.visible = false
-		print("DEBUG: Hiding arrow - no enemies or invalid index")
 		return
 	
 	var target_enemy: Unit = alive_enemies[selected_enemy_index]
 	var target_sprite: AnimatedFrames = _sprite_for_unit(target_enemy)
 	
-	print("DEBUG: Target enemy: ", target_enemy.name if target_enemy else "null")
-	print("DEBUG: Target sprite: ", target_sprite)
-	
 	if target_sprite:
 		selector_arrow.visible = true
 		selector_arrow.position = target_sprite.position + Vector2(0, -80)
-		print("DEBUG: Arrow positioned at: ", selector_arrow.position, " visible: ", selector_arrow.visible)
 		_log("[color=yellow]Targeting: %s[/color]" % target_enemy.name, Color.WHITE, true)
 	else:
 		selector_arrow.visible = false
-		print("DEBUG: No target sprite found - hiding arrow")
 
 func _confirm_target_selection() -> void:
-	print("DEBUG: _confirm_target_selection called, selecting_target = ", selecting_target)
 	if !selecting_target:
 		return
 	
@@ -571,12 +548,10 @@ func _confirm_target_selection() -> void:
 			alive_enemies.append(e)
 	
 	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
-		print("DEBUG: No valid targets, canceling selection")
 		_cancel_target_selection()
 		return
 	
 	var target_enemy: Unit = alive_enemies[selected_enemy_index]
-	print("DEBUG: Confirming target selection for: ", target_enemy.name)
 	selecting_target = false
 	selector_arrow.visible = false
 	
@@ -700,11 +675,13 @@ func _update_sprites() -> void:
 		if i < hero_sprites.size() and hero_sprites[i]:
 			hero_sprites[i].modulate = _base_modulate_for(heroes[i])
 			hero_sprites[i].position = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+			hero_sprites[i].scale = Vector2(0.4, 0.4)
 			hero_sprites[i].z_index = 10 + i
 			hero_sprites[i].set_facing_back(false)  # Heroes face forward
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
-			hero_shadows[i].scale = Vector2(1.0, 0.6)  # Adjusted for original sprites
+			hero_shadows[i].position = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)] + Vector2(0, 20)
+			hero_shadows[i].scale = Vector2(0.4, 0.2)
 			hero_shadows[i].z_index = 9
 			
 	# Update all enemy sprites
@@ -712,11 +689,13 @@ func _update_sprites() -> void:
 		if i < enemy_sprites.size() and enemy_sprites[i]:
 			enemy_sprites[i].modulate = _base_modulate_for(enemies[i])
 			enemy_sprites[i].position = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+			enemy_sprites[i].scale = Vector2(0.4, 0.4)
 			enemy_sprites[i].z_index = 5 + i
 			enemy_sprites[i].set_facing_back(true)  # Enemies face back
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
-			enemy_shadows[i].scale = Vector2(1.1, 0.6)  # Adjusted for original sprites
+			enemy_shadows[i].position = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)] + Vector2(0, 20)
+			enemy_shadows[i].scale = Vector2(0.4, 0.2)
 			enemy_shadows[i].z_index = 4
 	
 	# Legacy single sprite support
@@ -786,7 +765,10 @@ func _origin_for_unit(u: Unit) -> Vector2:
 	return Vector2.ZERO
 
 func _shadow_base_scale(u: Unit) -> Vector2:
-	return Vector2(1.0, 0.6) if u in heroes else Vector2(1.1, 0.6) if u in enemies else Vector2.ONE
+	var shadow_sprite = _shadow_for_unit(u)
+	if shadow_sprite:
+		return shadow_sprite.scale
+	return Vector2(0.4, 0.2) # Fallback to default scale
 
 func _attack_offset(u: Unit) -> Vector2:
 	# Adjusted offsets for original sprite size

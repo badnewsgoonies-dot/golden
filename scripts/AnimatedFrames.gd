@@ -26,7 +26,6 @@ func _ready() -> void:
 	_apply_orientation()
 
 func _build_frames() -> void:
-	print("DEBUG AnimatedFrames: Building frames for character '%s', facing_back=%s" % [character, facing_back])
 	var frames = SpriteFrames.new()
 	var total_frames = 0
 	for anim_name in ANIM_DEF.keys():
@@ -42,11 +41,10 @@ func _build_frames() -> void:
 				var tex: Texture2D = load(path)
 				if tex is Texture2D:
 					textures.append(tex)
-					print("  ✓ Loaded frame: %s" % path)
 				else:
-					print("  ✗ Failed to load as Texture2D: %s" % path)
+					pass # Fail silently
 			else:
-				print("  ✗ File not found: %s" % path)
+				pass # Fail silently
 		if textures.is_empty():
 			continue
 		frames.add_animation(anim_name)
@@ -56,10 +54,7 @@ func _build_frames() -> void:
 			frames.add_frame(anim_name, tex)
 			total_frames += 1
 	
-	print("DEBUG AnimatedFrames: Total frames loaded: %d" % total_frames)
-	
 	if total_frames == 0:
-		print("WARNING: No frames found, using procedural fallback for character '%s'" % character)
 		# Build a one-frame procedural fallback via SpriteFactory
 		var fallback_tex: Texture2D = _make_fallback_texture()
 		var frames_fallback := SpriteFrames.new()
@@ -74,7 +69,6 @@ func _build_frames() -> void:
 		return
 	sprite_frames = frames
 	_has_frames = true
-	print("DEBUG AnimatedFrames: Successfully built %d animations" % frames.get_animation_names().size())
 
 func _make_placeholder_texture() -> Texture2D:
 	var img = Image.create(48, 64, false, Image.FORMAT_RGBA8)
