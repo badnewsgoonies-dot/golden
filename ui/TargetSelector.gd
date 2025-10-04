@@ -1,10 +1,10 @@
 extends Control
 class_name TargetSelector
 
-signal target_selected(target: Dictionary)
-signal cancelled()
+signal target_selected(target_sprite: Node2D)
+signal selection_cancelled()
 
-var _targets: Array[Dictionary] = []
+var _targets: Array[Node2D] = []
 var _selected_index: int = 0
 var _selector_sprites: Array[Sprite2D] = []
 var _selector_container: Node2D = null
@@ -18,10 +18,10 @@ func _ready() -> void:
 	_selector_container.name = "SelectorContainer"
 	_selector_container.z_index = 100
 
-func show_for_targets(targets: Array) -> void:
+func start_selection(target_sprites: Array) -> void:
 	_targets.clear()
-	for t in targets:
-		if typeof(t) == TYPE_DICTIONARY:
+	for t in target_sprites:
+		if t is Node2D:
 			_targets.append(t)
 	
 	if _targets.is_empty():
@@ -38,9 +38,9 @@ func show_for_targets(targets: Array) -> void:
 			var stage = battle_scene.get_node("Stage")
 			stage.add_child(_selector_container)
 	
-	_update_selectors()
+ _update_selectors()
 
-func hide_selector() -> void:
+func hide() -> void:
 	visible = false
 	_clear_selectors()
 	
@@ -63,13 +63,10 @@ func _process(_delta: float) -> void:
 		if i >= _selector_sprites.size():
 			break
 			
-		var target: Dictionary = _targets[i]
-		var sprite_node = target.get("sprite", null)
+		var sprite_node: Node2D = _targets[i]
 		var selector = _selector_sprites[i]
-		
-		if sprite_node is Node2D and is_instance_valid(selector):
-			var target_pos: Vector2 = (sprite_node as Node2D).global_position
-			selector.position = target_pos + Vector2(0, -80)
+		if is_instance_valid(sprite_node) and is_instance_valid(selector):
+			selector.position = sprite_node.global_position + Vector2(0, -80)
 
 func _update_selectors() -> void:
 	_clear_selectors()
@@ -81,17 +78,11 @@ func _update_selectors() -> void:
 		return
 	
 	# Create selector sprites for each target
-	for i in range(_targets.size()):
-		var target: Dictionary = _targets[i]
-		var sprite_node = target.get("sprite", null)
-		
-		if sprite_node == null:
-			continue
-		
-		# Get the target's position
-		var target_pos: Vector2 = Vector2.ZERO
-		if sprite_node is Node2D:
-			target_pos = (sprite_node as Node2D).global_position
+ 	for i in range(_targets.size()):
+ 		var sprite_node: Node2D = _targets[i]
+ 		if !is_instance_valid(sprite_node):
+ 			continue
+ 		var target_pos: Vector2 = sprite_node.global_position
 		
 		# Create selector arrow sprite
 		var selector := Sprite2D.new()
@@ -137,7 +128,7 @@ func _create_arrow_texture() -> Texture2D:
 	return ImageTexture.create_from_image(img)
 
 func _get_arrow_texture() -> Texture2D:
-	var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
+	var ui_arrow_path := "res://art/ui/selector_arrow.png"
 	if FileAccess.file_exists(ui_arrow_path):
 		var tex = load(ui_arrow_path)
 		if tex is Texture2D:
@@ -160,8 +151,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_confirm_selection()
 		handled = true
 	elif event.is_action_pressed("ui_cancel"):
-		cancelled.emit()
-		hide_selector()
+		selection_cancelled.emit()
+		hide()
 		handled = true
 	
 	if handled:
@@ -177,9 +168,9 @@ func _move_selection(delta: int) -> void:
 func _confirm_selection() -> void:
 	if _selected_index >= 0 and _selected_index < _targets.size():
 		target_selected.emit(_targets[_selected_index])
-		hide_selector()
+		hide()
 
-func get_selected_target() -> Dictionary:
+func get_selected_target() -> Node2D:
 	if _selected_index >= 0 and _selected_index < _targets.size():
 		return _targets[_selected_index]
-	return {}
+	return null

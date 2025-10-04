@@ -1,8 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://buekoq2w3lgrh"]
+[gd_scene load_steps=14 format=3 uid="uid://buekoq2w3lgrh"]
 
 [ext_resource type="Script" uid="uid://dqtsn5gpp5v15" path="res://scenes/BattleScene.gd" id="1"]
 [ext_resource type="Script" uid="uid://bgycgebbvpb63" path="res://scripts/FX.gd" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/background_meadow.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/background_dark_fantasy.tscn" id="3"]
+[ext_resource type="Script" path="res://ui/TargetSelector.gd" id="4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyan_panel"]
 bg_color = Color(0.08, 0.08, 0.12, 0.95)
@@ -122,7 +123,7 @@ anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(0.02, 0.01, 0.03, 1)
 
-[node name="MeadowBackground" parent="." instance=ExtResource("3")]
+[node name="DarkFantasyBackground" parent="." instance=ExtResource("3")]
 
 [node name="AmbientLight" type="CanvasModulate" parent="."]
 color = Color(0.7, 0.65, 0.8, 1)
@@ -166,15 +167,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="PartyPanel" type="PanelContainer" parent="UI/HUD"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -780.0
+layout_mode = 0
+offset_left = 16.0
 offset_top = 16.0
-offset_right = -16.0
+offset_right = 780.0
 offset_bottom = 180.0
-grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="PartyMargin" type="MarginContainer" parent="UI/HUD/PartyPanel"]
@@ -191,6 +188,11 @@ theme_override_constants/separation = 16
 [node name="Hero1" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="HeroPortrait1" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
 
 [node name="HeroLabel1" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 modulate = Color(0.9, 0.9, 0.95, 1)
@@ -223,6 +225,11 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_constants/separation = 4
 
+[node name="HeroPortrait2" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
+
 [node name="HeroLabel2" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
 modulate = Color(0.9, 0.9, 0.95, 1)
 layout_mode = 2
@@ -254,6 +261,11 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_constants/separation = 4
 
+[node name="HeroPortrait3" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
+
 [node name="HeroLabel3" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
 modulate = Color(0.9, 0.9, 0.95, 1)
 layout_mode = 2
@@ -284,6 +296,11 @@ theme_override_constants/separation = 4
 [node name="Hero4" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="HeroPortrait4" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
 
 [node name="HeroLabel4" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
 modulate = Color(0.9, 0.9, 0.95, 1)
@@ -330,11 +347,12 @@ visible = false
 layout_mode = 2
 
 [node name="EnemyPanel" type="PanelContainer" parent="UI/HUD"]
-layout_mode = 1
-anchors_preset = 0
-offset_left = 16.0
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -420.0
 offset_top = 16.0
-offset_right = 420.0
+offset_right = -16.0
 offset_bottom = 180.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
@@ -352,6 +370,11 @@ theme_override_constants/separation = 16
 [node name="Enemy1" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="EnemyPortrait1" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
 
 [node name="EnemyLabel1" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
 modulate = Color(0.9, 0.9, 0.95, 1)
@@ -376,6 +399,11 @@ theme_override_constants/separation = 4
 layout_mode = 2
 theme_override_constants/separation = 4
 
+[node name="EnemyPortrait2" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
+
 [node name="EnemyLabel2" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
 modulate = Color(0.9, 0.9, 0.95, 1)
 layout_mode = 2
@@ -398,6 +426,11 @@ theme_override_constants/separation = 4
 [node name="Enemy3" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="EnemyPortrait3" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+stretch_mode = 6
 
 [node name="EnemyLabel3" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
 modulate = Color(0.9, 0.9, 0.95, 1)
@@ -437,63 +470,6 @@ text = "DEPRECATED"
 visible = false
 layout_mode = 2
 
-[node name="ActiveCharacterPanel" type="PanelContainer" parent="UI/HUD"]
-layout_mode = 0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = -168.0
-offset_right = 296.0
-offset_bottom = -16.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
-
-[node name="ActiveMargin" type="MarginContainer" parent="UI/HUD/ActiveCharacterPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
-
-[node name="ActiveHBox" type="HBoxContainer" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="ActivePortrait" type="TextureRect" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-stretch_mode = 6
-
-[node name="ActiveStats" type="VBoxContainer" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="ActiveHPLabel" type="Label" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-modulate = Color(0.9, 0.9, 0.95, 1)
-layout_mode = 2
-text = "HP: 100/100"
-
-[node name="ActiveHPBar" type="ProgressBar" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-custom_minimum_size = Vector2(140, 16)
-layout_mode = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
-step = 1.0
-show_percentage = false
-
-[node name="ActiveMPLabel" type="Label" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-modulate = Color(0.9, 0.9, 0.95, 1)
-layout_mode = 2
-text = "MP: 30/30"
-
-[node name="ActiveMPBar" type="ProgressBar" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-custom_minimum_size = Vector2(140, 16)
-layout_mode = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
-max_value = 40.0
-step = 1.0
-show_percentage = false
 
 [node name="ActionPanel" type="PanelContainer" parent="UI/HUD"]
 layout_mode = 0
@@ -559,6 +535,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
 text = "Defend"
 
 [node name="SpellBubble" type="PanelContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
+visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_yellow_panel")
 
@@ -578,6 +555,16 @@ modulate = Color(0.9, 0.9, 0.95, 1)
 layout_mode = 2
 text = "- Fireball
 - Flame wall"
+
+[node name="SpellsContainer" type="VBoxContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ItemsContainer" type="VBoxContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 4
 
 [node name="Vignette" type="TextureRect" parent="UI"]
 anchors_preset = 15
@@ -627,3 +614,8 @@ layout_mode = 2
 text = "XP +0
 Loot: --"
 horizontal_alignment = 1
+
+[node name="TargetSelector" type="Control" parent="UI/HUD"]
+visible = false
+layout_mode = 0
+script = ExtResource("4")
