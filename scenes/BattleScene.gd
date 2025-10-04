@@ -2,7 +2,67 @@ extends Node2D
 
 const Action := preload("res://battle/models/Action.gd")
 const Unit := preload("res://battle/models/Unit.gd")
-const Formula := preload("res://battle/Formula.gd")
+const Formula := prel	# Initial	# Initial	# Initial	# Initial	# Initial	# Initialize enemies (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(enemy_types.size()):
+		var enemy_id: String = enemy_types[i]
+		var unit: Unit = _build_unit_from_enemy(enemy_id)
+		if unit:
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
+			enemies.append(unit)
+		else:
+			print("ERROR: Failed to create enemy unit: %s" % enemy_id)battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
@@ -27,9 +87,9 @@ const CHARACTER_ART := {
 	"Fierce Barbarian": "barbarian",
 	"Primal Werewolf": "werewolf",
 	# Enemy mappings
-	"Goblin": "werewolf",
-	"Slime": "werewolf",  # Using werewolf as slime sprite fallback
-	"Water Slime": "werewolf"  # Using werewolf as water slime sprite fallback
+	"Goblin": "goblin",
+	"Slime": "slime",
+	"Water Slime": "slime" 
 }
 
 @export var keyboard_end_turn_enabled: bool = true
@@ -250,7 +310,8 @@ func _ready() -> void:
 		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 		
 		# Create sprite
-		var enemy_folder: String = String(CHARACTER_ART.get(unit.name.split(" ")[0], unit.name.split(" ")[0].to_lower()))
+		var base_name: String = unit.name.rsplit(" ", true, 1)[0]
+		var enemy_folder: String = String(CHARACTER_ART.get(base_name, base_name.to_lower().replace(" ", "_")))
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
 		sprite.character = enemy_folder
@@ -941,7 +1002,8 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
-	if battle_victory and heroes.any(func(h): return h.is_alive()): # If victory and any hero alive, go to upgrade selection
+	var heroes_alive := heroes.filter(func(h): return h.is_alive())
+	if !heroes_alive.is_empty(): # If victory, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
-	else: # If defeat or all heroes dead, go back to main menu or game over screen
-		get_tree().change_scene_to_file("res://scenes/Boot.tscn")
+	else: # If defeat, go back to main menu or game over screen
+		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene

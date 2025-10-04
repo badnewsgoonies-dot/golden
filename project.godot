@@ -14,12 +14,6 @@ config/name="Golden Battle Tower"
 run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.5")
 
-[display]
-
-window/size/viewport_width=1280
-window/size/viewport_height=720
-window/size/resizable=true
-
 [autoload]
 
 GameManager="*res://autoload/GameManager.gd"
@@ -27,6 +21,11 @@ RunManager="*res://autoload/RunManager.gd"
 DataRegistry="*res://autoload/DataRegistry.gd"
 SaveService="*res://autoload/SaveService.gd"
 AudioService="*res://autoload/AudioService.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [input]
 
