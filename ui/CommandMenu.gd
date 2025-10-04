@@ -226,7 +226,7 @@ func _open_submenu(kind: String) -> void:
 		
 		# Create label with dash prefix like in the screenshot
 		var item_label := Label.new()
-		var _t: String = "- " + label
+		var _t := "- " + label
 		if mp != null:
 			_t = "- %s" % label  # MP cost shown separately if needed
 		item_label.text = _t
