@@ -37,26 +37,26 @@ const CHARACTER_ART := {
 # Top HUD - Party Panel (left) - Updated for multiple heroes
 @onready var hero_portraits: Array[TextureRect] = []
 @onready var hero_labels: Array[Label] = []
-@onready var hero_hp_bars: Array[ProgressBar] = []
-@onready var hero_mp_bars: Array[ProgressBar] = []
+@onready var hero_hp_bars: Array = []
+@onready var hero_mp_bars: Array = []
 @onready var hero_status_containers: Array[HBoxContainer] = []
 
 # Top HUD - Enemy Panel (right) - Updated for multiple enemies
 @onready var enemy_portraits: Array[TextureRect] = []
 @onready var enemy_labels: Array[Label] = []
-@onready var enemy_hp_bars: Array[ProgressBar] = []
+@onready var enemy_hp_bars: Array = []
 @onready var enemy_status_containers: Array[HBoxContainer] = []
 
 # Legacy UI references (for compatibility)
-@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/HeroLabel
-@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/HeroStatus
-@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/HeroHPBar
-@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/HeroMPBar
+@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/HeroLabel if has_node("UI/HUD/PartyPanel/PartyMargin/HeroLabel") else null
+@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/HeroStatus if has_node("UI/HUD/PartyPanel/PartyMargin/HeroStatus") else null
+@onready var hero_hp_bar = $UI/HUD/PartyPanel/PartyMargin/HeroHPBar if has_node("UI/HUD/PartyPanel/PartyMargin/HeroHPBar") else null
+@onready var hero_mp_bar = $UI/HUD/PartyPanel/PartyMargin/HeroMPBar if has_node("UI/HUD/PartyPanel/PartyMargin/HeroMPBar") else null
 @onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/HeroPortrait if has_node("UI/HUD/PartyPanel/PartyMargin/HeroPortrait") else null
 
-@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus
-@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar
+@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyLabel") else null
+@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyStatus") else null
+@onready var enemy_hp_bar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyHPBar") else null
 @onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait if has_node("UI/HUD/EnemyPanel/EnemyMargin/EnemyPortrait") else null
 
 # Bottom HUD - Active Character Panel (left)
