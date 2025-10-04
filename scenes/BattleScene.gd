@@ -105,14 +105,14 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(780, 480), # barbarian
-	Vector2(820, 500), # cleric_blue
-	Vector2(840, 470)  # mage_red
+	Vector2(800, 500), # barbarian
+	Vector2(850, 460), # cleric_blue
+	Vector2(900, 500)  # mage_red
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(450, 480), # werewolf 1
-	Vector2(420, 460)  # werewolf 2
+	Vector2(400, 500), # werewolf 1
+	Vector2(450, 460)  # werewolf 2
 ]
 
 # Battle floor (blue diamond) configuration
@@ -232,7 +232,7 @@ func _ready() -> void:
 		sprite.position = pos
 		sprite.scale = Vector2(0.4, 0.4)
 		sprite.visible = true
-		sprite.z_index = 10 + i
+		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)
 		hero_sprites.append(sprite)
 		
@@ -243,7 +243,7 @@ func _ready() -> void:
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = Vector2(0.4, 0.2)
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 9
+		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
 		hero_shadows.append(shadow)
 	
@@ -264,7 +264,7 @@ func _ready() -> void:
 		sprite.position = pos
 		sprite.scale = Vector2(0.4, 0.4)
 		sprite.visible = true
-		sprite.z_index = 5 + i
+		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)
 		enemy_sprites.append(sprite)
 		
@@ -275,7 +275,7 @@ func _ready() -> void:
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = Vector2(0.4, 0.2)
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 4
+		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
 		enemy_shadows.append(shadow)
 	
@@ -681,29 +681,29 @@ func _update_sprites() -> void:
 	for i in range(heroes.size()):
 		if i < hero_sprites.size() and hero_sprites[i]:
 			hero_sprites[i].modulate = _base_modulate_for(heroes[i])
-			hero_sprites[i].position = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
-			hero_sprites[i].scale = Vector2(0.4, 0.4)
-			hero_sprites[i].z_index = 10 + i
+			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+			hero_sprites[i].position = pos
+			hero_sprites[i].z_index = int(pos.y)
 			hero_sprites[i].set_facing_back(false)  # Heroes face forward
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
-			hero_shadows[i].position = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)] + Vector2(0, 20)
-			hero_shadows[i].scale = Vector2(0.4, 0.2)
-			hero_shadows[i].z_index = 9
+			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+			hero_shadows[i].position = pos + Vector2(0, 20)
+			hero_shadows[i].z_index = int(pos.y) - 1
 			
 	# Update all enemy sprites
 	for i in range(enemies.size()):
 		if i < enemy_sprites.size() and enemy_sprites[i]:
 			enemy_sprites[i].modulate = _base_modulate_for(enemies[i])
-			enemy_sprites[i].position = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
-			enemy_sprites[i].scale = Vector2(0.4, 0.4)
-			enemy_sprites[i].z_index = 5 + i
+			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+			enemy_sprites[i].position = pos
+			enemy_sprites[i].z_index = int(pos.y)
 			enemy_sprites[i].set_facing_back(true)  # Enemies face back
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
-			enemy_shadows[i].position = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)] + Vector2(0, 20)
-			enemy_shadows[i].scale = Vector2(0.4, 0.2)
-			enemy_shadows[i].z_index = 4
+			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+			enemy_shadows[i].position = pos + Vector2(0, 20)
+			enemy_shadows[i].z_index = int(pos.y) - 1
 	
 	# Legacy single sprite support
 	if hero_sprite and heroes.size() > 0:
