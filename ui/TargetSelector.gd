@@ -38,7 +38,7 @@ func start_selection(target_sprites: Array) -> void:
 			var stage = battle_scene.get_node("Stage")
 			stage.add_child(_selector_container)
 	
- _update_selectors()
+	_update_selectors()
 
 func hide() -> void:
 	visible = false
@@ -78,11 +78,11 @@ func _update_selectors() -> void:
 		return
 	
 	# Create selector sprites for each target
- 	for i in range(_targets.size()):
- 		var sprite_node: Node2D = _targets[i]
- 		if !is_instance_valid(sprite_node):
- 			continue
- 		var target_pos: Vector2 = sprite_node.global_position
+	for i in range(_targets.size()):
+		var sprite_node: Node2D = _targets[i]
+		if !is_instance_valid(sprite_node):
+			continue
+		var target_pos: Vector2 = sprite_node.global_position
 		
 		# Create selector arrow sprite
 		var selector := Sprite2D.new()
