@@ -220,7 +220,7 @@ func _ready() -> void:
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = Vector2(1.0, 1.0) # Normal scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		hero_sprites.append(sprite)
@@ -230,7 +230,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = Vector2(0.6, 0.3) # Smaller shadow
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
@@ -253,7 +253,7 @@ func _ready() -> void:
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = Vector2(1.0, 1.0) # Normal scale
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		enemy_sprites.append(sprite)
@@ -263,7 +263,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = Vector2(0.6, 0.3) # Smaller shadow
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
