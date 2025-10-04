@@ -113,10 +113,10 @@ const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(200, 720),
-	Vector2(1160, 720),
-	Vector2(1040, 360),
-	Vector2(320, 360)
+	Vector2(200, 760),
+	Vector2(1180, 760),
+	Vector2(1080, 420),
+	Vector2(300, 420)
 ]
 const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
 
