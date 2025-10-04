@@ -326,4 +326,3 @@ func _show_result(victory: bool) -> void:
 
 func _log(msg: String) -> void:
 	print(msg)
-		if pending_skill.is_empty():
