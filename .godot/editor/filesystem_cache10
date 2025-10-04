@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759553489
+::res://::1759553539
 BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759551777::0::1::::<><><>0<>0<><>::
 ::res://art/::1759551777
 portrait_alias.json::JSON::-1::1759551777::0::1::::<><><>0<>0<><>::
@@ -591,7 +591,7 @@ UpgradeSelection.tscn::PackedScene::4011143118926452549::1759551777::0::1::::<><
 ::res://scenes/FX/::1759551777
 damage_number.tscn::PackedScene::-1::1759551777::0::1::::<><><>0<>0<><>::
 selector_arrow.tscn::PackedScene::-1::1759551777::0::1::::<><><>0<>0<><>::
-::res://scripts/::1759553478
+::res://scripts/::1759553501
 ActionQueue.gd::GDScript::2185839688817861664::1759551777::0::1::::<>Node<><>0<>0<><>::
 AIController.gd::GDScript::70837940992478045::1759551777::0::1::::<>Node<><>0<>0<><>::
 AnimatedFrames.gd::GDScript::8422127605135520097::1759551777::0::1::::AnimatedFrames<>AnimatedSprite2D<><>0<>0<><>::
@@ -601,7 +601,7 @@ BattleState.gd::GDScript::2582550453894339558::1759551777::0::1::::<>Node<><>0<>
 Boot.gd::GDScript::5733614598153260337::1759551777::0::1::::<>Node<><>0<>0<><>::
 EffectSystem.gd::GDScript::4297200307181946211::1759551777::0::1::::<>Node<><>0<>0<><>::
 Formula.gd::GDScript::7123728041291322933::1759551777::0::1::::<>Node<><>0<>0<><>::
-FX.gd::GDScript::2857231172079987558::1759551777::0::1::::<>Node<><>0<>0<><>::
+FX.gd::GDScript::2857231172079987558::1759553501::0::1::::<>Node<><>0<>0<><>::
 FXDamageNumber.gd::GDScript::5790063536421429034::1759551777::0::1::::<>Node2D<><>0<>0<><>::
 PortraitLoader.gd::GDScript::8626782880797348315::1759551777::0::1::::PortraitLoader<>Node<><>0<>0<><>::
 SelectorArrow.gd::GDScript::5445884318294594554::1759551777::0::1::::<>Sprite2D<><>0<>0<><>::
