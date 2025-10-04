@@ -1,4 +1,3 @@
-
 extends Node
 signal state_changed(prev: String, next: String)
 var _state := "intro"
@@ -13,7 +12,7 @@ func push_state(next: String) -> void:
     set_state(next)
 func pop_state() -> void:
     if _stack.is_empty(): return
-    var back := _stack.pop_back()
+    var back: String = _stack.pop_back()
     set_state(back)
 func is_state(s: String) -> bool: return _state == s
 func get_state() -> String: return _state

@@ -1,7 +1,0 @@
-
-[gd_scene format=3]
-[node name="SelectorArrow" type="Sprite2D"]
-texture = ExtResource(1)
-script = ExtResource(2)
-[ext_resource path="res://art/ui/selector_arrow.png" type="Texture2D" id=1]
-[ext_resource path="res://scripts/SelectorArrow.gd" type="Script" id=2]

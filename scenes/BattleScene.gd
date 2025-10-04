@@ -1,51 +1,40 @@
 extends Node2D
 
-const Action := preload("res://battle/models/Action.gd")
-const Unit := preload("res://battle/models/Unit.gd")
-const Formula := preload("res://battle/Formula.gd")
-const TurnEngine := preload("res://battle/TurnEngine.gd")
-const SpriteFactory := preload("res://art/SpriteFactory.gd")
-const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")
-const PortraitLoader := preload("res://scripts/PortraitLoader.gd")
-# CommandMenu removed - using built-in UI
-const SelectorArrow := preload("res://scripts/SelectorArrow.gd")
+# This script orchestrates the entire battle sequence, from setup to conclusion.
+# It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
 
+# --- CONFIGURATION ---
+# Set to true to allow ending the turn with a keyboard key (e.g., 'E')
+var keyboard_end_turn_enabled := true
+
+# --- ART ASSETS MAPPING ---
+# Maps character/enemy IDs to their corresponding folder names in `art/battlers/`
+# This allows using different art for units with the same name (e.g., color variations).
 const CHARACTER_ART := {
-	# Playable characters with proper sprite mappings
-	"Pyro Adept": "hero",
-	"Gale Rogue": "rogue",
-	"Sunlit Cleric": "healer",
-	"Cleric": "healer",
-	"Iron Guard": "hero_warrior",  # Using hero_warrior sprite for guard
-	"Guard": "hero_warrior",
-	"Hero Warrior": "hero_warrior",
-	"Crimson Mage": "mage_red",
-	"Azure Cleric": "cleric_blue",
-	"Armored Knight": "knight_armored",
-	"Forest Archer": "archer_green",
-	"Elder Wizard": "wizard_elder",
-	"Fierce Barbarian": "barbarian",
-	"Primal Werewolf": "werewolf",
-	# Enemy mappings - using available placeholders
-	"Goblin": "werewolf",
-	"Slime": "mage_red",
-	"Water Slime": "mage_red" 
+	"barbarian": "barbarian",
+	"cleric_blue": "cleric_blue",
+	"mage_red": "mage_red",
+	"werewolf": "werewolf",
+	# Add other character mappings here
 }
 
-@export var keyboard_end_turn_enabled: bool = true
+# --- PRELOAD SCRIPT CLASSES ---
+const Unit = preload("res://battle/models/Unit.gd")
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const Action = preload("res://battle/models/Action.gd")
+const TurnEngine = preload("res://battle/TurnEngine.gd")
+const SpriteFactory = preload("res://art/SpriteFactory.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
-# Top HUD - Party Panel (left)
-@onready var lbl_hero: Label = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroLabel
-@onready var hero_status_container: HBoxContainer = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroStatus
-@onready var hero_hp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroHPBar
-@onready var hero_mp_bar: ProgressBar = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroMPBar
-@onready var hero_portrait_rect: TextureRect = $UI/HUD/PartyPanel/PartyMargin/PartyVBox/HeroPortrait
+# --- UI NODE REFERENCES ---
+# `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
 
-# Top HUD - Enemy Panel (right)
-@onready var lbl_enemy: Label = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyLabel
-@onready var enemy_status_container: HBoxContainer = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyStatus
-@onready var enemy_hp_bar: ProgressBar = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyHPBar
-@onready var enemy_portrait_rect: TextureRect = $UI/HUD/EnemyPanel/EnemyMargin/EnemyVBox/EnemyPortrait
+# Top HUD - Party Panel (top right)
+@onready var hero_info_container: VBoxContainer = $UI/TopHud/HBox/HeroInfoPanel/Margin/VBox
+
+# Top HUD - Enemy Panel (top left)
+@onready var enemy_info_container: VBoxContainer = $UI/TopHud/HBox/EnemyInfoPanel/Margin/VBox
 
 # Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
@@ -105,20 +94,24 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(800, 500), # barbarian
-	Vector2(850, 460), # cleric_blue
-	Vector2(900, 500)  # mage_red
+	Vector2(850, 600), # barbarian (front)
+	Vector2(950, 550), # cleric_blue (middle)
+	Vector2(1050, 600) # mage_red (back)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(400, 500), # werewolf 1
-	Vector2(450, 460)  # werewolf 2
+	Vector2(300, 550), # werewolf 1 (top)
+	Vector2(400, 600), # werewolf 2 (bottom)
+	Vector2(500, 550)  # werewolf 3 (middle)
 ]
 
 # Battle floor (blue diamond) configuration
-const FLOOR_CENTER := Vector2(640, 360)
-const FLOOR_HALF_WIDTH := 520.0
-const FLOOR_HALF_HEIGHT := 240.0
+const FLOOR_POINTS := [
+	Vector2(100, 700),
+	Vector2(1180, 700),
+	Vector2(980, 400),
+	Vector2(300, 400)
+]
 const FLOOR_COLOR := Color(0.28, 0.4, 0.7, 0.85)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
@@ -149,8 +142,8 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["werewolf", "werewolf"]
-	for i in range(min(2, enemy_types.size())):
+	var enemy_types := ["werewolf", "werewolf", "werewolf"]
+	for i in range(min(3, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
@@ -167,24 +160,24 @@ func _ready() -> void:
 	# Create battle floor (blue diamond) under Stage once
 	if has_node("Stage"):
 		var stage := $Stage
-		if stage.get_node_or_null("BattleFloor") == null:
-			var floor := Polygon2D.new()
+		var floor := stage.get_node_or_null("BattleFloor")
+		if floor == null:
+			floor = Polygon2D.new()
 			floor.name = "BattleFloor"
-			var pts := PackedVector2Array([
-				FLOOR_CENTER + Vector2(0, -FLOOR_HALF_HEIGHT),
-				FLOOR_CENTER + Vector2(FLOOR_HALF_WIDTH, 0),
-				FLOOR_CENTER + Vector2(0, FLOOR_HALF_HEIGHT),
-				FLOOR_CENTER + Vector2(-FLOOR_HALF_WIDTH, 0)
-			])
-			floor.polygon = pts
-			floor.color = FLOOR_COLOR
-			floor.z_index = 1
 			stage.add_child(floor)
+		
+		var pts := PackedVector2Array()
+		for p in FLOOR_POINTS:
+			pts.append(p)
+		
+		(floor as Polygon2D).polygon = pts
+		(floor as Polygon2D).color = FLOOR_COLOR
+		(floor as Polygon2D).z_index = -10 # Draw behind everything
 	
 	# Create selector arrow (initially hidden)
 	selector_arrow = SelectorArrow.new()
 	# Prefer authored UI arrow asset; fallback to procedural if missing
-	var ui_arrow_path := "res://Art Info/art/ui/selector_arrow.png"
+	var ui_arrow_path := "res://art/ui/selector_arrow.png"
 	if FileAccess.file_exists(ui_arrow_path):
 		selector_arrow.texture = load(ui_arrow_path)
 	else:
@@ -226,7 +219,7 @@ func _ready() -> void:
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
 		sprite.character = hero_folder
-		sprite.set_facing_back(false)  # Heroes face forward
+		sprite.set_facing_back(true)  # Heroes face away from camera
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
@@ -258,7 +251,7 @@ func _ready() -> void:
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
 		sprite.character = enemy_folder
-		sprite.set_facing_back(true)  # Enemies face back
+		sprite.set_facing_back(false)  # Enemies face camera
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
@@ -602,20 +595,9 @@ func _update_ui() -> void:
 	elif heroes.size() > 0:
 		current_hero = heroes[0]
 		
-	# Update top panels - show all heroes summary
-	if lbl_hero:
-		var heroes_text := "Heroes: "
-		for h in heroes:
-			if h.is_alive():
-				heroes_text += "%s (%d/%d) " % [h.name, h.stats.get("HP",0), h.max_stats.get("HP",0)]
-		lbl_hero.text = heroes_text
-		
-	if lbl_enemy:
-		var enemies_text := "Enemies: "
-		for e in enemies:
-			if e.is_alive():
-				enemies_text += "%s (%d/%d) " % [e.name, e.stats.get("HP",0), e.max_stats.get("HP",0)]
-		lbl_enemy.text = enemies_text
+	# Update top panels - hero and enemy info
+	#_update_info_panel(hero_info_container, heroes, "Hero")
+	#_update_info_panel(enemy_info_container, enemies, "Enemy")
 	
 	# Update bottom-left active character panel
 	if current_hero:
@@ -632,16 +614,53 @@ func _update_ui() -> void:
 		if active_portrait:
 			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
 			
-	# Update portraits with first alive hero/enemy
-	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
-	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
-	
-	if hero_portrait_rect and first_hero:
-		hero_portrait_rect.texture = PortraitLoader.get_portrait_for(first_hero.name)
-	if enemy_portrait_rect and first_enemy:
-		enemy_portrait_rect.texture = PortraitLoader.get_portrait_for(first_enemy.name)
 	_update_sprites()
-	refresh_status_hud()
+	# refresh_status_hud() # This is now handled by the info panels
+
+func _update_info_panel(container: VBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
+	if !container:
+		return
+		
+	# Clear previous entries
+	for child in container.get_children():
+		child.queue_free()
+		
+	# Create an entry for each unit
+	for i in range(unit_list.size()):
+		var unit: Unit = unit_list[i]
+		
+		var hbox := HBoxContainer.new()
+		
+		var name_label := Label.new()
+		name_label.text = "%s %d" % [label_prefix, i + 1]
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		var hp_bar := ProgressBar.new()
+		hp_bar.max_value = unit.max_stats.get("HP", 1)
+		hp_bar.value = unit.stats.get("HP", 0)
+		hp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		var mp_bar := ProgressBar.new()
+		mp_bar.max_value = unit.max_stats.get("MP", 1)
+		mp_bar.value = unit.stats.get("MP", 0)
+		mp_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		# Style the bars
+		var hp_stylebox := StyleBoxFlat.new()
+		hp_stylebox.bg_color = Color.RED
+		hp_bar.add_theme_stylebox_override("fill", hp_stylebox)
+		
+		var mp_stylebox := StyleBoxFlat.new()
+		mp_stylebox.bg_color = Color.BLUE
+		mp_bar.add_theme_stylebox_override("fill", mp_stylebox)
+
+		hbox.add_child(name_label)
+		hbox.add_child(hp_bar)
+		if unit.max_stats.get("MP", 0) > 0: # Only show MP bar if they have MP
+			hbox.add_child(mp_bar)
+			
+		container.add_child(hbox)
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	# Log to console only since we removed the log view
@@ -684,7 +703,7 @@ func _update_sprites() -> void:
 			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 			hero_sprites[i].position = pos
 			hero_sprites[i].z_index = int(pos.y)
-			hero_sprites[i].set_facing_back(false)  # Heroes face forward
+			hero_sprites[i].set_facing_back(true)  # Heroes face away
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
 			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
@@ -698,7 +717,7 @@ func _update_sprites() -> void:
 			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 			enemy_sprites[i].position = pos
 			enemy_sprites[i].z_index = int(pos.y)
-			enemy_sprites[i].set_facing_back(true)  # Enemies face back
+			enemy_sprites[i].set_facing_back(false)  # Enemies face camera
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
 			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
@@ -779,7 +798,7 @@ func _shadow_base_scale(u: Unit) -> Vector2:
 
 func _attack_offset(u: Unit) -> Vector2:
 	# Adjusted offsets for original sprite size
-	return Vector2(90, -18) if u in heroes else Vector2(-90, -12) if u in enemies else Vector2.ZERO
+	return Vector2(-90, -18) if u in heroes else Vector2(90, -12) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
@@ -837,14 +856,8 @@ func _shake_sprite(u: Unit) -> void:
 	await t.finished
 
 func refresh_status_hud() -> void:
-	# Show status for first alive hero/enemy
-	var first_hero = heroes.filter(func(h): return h.is_alive()).front()
-	var first_enemy = enemies.filter(func(e): return e.is_alive()).front()
-	
-	if first_hero:
-		_populate_status_container(hero_status_container, first_hero)
-	if first_enemy:
-		_populate_status_container(enemy_status_container, first_enemy)
+	# This function is now deprecated in favor of _update_info_panel
+	pass
 
 func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
 	if container==null:
@@ -916,7 +929,7 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	battle_finished = true
 	battle_victory = victory  # Store the victory state
 	planned_actions.clear()
-	refresh_status_hud()
+	# refresh_status_hud() # Deprecated
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
 	overlay_title.text = "Victory!" if victory else "Defeat"

@@ -1,5 +1,7 @@
 extends Node
 
+const Unit = preload("res://battle/models/Unit.gd")
+
 var rng := RandomNumberGenerator.new()
 var rng_seed: int = 0
 var current_hero_unit: Unit = null # New: Reference to the player's hero unit

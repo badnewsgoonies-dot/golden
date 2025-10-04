@@ -1,4 +1,4 @@
-
+class_name SelectorArrow
 extends Sprite2D
 @export var bob_amplitude := 4.0
 @export var bob_speed := 2.2

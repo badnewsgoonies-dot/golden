@@ -2,6 +2,8 @@ extends AnimatedSprite2D
 
 class_name AnimatedFrames
 
+const SpriteFactory = preload("res://art/SpriteFactory.gd")
+
 @export var character := "adept"
 @export var facing_back := true
 

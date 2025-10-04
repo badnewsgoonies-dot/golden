@@ -1,14 +1,21 @@
 
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://c26qjswk8yqf1"]
+
+[ext_resource type="Script" path="res://scripts/FXDamageNumber.gd" id="1_wgf5w"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w7l7c"]
+font_color = Color(1, 0.9, 0.1, 1)
+
 [node name="DamageNumber" type="Node2D"]
-script = ExtResource(1)
+script = ExtResource("1_wgf5w")
+
 [node name="Label" type="Label" parent="."]
 offset_left = -8.0
 offset_top = -6.0
 offset_right = 8.0
 offset_bottom = 6.0
-theme_override_colors/font_color = Color(1, 0.9, 0.1, 1)
 text = "0"
+label_settings = SubResource("LabelSettings_w7l7c")
 horizontal_alignment = 1
 vertical_alignment = 1
-[ext_resource path="res://scripts/FXDamageNumber.gd" type="Script" id=1]
+

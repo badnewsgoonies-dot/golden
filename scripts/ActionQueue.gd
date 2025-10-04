@@ -1,4 +1,3 @@
-
 extends Node
 class Act:
     var unit_id: String
@@ -12,7 +11,7 @@ var _counter := 0
 func push(act: Act) -> void:
     _counter += 1
     _queue.append({"k": -act.speed, "t": _counter, "v": act})
-    _queue.sort_custom(self, "_cmp")
+    _queue.sort_custom(Callable(self, "_cmp"))
 func _cmp(a, b):
     if a.k == b.k: return a.t < b.t
     return a.k < b.k

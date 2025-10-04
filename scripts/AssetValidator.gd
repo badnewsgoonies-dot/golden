@@ -1,4 +1,3 @@
-
 @tool
 extends EditorScript
 ## AssetValidator.gd — run from the Script Editor: "File" > "Run" or F6
@@ -21,8 +20,8 @@ func _run() -> void:
         if fs.current_is_dir() and not name.begins_with("."):
             var char := name
             for anim in ANIMS.keys():
-                var frames := ANIMS[anim]
-                for i in frames:
+                var frames: int = ANIMS[anim]
+                for i in range(frames):
                     var p := "res://art/battlers/%s/%s/%s_%s_%d.png" % [char, anim, char, anim, i]
                     if not FileAccess.file_exists(p):
                         print("[%s] Missing %s frame %d -> %s" % [char, anim, i, p])

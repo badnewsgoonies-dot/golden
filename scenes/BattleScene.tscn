@@ -1,8 +1,8 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=13 format=3 uid="uid://babrnsnp1bvug"]
 
-[ext_resource type="Script" path="res://scenes/BattleScene.gd" id=1]
-[ext_resource type="Script" path="res://scripts/FX.gd" id=2]
-[ext_resource type="PackedScene" path="res://scenes/background_dark_fantasy.tscn" id=3]
+[ext_resource type="Script" uid="uid://dqtsn5gpp5v15" path="res://scenes/BattleScene.gd" id="1"]
+[ext_resource type="Script" uid="uid://bgycgebbvpb63" path="res://scripts/FX.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/background_dark_fantasy.tscn" id="3"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cyan_panel"]
 bg_color = Color(0.08, 0.08, 0.12, 0.95)
@@ -18,33 +18,6 @@ corner_radius_bottom_left = 12
 shadow_color = Color(0, 0, 0, 0.8)
 shadow_size = 8
 shadow_offset = Vector2(4, 4)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yellow_panel"]
-bg_color = Color(0.12, 0.1, 0.15, 0.95)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.5, 0.4, 0.6, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_color = Color(0, 0, 0, 0.8)
-shadow_size = 8
-shadow_offset = Vector2(4, 4)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gray_panel"]
-bg_color = Color(0.75, 0.70, 0.60, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.65, 0.55, 0.25, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bar_bg"]
 bg_color = Color(0.1, 0.08, 0.12, 0.9)
@@ -82,6 +55,21 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yellow_panel"]
+bg_color = Color(0.12, 0.1, 0.15, 0.95)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.5, 0.4, 0.6, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 8
+shadow_offset = Vector2(4, 4)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_normal"]
 bg_color = Color(0.15, 0.12, 0.18, 0.9)
 border_width_left = 2
@@ -116,23 +104,25 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0, 0)
 
 [node name="BattleScene" type="Node2D"]
-script = ExtResource(1)
+script = ExtResource("1")
 
 [node name="Backdrop" type="ColorRect" parent="."]
+z_index = -10
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.02, 0.01, 0.03, 1.0)
 mouse_filter = 2
-z_index = -10
+color = Color(0.02, 0.01, 0.03, 1)
 
-[node name="Backdrop" type="ColorRect" parent="."]
+[node name="Backdrop2" type="ColorRect" parent="."]
+z_index = -10
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.02, 0.01, 0.03, 1.0)
 mouse_filter = 2
-z_index = -10
+color = Color(0.02, 0.01, 0.03, 1)
 
-[node name="DarkFantasyBackground" parent="." instance=ExtResource(3)]
+[node name="DarkFantasyBackground" parent="." instance=ExtResource("3")]
 
 [node name="AmbientLight" type="CanvasModulate" parent="."]
 color = Color(0.7, 0.65, 0.8, 1)
@@ -140,15 +130,15 @@ color = Color(0.7, 0.65, 0.8, 1)
 [node name="Stage" type="Node2D" parent="."]
 
 [node name="Floor" type="Polygon2D" parent="Stage"]
-polygon = PackedVector2Array(600, 280, 900, 420, 600, 580, 300, 420)
-color = Color(0.06, 0.05, 0.08, 0.9)
 z_index = -1
+color = Color(0.06, 0.05, 0.08, 0.9)
+polygon = PackedVector2Array(600, 280, 900, 420, 600, 580, 300, 420)
 
 [node name="FloorOutline" type="Line2D" parent="Stage"]
+z_index = -1
 points = PackedVector2Array(600, 280, 900, 420, 600, 580, 300, 420, 600, 280)
 width = 3.0
 default_color = Color(0.3, 0.25, 0.4, 0.6)
-z_index = -1
 
 [node name="HeroShadow" type="Sprite2D" parent="Stage"]
 position = Vector2(400, 460)
@@ -165,10 +155,13 @@ position = Vector2(800, 340)
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="PartyPanel" type="PanelContainer" parent="UI/HUD"]
+layout_mode = 0
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 780.0
@@ -176,152 +169,179 @@ offset_bottom = 180.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="PartyMargin" type="MarginContainer" parent="UI/HUD/PartyPanel"]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="PartyHBox" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin"]
+layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="Hero1" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="HeroPortrait1" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="HeroLabel1" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
-text = "Hero 1"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Hero 1"
 horizontal_alignment = 1
 
 [node name="HeroHPBar1" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(140, 12)
-max_value = 100.0
-step = 1.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+step = 1.0
+show_percentage = false
 
 [node name="HeroMPBar1" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
 custom_minimum_size = Vector2(140, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 max_value = 40.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="HeroStatus1" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Hero2" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="HeroPortrait2" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="HeroLabel2" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
-text = "Hero 2"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Hero 2"
 horizontal_alignment = 1
 
 [node name="HeroHPBar2" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
 custom_minimum_size = Vector2(140, 12)
-max_value = 100.0
-step = 1.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+step = 1.0
+show_percentage = false
 
 [node name="HeroMPBar2" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
 custom_minimum_size = Vector2(140, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 max_value = 40.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="HeroStatus2" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Hero3" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="HeroPortrait3" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="HeroLabel3" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
-text = "Hero 3"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Hero 3"
 horizontal_alignment = 1
 
 [node name="HeroHPBar3" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
 custom_minimum_size = Vector2(140, 12)
-max_value = 100.0
-step = 1.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+step = 1.0
+show_percentage = false
 
 [node name="HeroMPBar3" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
 custom_minimum_size = Vector2(140, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 max_value = 40.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="HeroStatus3" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Hero4" type="VBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="HeroPortrait4" type="TextureRect" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="HeroLabel4" type="Label" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
-text = "Hero 4"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Hero 4"
 horizontal_alignment = 1
 
 [node name="HeroHPBar4" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
 custom_minimum_size = Vector2(140, 12)
-max_value = 100.0
-step = 1.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+step = 1.0
+show_percentage = false
 
 [node name="HeroMPBar4" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
 custom_minimum_size = Vector2(140, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 max_value = 40.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="HeroStatus4" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="HeroLabel" type="Label" parent="UI/HUD/PartyPanel/PartyMargin"]
-text = "DEPRECATED"
 visible = false
+layout_mode = 2
+text = "DEPRECATED"
 
 [node name="HeroHPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin"]
 visible = false
+layout_mode = 2
 
 [node name="HeroMPBar" type="ProgressBar" parent="UI/HUD/PartyPanel/PartyMargin"]
 visible = false
+layout_mode = 2
 
 [node name="HeroStatus" type="HBoxContainer" parent="UI/HUD/PartyPanel/PartyMargin"]
 visible = false
+layout_mode = 2
 
 [node name="EnemyPanel" type="PanelContainer" parent="UI/HUD"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -420.0
@@ -331,99 +351,121 @@ offset_bottom = 180.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="EnemyMargin" type="MarginContainer" parent="UI/HUD/EnemyPanel"]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="EnemyHBox" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin"]
+layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="Enemy1" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="EnemyPortrait1" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="EnemyLabel1" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
-text = "Enemy 1"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Enemy 1"
 horizontal_alignment = 1
 
 [node name="EnemyHPBar1" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
 custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 max_value = 70.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
 [node name="EnemyStatus1" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Enemy2" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="EnemyPortrait2" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="EnemyLabel2" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
-text = "Enemy 2"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Enemy 2"
 horizontal_alignment = 1
 
 [node name="EnemyHPBar2" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
 custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 max_value = 70.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
 [node name="EnemyStatus2" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Enemy3" type="VBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="EnemyPortrait3" type="TextureRect" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
 custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="EnemyLabel3" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
-text = "Enemy 3"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "Enemy 3"
 horizontal_alignment = 1
 
 [node name="EnemyHPBar3" type="ProgressBar" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
 custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 max_value = 70.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
 
 [node name="EnemyStatus3" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin/EnemyHBox/Enemy3"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="EnemyLabel" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
-text = "DEPRECATED"
 visible = false
+layout_mode = 2
+text = "DEPRECATED"
 
 [node name="EnemyHPBar" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
-text = "DEPRECATED"
 visible = false
+layout_mode = 2
+text = "DEPRECATED"
 
 [node name="EnemyMPBar" type="Label" parent="UI/HUD/EnemyPanel/EnemyMargin"]
-text = "DEPRECATED"
 visible = false
+layout_mode = 2
+text = "DEPRECATED"
 
 [node name="EnemyStatus" type="HBoxContainer" parent="UI/HUD/EnemyPanel/EnemyMargin"]
 visible = false
+layout_mode = 2
 
 [node name="ActiveCharacterPanel" type="PanelContainer" parent="UI/HUD"]
+layout_mode = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
@@ -433,47 +475,55 @@ offset_bottom = -16.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="ActiveMargin" type="MarginContainer" parent="UI/HUD/ActiveCharacterPanel"]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="ActiveHBox" type="HBoxContainer" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin"]
+layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="ActivePortrait" type="TextureRect" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
 custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
 stretch_mode = 6
 
 [node name="ActiveStats" type="VBoxContainer" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox"]
+layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="ActiveHPLabel" type="Label" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-text = "HP: 100/100"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "HP: 100/100"
 
 [node name="ActiveHPBar" type="ProgressBar" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
 custom_minimum_size = Vector2(140, 16)
-max_value = 100.0
-step = 1.0
-show_percentage = false
+layout_mode = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+step = 1.0
+show_percentage = false
 
 [node name="ActiveMPLabel" type="Label" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
-text = "MP: 30/30"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "MP: 30/30"
 
 [node name="ActiveMPBar" type="ProgressBar" parent="UI/HUD/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats"]
 custom_minimum_size = Vector2(140, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 max_value = 40.0
 step = 1.0
 show_percentage = false
-theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="ActionPanel" type="PanelContainer" parent="UI/HUD"]
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -485,108 +535,122 @@ offset_bottom = -16.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_yellow_panel")
 
 [node name="ActionMargin" type="MarginContainer" parent="UI/HUD/ActionPanel"]
+layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="ActionVBox" type="VBoxContainer" parent="UI/HUD/ActionPanel/ActionMargin"]
+layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="Buttons" type="HBoxContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
+layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="Attack" type="Button" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons"]
 custom_minimum_size = Vector2(150, 45)
-text = "Attack"
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Attack"
 
 [node name="Spells" type="Button" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons"]
 custom_minimum_size = Vector2(150, 45)
-text = "Spells"
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Spells"
 
 [node name="Items" type="Button" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons"]
 custom_minimum_size = Vector2(150, 45)
-text = "Items"
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Items"
 
 [node name="Defend" type="Button" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/Buttons"]
 custom_minimum_size = Vector2(150, 45)
-text = "Defend"
-theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.9, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Defend"
 
 [node name="SpellBubble" type="PanelContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox"]
-visible = true
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_yellow_panel")
 
 [node name="SpellMargin" type="MarginContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble"]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
 [node name="SpellList" type="VBoxContainer" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin"]
+layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="SpellLabel" type="Label" parent="UI/HUD/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin/SpellList"]
-text = "- Fireball\n- Flame wall"
 modulate = Color(0.9, 0.9, 0.95, 1)
+layout_mode = 2
+text = "- Fireball
+- Flame wall"
+
+[node name="Vignette" type="TextureRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_vignette")
+
 [node name="FX" type="CanvasLayer" parent="."]
-script = ExtResource(2)
+script = ExtResource("2")
 
 [node name="Popups" type="Control" parent="FX"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
 [node name="SFX" type="AudioStreamPlayer" parent="."]
 
-[node name="Vignette" type="TextureRect" parent="UI"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-texture = SubResource("GradientTexture2D_vignette")
-
 [node name="Overlay" type="CanvasLayer" parent="."]
 visible = false
 
 [node name="Fade" type="ColorRect" parent="Overlay"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0)
 
 [node name="CenterContainer" type="CenterContainer" parent="Overlay"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Overlay/CenterContainer"]
-alignment = 1
+layout_mode = 2
 theme_override_constants/separation = 12
+alignment = 1
 
 [node name="Label" type="Label" parent="Overlay/CenterContainer/VBoxContainer"]
+layout_mode = 2
 text = "Victory!"
 horizontal_alignment = 1
 
 [node name="Label2" type="Label" parent="Overlay/CenterContainer/VBoxContainer"]
-text = "XP +0\nLoot: --"
+layout_mode = 2
+text = "XP +0
+Loot: --"
 horizontal_alignment = 1
-
-
-
-
-
-
-

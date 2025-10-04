@@ -25,7 +25,7 @@ func _process(delta: float) -> void:
     _t += delta
     position = _start.lerp(_start + rise, clamp(_t/duration, 0.0, 1.0))
     if _t > fade_delay:
-        var a := 1.0 - ((_t - fade_delay) / max(0.01, duration - fade_delay))
+        var a: float = 1.0 - ((_t - fade_delay) / max(0.01, duration - fade_delay))
         modulate.a = clamp(a, 0.0, 1.0)
     if _t >= duration:
         queue_free()
