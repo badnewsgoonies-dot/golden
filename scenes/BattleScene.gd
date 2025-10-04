@@ -212,16 +212,9 @@ func _ready() -> void:
 		var unit: Unit = heroes[i]
 		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 		
-		var hero_folder: String
-		var unit_name_lower: String = unit.name.to_lower()
-
-		if CHARACTER_ART.has(unit.name):
-			hero_folder = CHARACTER_ART[unit.name]
-		elif DataRegistry.characters.has(unit_name_lower) and DataRegistry.characters[unit_name_lower].has("name"):
-			var character_name: String = DataRegistry.characters[unit_name_lower]["name"]
-			hero_folder = CHARACTER_ART.get(character_name, unit_name_lower.replace(" ", "_"))
-		else:
-			hero_folder = unit_name_lower.replace(" ", "_")
+		# Correctly determine the art folder from the unit's ID
+		var hero_id: String = hero_characters[i]
+		var hero_folder: String = CHARACTER_ART.get(hero_id, hero_id)
 			
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
@@ -230,7 +223,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(0.4, 0.4)
+		sprite.scale = Vector2(4.0, 4.0) # Increased scale for visibility
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)
@@ -241,7 +234,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(0.4, 0.2)
+		shadow.scale = Vector2(2.0, 1.0) # Increased scale
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
@@ -252,9 +245,10 @@ func _ready() -> void:
 		var unit: Unit = enemies[i]
 		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 		
-		# Create sprite
-		var base_name: String = unit.name.rsplit(" ", true, 1)[0]
-		var enemy_folder: String = String(CHARACTER_ART.get(base_name, base_name.to_lower().replace(" ", "_")))
+		# Correctly determine the art folder from the unit's ID
+		var enemy_id: String = enemy_types[i]
+		var enemy_folder: String = CHARACTER_ART.get(enemy_id, enemy_id)
+
 		var sprite := AnimatedFrames.new()
 		sprite.centered = false
 		sprite.character = enemy_folder
@@ -262,7 +256,7 @@ func _ready() -> void:
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.position = pos
-		sprite.scale = Vector2(0.4, 0.4)
+		sprite.scale = Vector2(4.0, 4.0) # Increased scale for visibility
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		$Stage.add_child(sprite)
@@ -273,7 +267,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(0.4, 0.2)
+		shadow.scale = Vector2(2.0, 1.0) # Increased scale
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
@@ -645,15 +639,20 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 
 		var unit: Unit = unit_list[i]
 		var unit_box: VBoxContainer = container.get_child(i) as VBoxContainer
+		if not unit_box:
+			print("Error: UI element for unit %d is not a VBoxContainer." % i)
+			continue
 		unit_box.visible = true
 
-		var name_label: Label = unit_box.get_node("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node("EnemyLabel" + str(i+1))
-		var hp_bar: ProgressBar = unit_box.get_node("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node("EnemyHPBar" + str(i+1))
+		var name_label: Label = unit_box.get_node_or_null("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyLabel" + str(i+1))
+		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
 		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) # Enemies might not have this
 
-		name_label.text = unit.name
-		hp_bar.max_value = unit.max_stats.get("HP", 1)
-		hp_bar.value = unit.stats.get("HP", 0)
+		if name_label:
+			name_label.text = unit.name
+		if hp_bar:
+			hp_bar.max_value = unit.max_stats.get("HP", 1)
+			hp_bar.value = unit.stats.get("HP", 0)
 
 		if mp_bar:
 			if unit.max_stats.get("MP", 0) > 0:
