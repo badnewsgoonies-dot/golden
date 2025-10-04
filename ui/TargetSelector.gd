@@ -115,7 +115,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_confirm_selection()
 		handled = true
 	elif event.is_action_pressed("ui_cancel"):
-		emit_signal("cancelled")
+		cancelled.emit()
 		hide_selector()
 		handled = true
 	
@@ -131,7 +131,7 @@ func _move_selection(delta: int) -> void:
 
 func _confirm_selection() -> void:
 	if _selected_index >= 0 and _selected_index < _targets.size():
-		emit_signal("target_selected", _targets[_selected_index])
+		target_selected.emit(_targets[_selected_index])
 		hide_selector()
 
 func get_selected_target() -> Dictionary:
