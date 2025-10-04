@@ -2,67 +2,7 @@ extends Node2D
 
 const Action := preload("res://battle/models/Action.gd")
 const Unit := preload("res://battle/models/Unit.gd")
-const Formula := prel	# Initial	# Initial	# Initial	# Initial	# Initial	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id) (positioned in front of heroes)
-	var enemy_types := ["goblin", "goblin", "water_slime"]
-	for i in range(enemy_types.size()):
-		var enemy_id: String = enemy_types[i]
-		var unit: Unit = _build_unit_from_enemy(enemy_id)
-		if unit:
-			# Give them distinct names
-			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
-			enemies.append(unit)
-		else:
-			print("ERROR: Failed to create enemy unit: %s" % enemy_id)battle/Formula.gd")
+const Formula := preload("res://battle/Formula.gd")
 const TurnEngine := preload("res://battle/TurnEngine.gd")
 const SpriteFactory := preload("res://art/SpriteFactory.gd")
 const AnimatedFrames := preload("res://scripts/AnimatedFrames.gd")

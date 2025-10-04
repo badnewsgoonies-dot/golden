@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759569756
+::res://::1759570212
 BATTLE_FORMATION_CHANGES.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
 BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759560834::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
@@ -562,7 +562,7 @@ upgrades.json::JSON::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://docs/::1759558882
 AI_Godot4_Guide.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 BATTLE_CONTROLS.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
-::res://errors/::1759569494
+::res://errors/::1759569758
 Capture.JPG::CompressedTexture2D::8494496166714288162::1759558882::1759559769::1::::<><><>0<>0<>bb2f367005e5a6d90132da19e055d849<>res://.godot/imported/Capture.JPG-0f4f6d43a968395c973b94b9837f6c17.ctex::
 Capture.PNG::CompressedTexture2D::5441905508402472233::1759567660::1759569758::1::::<><><>0<>0<>1658b20cc41aaa23f020b2b4f610dded<>res://.godot/imported/Capture.PNG-c75dfe776529e3e1a57dd6f9107edcb3.ctex::
 pture.PNG::CompressedTexture2D::8189537708618562344::1759558882::1759559769::1::::<><><>0<>0<>fc5918daa3c7f372bde17f2f22f734e0<>res://.godot/imported/pture.PNG-d89058eba0b18e9db9377d721bf90f01.ctex::
@@ -597,7 +597,7 @@ Desired_thumb.png::CompressedTexture2D::5772610425224863726::1759558881::1759558
 background_dark_fantasy.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 background_meadow.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::4161133067723001155::1759558882::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd<>uid://dlvewljxdg2s7::::res://art/battlers/werewolf/idle_f/3.png<>uid://cr8pdx1ej67qd::::res://art/battlers/hero/idle_b/1.png<>uid://cx8hxm0vfq8n1::::res://art/battlers/mage/idle_b/1.png<>uid://dpsjokc2fqhns::::res://art/battlers/healer/idle_b/1.png
-BattleScene.gd::GDScript::8322624433477628582::1759569722::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759570178::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::-1::1759562993::0::1::::<><><>0<>0<><>::res://scenes/BattleScene.gd<>res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759558882::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759558882::0::1::::<>Control<><>0<>0<><>::
