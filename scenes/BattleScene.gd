@@ -92,16 +92,17 @@ var skill_fireball: Dictionary = {}
 const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
+# Heroes in FRONT (left side), Enemies in BACK (right side)
 const HERO_POSITIONS := [
-	Vector2(800, 500),
-	Vector2(900, 550),
-	Vector2(850, 600),
-	Vector2(950, 650)
+	Vector2(400, 450),
+	Vector2(350, 500),
+	Vector2(450, 550),
+	Vector2(400, 600)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(350, 525),
-	Vector2(300, 625)
+	Vector2(800, 475),
+	Vector2(850, 550)
 ]
 
 # Battle floor (blue diamond) configuration
@@ -214,15 +215,15 @@ func _ready() -> void:
 			
 		var sprite := AnimatedFrames.new()
 		sprite.character = hero_folder
-		sprite.set_facing_back(true)  # Heroes face away from camera
+		sprite.set_facing_back(false)  # Heroes face forward (toward camera/enemies)
 		$Stage.add_child(sprite)
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = Vector2(2.0, 2.0) # Reduced from 3.5 to 2.0
 		sprite.visible = true
-		sprite.z_index = int(pos.y)
+		sprite.z_index = 10  # Heroes in front layer
 		hero_sprites.append(sprite)
 		
 		# Create shadow
@@ -230,9 +231,9 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = Vector2(1.2, 0.6) # Adjusted shadow scale
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = int(pos.y) - 1
+		shadow.z_index = 9  # Just below heroes
 		$Stage.add_child(shadow)
 		hero_shadows.append(shadow)
 	
@@ -247,15 +248,15 @@ func _ready() -> void:
 
 		var sprite := AnimatedFrames.new()
 		sprite.character = enemy_folder
-		sprite.set_facing_back(false)  # Enemies face camera
+		sprite.set_facing_back(true)  # Enemies face backward (away from camera)
 		$Stage.add_child(sprite)
 		sprite._build_frames()
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = Vector2(2.0, 2.0) # Reduced from 3.5 to 2.0
 		sprite.visible = true
-		sprite.z_index = int(pos.y)
+		sprite.z_index = 1  # Enemies in back layer
 		enemy_sprites.append(sprite)
 		
 		# Create shadow
@@ -263,9 +264,9 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = Vector2(1.2, 0.6) # Adjusted shadow scale
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = int(pos.y) - 1
+		shadow.z_index = 0  # Just below enemies
 		$Stage.add_child(shadow)
 		enemy_shadows.append(shadow)
 	
