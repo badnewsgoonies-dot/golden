@@ -106,14 +106,16 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - like traditional JRPGs
 const HERO_POSITIONS := [
 	Vector2(300, 480),  # Bottom-left
-	Vector2(250, 550),  # Front-left
 	Vector2(450, 480),  # Bottom-center-left
-	Vector2(400, 550)   # Front-center-left
+	Vector2(600, 480),  # Bottom-center-right
+	Vector2(750, 480)   # Bottom-right
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(850, 480),  # Top-right
-	Vector2(800, 550)   # Front-right
+	Vector2(400, 280),  # Top-left
+	Vector2(550, 280),  # Top-center-left
+	Vector2(700, 280),  # Top-center-right
+	Vector2(850, 280)   # Top-right
 ]
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
@@ -144,8 +146,8 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 		
 	# Initialize enemies (positioned in front of heroes)
-	var enemy_types := ["goblin", "water_slime"]
-	for i in range(min(2, enemy_types.size())):
+	var enemy_types := ["goblin", "goblin", "water_slime"]
+	for i in range(min(3, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
@@ -807,7 +809,7 @@ func _shake_sprite(u: Unit) -> void:
 		return
 	var o: Vector2 = _origin_for_unit(u)
 	var off: Vector2 = Vector2(12,0)
-	if u==enemy:
+	if u in enemies:
 		off.x = -off.x
 	var t: Tween = create_tween()
 	t.tween_property(s, "position", o+off, 0.05)
@@ -908,7 +910,8 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
-	if hero.is_alive(): # If victory, go to upgrade selection
+	var heroes_alive := heroes.filter(func(h): return h.is_alive())
+	if !heroes_alive.is_empty(): # If victory, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
 	else: # If defeat, go back to main menu or game over screen
 		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene
