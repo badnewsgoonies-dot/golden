@@ -105,14 +105,14 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(800, 450), # barbarian
-	Vector2(850, 500), # cleric_blue
-	Vector2(900, 450)  # mage_red
+	Vector2(750, 350), # barbarian
+	Vector2(800, 400), # cleric_blue
+	Vector2(850, 350)  # mage_red
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(300, 450), # werewolf 1
-	Vector2(350, 500)  # werewolf 2
+	Vector2(400, 350), # werewolf 1
+	Vector2(450, 400)  # werewolf 2
 ]
 
 # Battle floor (blue diamond) configuration
