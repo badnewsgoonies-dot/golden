@@ -93,16 +93,21 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions - JRPG style side-view
 const HERO_POSITIONS := [
-	Vector2(800, 500),
-	Vector2(900, 550),
-	Vector2(850, 600),
-	Vector2(950, 650)
+	Vector2(360, 540),
+	Vector2(480, 580),
+	Vector2(600, 620),
+	Vector2(720, 660)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(350, 525),
-	Vector2(300, 625)
+	Vector2(880, 360),
+	Vector2(980, 420)
 ]
+
+const HERO_SCALE := Vector2(0.82, 0.82)
+const ENEMY_SCALE := Vector2(0.95, 0.95)
+const HERO_SHADOW_SCALE := Vector2(0.5, 0.24)
+const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
@@ -220,7 +225,7 @@ func _ready() -> void:
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = HERO_SCALE
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		hero_sprites.append(sprite)
@@ -230,7 +235,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = HERO_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
@@ -253,7 +258,7 @@ func _ready() -> void:
 		sprite._apply_orientation()
 		sprite.centered = true  # Center the sprite on the position
 		sprite.position = pos
-		sprite.scale = Vector2(3.5, 3.5) # Adjusted scale
+		sprite.scale = ENEMY_SCALE
 		sprite.visible = true
 		sprite.z_index = int(pos.y)
 		enemy_sprites.append(sprite)
@@ -263,7 +268,7 @@ func _ready() -> void:
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
-		shadow.scale = Vector2(2.0, 1.0) # Increased scale
+		shadow.scale = ENEMY_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = int(pos.y) - 1
 		$Stage.add_child(shadow)
@@ -699,12 +704,14 @@ func _update_sprites() -> void:
 			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 			hero_sprites[i].position = pos
 			hero_sprites[i].z_index = int(pos.y)
+			hero_sprites[i].scale = HERO_SCALE
 			hero_sprites[i].set_facing_back(true)  # Heroes face away
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
 			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 			hero_shadows[i].position = pos + Vector2(0, 20)
 			hero_shadows[i].z_index = int(pos.y) - 1
+			hero_shadows[i].scale = HERO_SHADOW_SCALE
 			
 	# Update all enemy sprites
 	for i in range(enemies.size()):
@@ -713,12 +720,14 @@ func _update_sprites() -> void:
 			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 			enemy_sprites[i].position = pos
 			enemy_sprites[i].z_index = int(pos.y)
+			enemy_sprites[i].scale = ENEMY_SCALE
 			enemy_sprites[i].set_facing_back(false)  # Enemies face camera
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
 			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
 			enemy_shadows[i].position = pos + Vector2(0, 20)
 			enemy_shadows[i].z_index = int(pos.y) - 1
+			enemy_shadows[i].scale = ENEMY_SHADOW_SCALE
 	
 	# Legacy single sprite support
 	if hero_sprite and heroes.size() > 0:
