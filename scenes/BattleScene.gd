@@ -103,17 +103,17 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - like traditional JRPGs
+# Formation positions - moved higher to avoid UI overlap
 const HERO_POSITIONS := [
-	Vector2(300, 480),  # Bottom-left
-	Vector2(250, 550),  # Front-left
-	Vector2(450, 480),  # Bottom-center-left
-	Vector2(400, 550)   # Front-center-left
+	Vector2(300, 280),  # Left-back
+	Vector2(250, 350),  # Left-front
+	Vector2(450, 280),  # Center-back
+	Vector2(400, 350)   # Center-front
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(850, 480),  # Top-right
-	Vector2(800, 550)   # Front-right
+	Vector2(850, 280),  # Right-back
+	Vector2(800, 350)   # Right-front
 ]
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
@@ -214,7 +214,7 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(60, 160)  # Adjusted for 2.5x scaled sprite (48*2.5=120, 64*2.5=160)
+		shadow.position = pos + Vector2(60, 160)  # Adjusted for 6.0x scaled sprite and new positions
 		shadow.scale = Vector2(2.0, 1.2)  # Scale shadow to match larger sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 9
@@ -248,7 +248,7 @@ func _ready() -> void:
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
-		shadow.position = pos + Vector2(60, 160)  # Adjusted for 2.5x scaled sprite (48*2.5=120, 64*2.5=160)
+		shadow.position = pos + Vector2(60, 160)  # Adjusted for 6.0x scaled sprite and new positions
 		shadow.scale = Vector2(2.1, 1.2)  # Scale shadow to match larger sprite
 		shadow.modulate = Color(0, 0, 0, 0.5)
 		shadow.z_index = 4
