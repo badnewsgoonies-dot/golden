@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://e7d2412f7cd1f35e"
-path="res://.godot/imported/werewolf_idle_b_0.png-e7d2412f7cd1f35e.ctex"
+uid="uid://8i3byf27rt6g"
+path="res://.godot/imported/werewolf_idle_b_0.png-e7d2412f7cd1f35ee9c08054770d58d5.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/werewolf/idle_b/werewolf_idle_b_0.png"
-dest_files=["res://.godot/imported/werewolf_idle_b_0.png-e7d2412f7cd1f35e.ctex"]
+dest_files=["res://.godot/imported/werewolf_idle_b_0.png-e7d2412f7cd1f35ee9c08054770d58d5.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1b4cec8bd4e427eb"
-path="res://.godot/imported/knight_armored_cast_f_5.png-1b4cec8bd4e427eb.ctex"
+uid="uid://bosnrho5j8a2d"
+path="res://.godot/imported/knight_armored_cast_f_5.png-1b4cec8bd4e427ebcf778149945b032b.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/knight_armored/cast_f/knight_armored_cast_f_5.png"
-dest_files=["res://.godot/imported/knight_armored_cast_f_5.png-1b4cec8bd4e427eb.ctex"]
+dest_files=["res://.godot/imported/knight_armored_cast_f_5.png-1b4cec8bd4e427ebcf778149945b032b.ctex"]
 
 [params]
 

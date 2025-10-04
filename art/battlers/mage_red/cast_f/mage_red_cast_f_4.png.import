@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfc8beec15ea56de"
-path="res://.godot/imported/mage_red_cast_f_4.png-cfc8beec15ea56de.ctex"
+uid="uid://bpls740qesn5w"
+path="res://.godot/imported/mage_red_cast_f_4.png-cfc8beec15ea56de7725bcacfeffd227.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/mage_red/cast_f/mage_red_cast_f_4.png"
-dest_files=["res://.godot/imported/mage_red_cast_f_4.png-cfc8beec15ea56de.ctex"]
+dest_files=["res://.godot/imported/mage_red_cast_f_4.png-cfc8beec15ea56de7725bcacfeffd227.ctex"]
 
 [params]
 

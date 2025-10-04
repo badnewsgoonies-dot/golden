@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://7299482e2bbd8102"
-path="res://.godot/imported/knight_armored_hit_b_2.png-7299482e2bbd8102.ctex"
+uid="uid://cofbi4dm42yxx"
+path="res://.godot/imported/knight_armored_hit_b_2.png-7299482e2bbd810218092fa7dd8de666.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/knight_armored/hit_b/knight_armored_hit_b_2.png"
-dest_files=["res://.godot/imported/knight_armored_hit_b_2.png-7299482e2bbd8102.ctex"]
+dest_files=["res://.godot/imported/knight_armored_hit_b_2.png-7299482e2bbd810218092fa7dd8de666.ctex"]
 
 [params]
 

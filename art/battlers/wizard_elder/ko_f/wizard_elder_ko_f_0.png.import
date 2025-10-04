@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dd00bc2003193b7e"
-path="res://.godot/imported/wizard_elder_ko_f_0.png-dd00bc2003193b7e.ctex"
+uid="uid://dehv1kp10vxoy"
+path="res://.godot/imported/wizard_elder_ko_f_0.png-dd00bc2003193b7e0693c4daa726d474.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/wizard_elder/ko_f/wizard_elder_ko_f_0.png"
-dest_files=["res://.godot/imported/wizard_elder_ko_f_0.png-dd00bc2003193b7e.ctex"]
+dest_files=["res://.godot/imported/wizard_elder_ko_f_0.png-dd00bc2003193b7e0693c4daa726d474.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c06e936b784be840"
-path="res://.godot/imported/barbarian_idle_b_1.png-c06e936b784be840.ctex"
+uid="uid://4so5nn3u82xf"
+path="res://.godot/imported/barbarian_idle_b_1.png-c06e936b784be840c338305fd8e7fa17.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/barbarian/idle_b/barbarian_idle_b_1.png"
-dest_files=["res://.godot/imported/barbarian_idle_b_1.png-c06e936b784be840.ctex"]
+dest_files=["res://.godot/imported/barbarian_idle_b_1.png-c06e936b784be840c338305fd8e7fa17.ctex"]
 
 [params]
 

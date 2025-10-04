@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://5e3fe0fb18935d6c"
-path="res://.godot/imported/archer_green_idle_b_2.png-5e3fe0fb18935d6c.ctex"
+uid="uid://q7gluj3owsyu"
+path="res://.godot/imported/archer_green_idle_b_2.png-5e3fe0fb18935d6c6b0101fc7a802035.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/archer_green/idle_b/archer_green_idle_b_2.png"
-dest_files=["res://.godot/imported/archer_green_idle_b_2.png-5e3fe0fb18935d6c.ctex"]
+dest_files=["res://.godot/imported/archer_green_idle_b_2.png-5e3fe0fb18935d6c6b0101fc7a802035.ctex"]
 
 [params]
 

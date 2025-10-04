@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2f974d7c375c936"
-path="res://.godot/imported/mage_red_hit_b_0.png-b2f974d7c375c936.ctex"
+uid="uid://kgsbh2uyac5l"
+path="res://.godot/imported/mage_red_hit_b_0.png-b2f974d7c375c936ab3fc6e6528040ec.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/mage_red/hit_b/mage_red_hit_b_0.png"
-dest_files=["res://.godot/imported/mage_red_hit_b_0.png-b2f974d7c375c936.ctex"]
+dest_files=["res://.godot/imported/mage_red_hit_b_0.png-b2f974d7c375c936ab3fc6e6528040ec.ctex"]
 
 [params]
 

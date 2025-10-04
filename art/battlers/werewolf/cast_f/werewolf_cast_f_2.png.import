@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://a30f0eb9de88f491"
-path="res://.godot/imported/werewolf_cast_f_2.png-a30f0eb9de88f491.ctex"
+uid="uid://ynbi46vg7odm"
+path="res://.godot/imported/werewolf_cast_f_2.png-a30f0eb9de88f491b3d6ead830fe3d46.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/werewolf/cast_f/werewolf_cast_f_2.png"
-dest_files=["res://.godot/imported/werewolf_cast_f_2.png-a30f0eb9de88f491.ctex"]
+dest_files=["res://.godot/imported/werewolf_cast_f_2.png-a30f0eb9de88f491b3d6ead830fe3d46.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://a386181b826db26c"
-path="res://.godot/imported/hero_warrior_hit_f_2.png-a386181b826db26c.ctex"
+uid="uid://bf3y5o3e3i7v1"
+path="res://.godot/imported/hero_warrior_hit_f_2.png-a386181b826db26cf1c99678cb2de393.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/hero_warrior/hit_f/hero_warrior_hit_f_2.png"
-dest_files=["res://.godot/imported/hero_warrior_hit_f_2.png-a386181b826db26c.ctex"]
+dest_files=["res://.godot/imported/hero_warrior_hit_f_2.png-a386181b826db26cf1c99678cb2de393.ctex"]
 
 [params]
 

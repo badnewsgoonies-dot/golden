@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://e25400c6cd64f360"
-path="res://.godot/imported/cleric_blue_idle_b_2.png-e25400c6cd64f360.ctex"
+uid="uid://c7n643ssr5vi2"
+path="res://.godot/imported/cleric_blue_idle_b_2.png-e25400c6cd64f3603a7166933c22ad45.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/cleric_blue/idle_b/cleric_blue_idle_b_2.png"
-dest_files=["res://.godot/imported/cleric_blue_idle_b_2.png-e25400c6cd64f360.ctex"]
+dest_files=["res://.godot/imported/cleric_blue_idle_b_2.png-e25400c6cd64f3603a7166933c22ad45.ctex"]
 
 [params]
 

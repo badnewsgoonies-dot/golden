@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://58cb0e8f45ce5b9f"
-path="res://.godot/imported/hero_warrior_attack_f_3.png-58cb0e8f45ce5b9f.ctex"
+uid="uid://bsvjnbw12gccr"
+path="res://.godot/imported/hero_warrior_attack_f_3.png-58cb0e8f45ce5b9ff7b6b465933d1b9d.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/hero_warrior/attack_f/hero_warrior_attack_f_3.png"
-dest_files=["res://.godot/imported/hero_warrior_attack_f_3.png-58cb0e8f45ce5b9f.ctex"]
+dest_files=["res://.godot/imported/hero_warrior_attack_f_3.png-58cb0e8f45ce5b9ff7b6b465933d1b9d.ctex"]
 
 [params]
 

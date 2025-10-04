@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c11561ce12ee9a2c"
-path="res://.godot/imported/knight_armored_attack_f_4.png-c11561ce12ee9a2c.ctex"
+uid="uid://fttoond04sce"
+path="res://.godot/imported/knight_armored_attack_f_4.png-c11561ce12ee9a2c2b19deddf1f6b6c2.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/knight_armored/attack_f/knight_armored_attack_f_4.png"
-dest_files=["res://.godot/imported/knight_armored_attack_f_4.png-c11561ce12ee9a2c.ctex"]
+dest_files=["res://.godot/imported/knight_armored_attack_f_4.png-c11561ce12ee9a2c2b19deddf1f6b6c2.ctex"]
 
 [params]
 

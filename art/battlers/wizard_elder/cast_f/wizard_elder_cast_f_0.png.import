@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b29b5ac2a4713b33"
-path="res://.godot/imported/wizard_elder_cast_f_0.png-b29b5ac2a4713b33.ctex"
+uid="uid://co8n1jyvw82qe"
+path="res://.godot/imported/wizard_elder_cast_f_0.png-b29b5ac2a4713b3315b170ce65081caa.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/wizard_elder/cast_f/wizard_elder_cast_f_0.png"
-dest_files=["res://.godot/imported/wizard_elder_cast_f_0.png-b29b5ac2a4713b33.ctex"]
+dest_files=["res://.godot/imported/wizard_elder_cast_f_0.png-b29b5ac2a4713b3315b170ce65081caa.ctex"]
 
 [params]
 

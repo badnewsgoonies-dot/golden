@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bdfe01b1c715cecd"
-path="res://.godot/imported/knight_armored_idle_b_0.png-bdfe01b1c715cecd.ctex"
+uid="uid://dobio6a4yjpkp"
+path="res://.godot/imported/knight_armored_idle_b_0.png-bdfe01b1c715cecd0a37de4b87460308.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/knight_armored/idle_b/knight_armored_idle_b_0.png"
-dest_files=["res://.godot/imported/knight_armored_idle_b_0.png-bdfe01b1c715cecd.ctex"]
+dest_files=["res://.godot/imported/knight_armored_idle_b_0.png-bdfe01b1c715cecd0a37de4b87460308.ctex"]
 
 [params]
 

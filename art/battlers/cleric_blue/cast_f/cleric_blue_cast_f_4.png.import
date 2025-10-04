@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://18a42af5d149208d"
-path="res://.godot/imported/cleric_blue_cast_f_4.png-18a42af5d149208d.ctex"
+uid="uid://cje4076ec0c22"
+path="res://.godot/imported/cleric_blue_cast_f_4.png-18a42af5d149208decf5faa6335ae507.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/cleric_blue/cast_f/cleric_blue_cast_f_4.png"
-dest_files=["res://.godot/imported/cleric_blue_cast_f_4.png-18a42af5d149208d.ctex"]
+dest_files=["res://.godot/imported/cleric_blue_cast_f_4.png-18a42af5d149208decf5faa6335ae507.ctex"]
 
 [params]
 

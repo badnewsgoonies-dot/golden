@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://05908022aadf8109"
-path="res://.godot/imported/mage_red_guard_f_1.png-05908022aadf8109.ctex"
+uid="uid://ex2ww13xltpc"
+path="res://.godot/imported/mage_red_guard_f_1.png-05908022aadf8109465ef50cfa4d23d9.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/mage_red/guard_f/mage_red_guard_f_1.png"
-dest_files=["res://.godot/imported/mage_red_guard_f_1.png-05908022aadf8109.ctex"]
+dest_files=["res://.godot/imported/mage_red_guard_f_1.png-05908022aadf8109465ef50cfa4d23d9.ctex"]
 
 [params]
 

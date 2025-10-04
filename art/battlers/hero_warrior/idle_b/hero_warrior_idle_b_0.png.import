@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ac1d2ac41b5f4465"
-path="res://.godot/imported/hero_warrior_idle_b_0.png-ac1d2ac41b5f4465.ctex"
+uid="uid://dqvmbc5tdwciq"
+path="res://.godot/imported/hero_warrior_idle_b_0.png-ac1d2ac41b5f4465c284ace5d753bff0.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/hero_warrior/idle_b/hero_warrior_idle_b_0.png"
-dest_files=["res://.godot/imported/hero_warrior_idle_b_0.png-ac1d2ac41b5f4465.ctex"]
+dest_files=["res://.godot/imported/hero_warrior_idle_b_0.png-ac1d2ac41b5f4465c284ace5d753bff0.ctex"]
 
 [params]
 

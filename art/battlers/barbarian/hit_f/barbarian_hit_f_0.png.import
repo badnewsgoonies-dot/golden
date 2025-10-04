@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://0def078a247b5efd"
-path="res://.godot/imported/barbarian_hit_f_0.png-0def078a247b5efd.ctex"
+uid="uid://3istsf3txxsv"
+path="res://.godot/imported/barbarian_hit_f_0.png-0def078a247b5efd8b1bd2df3d1b0290.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/barbarian/hit_f/barbarian_hit_f_0.png"
-dest_files=["res://.godot/imported/barbarian_hit_f_0.png-0def078a247b5efd.ctex"]
+dest_files=["res://.godot/imported/barbarian_hit_f_0.png-0def078a247b5efd8b1bd2df3d1b0290.ctex"]
 
 [params]
 

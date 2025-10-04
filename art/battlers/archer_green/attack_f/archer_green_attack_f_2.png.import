@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d8e827c554225cb9"
-path="res://.godot/imported/archer_green_attack_f_2.png-d8e827c554225cb9.ctex"
+uid="uid://bh2gfibkwbs4c"
+path="res://.godot/imported/archer_green_attack_f_2.png-d8e827c554225cb9871f7d082a49bd9f.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/archer_green/attack_f/archer_green_attack_f_2.png"
-dest_files=["res://.godot/imported/archer_green_attack_f_2.png-d8e827c554225cb9.ctex"]
+dest_files=["res://.godot/imported/archer_green_attack_f_2.png-d8e827c554225cb9871f7d082a49bd9f.ctex"]
 
 [params]
 

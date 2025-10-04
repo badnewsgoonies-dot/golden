@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://26cb10a5d0026708"
-path="res://.godot/imported/mage_red_idle_b_2.png-26cb10a5d0026708.ctex"
+uid="uid://n5undmiii3rj"
+path="res://.godot/imported/mage_red_idle_b_2.png-26cb10a5d002670826230cc1cbf41ded.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/mage_red/idle_b/mage_red_idle_b_2.png"
-dest_files=["res://.godot/imported/mage_red_idle_b_2.png-26cb10a5d0026708.ctex"]
+dest_files=["res://.godot/imported/mage_red_idle_b_2.png-26cb10a5d002670826230cc1cbf41ded.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://f0253386ea31fe36"
-path="res://.godot/imported/wizard_elder_idle_b_1.png-f0253386ea31fe36.ctex"
+uid="uid://dgv6ld7ax04d4"
+path="res://.godot/imported/wizard_elder_idle_b_1.png-f0253386ea31fe3698839f8e59e0c3a9.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/wizard_elder/idle_b/wizard_elder_idle_b_1.png"
-dest_files=["res://.godot/imported/wizard_elder_idle_b_1.png-f0253386ea31fe36.ctex"]
+dest_files=["res://.godot/imported/wizard_elder_idle_b_1.png-f0253386ea31fe3698839f8e59e0c3a9.ctex"]
 
 [params]
 

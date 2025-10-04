@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://f6e2c8ea506b8543"
-path="res://.godot/imported/werewolf_attack_f_0.png-f6e2c8ea506b8543.ctex"
+uid="uid://pkslbmb4xi0m"
+path="res://.godot/imported/werewolf_attack_f_0.png-f6e2c8ea506b85430acb8f61c67f506a.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/werewolf/attack_f/werewolf_attack_f_0.png"
-dest_files=["res://.godot/imported/werewolf_attack_f_0.png-f6e2c8ea506b8543.ctex"]
+dest_files=["res://.godot/imported/werewolf_attack_f_0.png-f6e2c8ea506b85430acb8f61c67f506a.ctex"]
 
 [params]
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://15e7491f1acb2924"
-path="res://.godot/imported/barbarian_attack_f_4.png-15e7491f1acb2924.ctex"
+uid="uid://bcn17hsgm36d8"
+path="res://.godot/imported/barbarian_attack_f_4.png-15e7491f1acb2924c7b886dd9a561811.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/barbarian/attack_f/barbarian_attack_f_4.png"
-dest_files=["res://.godot/imported/barbarian_attack_f_4.png-15e7491f1acb2924.ctex"]
+dest_files=["res://.godot/imported/barbarian_attack_f_4.png-15e7491f1acb2924c7b886dd9a561811.ctex"]
 
 [params]
 

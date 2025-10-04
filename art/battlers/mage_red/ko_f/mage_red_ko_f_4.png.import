@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://9920476240be54d0"
-path="res://.godot/imported/mage_red_ko_f_4.png-9920476240be54d0.ctex"
+uid="uid://txvtj2rso2e6"
+path="res://.godot/imported/mage_red_ko_f_4.png-9920476240be54d01e1c404f9c44c0e8.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://art/battlers/mage_red/ko_f/mage_red_ko_f_4.png"
-dest_files=["res://.godot/imported/mage_red_ko_f_4.png-9920476240be54d0.ctex"]
+dest_files=["res://.godot/imported/mage_red_ko_f_4.png-9920476240be54d01e1c404f9c44c0e8.ctex"]
 
 [params]
 
