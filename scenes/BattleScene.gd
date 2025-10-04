@@ -59,15 +59,15 @@ func _ready() -> void:
 func _build_units() -> void:
 	var hero_ids = ["barbarian", "cleric_blue", "mage_red", "barbarian"]
 	for i in range(hero_ids.size()):
-		var def := DataRegistry.characters.get(hero_ids[i], {})
-		var u := _make_unit_from_def(def)
+		var def: Dictionary = DataRegistry.characters.get(hero_ids[i], {}) as Dictionary
+		var u: Unit = _make_unit_from_def(def)
 		if hero_ids.count(hero_ids[i]) > 1:
 			u.name = "%s %s" % [u.name, String.chr(65 + i)]
 		heroes.append(u)
 	var enemy_ids = ["werewolf", "werewolf"]
 	for i in range(enemy_ids.size()):
-		var def_e := DataRegistry.enemies.get(enemy_ids[i], {})
-		var e := _make_unit_from_def(def_e)
+		var def_e: Dictionary = DataRegistry.enemies.get(enemy_ids[i], {}) as Dictionary
+		var e: Unit = _make_unit_from_def(def_e)
 		e.name = "%s %s" % [e.name, String.chr(65 + i)]
 		enemies.append(e)
 
