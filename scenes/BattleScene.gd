@@ -82,7 +82,13 @@ func _ready() -> void:
 	# Data
 	skill_slash = _fetch_skill("slash")
 	skill_fireball = _fetch_skill("fireball")
-	hero = _build_unit_from_character("adept_pyro")
+	
+	if GameManager.current_hero_unit == null:
+		hero = _build_unit_from_character("adept_pyro")
+		GameManager.current_hero_unit = hero
+	else:
+		hero = GameManager.current_hero_unit
+		
 	enemy = _build_unit_from_enemy("goblin")
 
 	# Engine
@@ -572,7 +578,11 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	var t: Tween = create_tween()
 	t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
 	t.tween_interval(0.1)
-	t.finished.connect(_lock_input_after_battle)
+	t.finished.connect(_on_battle_result_shown)
 
-func _lock_input_after_battle() -> void:
+func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
+	if hero.is_alive(): # If victory, go to upgrade selection
+		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
+	else: # If defeat, go back to main menu or game over screen
+		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene

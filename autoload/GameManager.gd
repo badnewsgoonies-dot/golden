@@ -2,6 +2,7 @@ extends Node
 
 var rng := RandomNumberGenerator.new()
 var rng_seed: int = 0
+var current_hero_unit: Unit = null # New: Reference to the player's hero unit
 
 func set_seed(new_seed: int) -> void:
 	rng_seed = new_seed

@@ -85,3 +85,25 @@ func get_status_types() -> Array[String]:
 			continue
 		types.append(st.type)
 	return types
+
+func apply_upgrade(upgrade_data: Dictionary) -> void:
+	var type: String = upgrade_data.get("type", "")
+	match type:
+		"stat_boost":
+			var stat_name: String = upgrade_data.get("stat", "")
+			var value: float = upgrade_data.get("value", 0.0)
+			if stat_name.is_empty() or value == 0.0:
+				return
+
+			if stats.has(stat_name):
+				var current_value = float(stats[stat_name])
+				stats[stat_name] = int(current_value * (1.0 + value))
+			if max_stats.has(stat_name):
+				var current_max_value = float(max_stats[stat_name])
+				max_stats[stat_name] = int(current_max_value * (1.0 + value))
+			
+			# If HP is boosted, also heal the unit for the increased amount
+			if stat_name == "HP":
+				var old_hp = int(stats.get("HP", 0))
+				var new_max_hp = int(max_stats.get("HP", 0))
+				stats["HP"] = new_max_hp # Fully heal on HP upgrade
