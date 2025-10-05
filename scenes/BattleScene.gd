@@ -343,20 +343,36 @@ func _populate_spell_bubble() -> void:
 	var current_hero: Unit = heroes[current_acting_hero_index]
 	var mp: int = current_hero.stats.get("MP", 0)
 	
-	# Add Fireball button
-	var fireball_cost: int = int(skill_fireball.get("mp_cost", 15))
-	var fireball_btn := Button.new()
-	fireball_btn.text = "🔥 Fireball (%d MP)" % fireball_cost
-	fireball_btn.disabled = mp < fireball_cost
-	fireball_btn.pressed.connect(_on_fireball_selected)
-	spell_button_container.add_child(fireball_btn)
+	# --- Dynamically add buttons for all known skills ---
+	# In a real game, you'd fetch these from the character's specific skill list.
+	# For this test, we'll just show all the new skills we created.
+	var available_skills = ["fireball", "poison_dart", "stun_bash"]
+	var has_any_castable_spell = false
+
+	for skill_id in available_skills:
+		var skill_data = _fetch_skill(skill_id)
+		var cost: int = int(skill_data.get("mp_cost", 0))
+		
+		var btn := Button.new()
+		btn.text = "%s (%d MP)" % [skill_data.get("name", "Unknown"), cost]
+		btn.disabled = mp < cost
+		
+		# Connect the button's pressed signal to a generic handler.
+		# We pass the skill data directly to the handler.
+		btn.pressed.connect(_on_skill_selected.bind(skill_data))
+		
+		spell_button_container.add_child(btn)
+		
+		if mp >= cost:
+			has_any_castable_spell = true
 	
-	# Show hint if not enough MP
-	if mp < fireball_cost:
+	# Show a hint if the hero can't afford any of the spells.
+	if not has_any_castable_spell:
 		var hint := Label.new()
 		hint.text = "Not enough MP!"
 		hint.add_theme_color_override("font_color", Color(1, 0.5, 0.5))
 		spell_button_container.add_child(hint)
+
 
 func _on_items_pressed() -> void:
 	if battle_finished or current_acting_hero_index >= heroes.size() or is_selecting_target:
@@ -381,22 +397,31 @@ func _on_defend_pressed() -> void:
 	planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
 	_advance_to_next_hero()
 
-func _on_fireball_selected() -> void:
+## Generic handler for when any skill button is pressed from the spell bubble.
+func _on_skill_selected(skill_data: Dictionary) -> void:
 	if battle_finished or current_acting_hero_index >= heroes.size():
 		return
-	
+
 	var current_hero: Unit = heroes[current_acting_hero_index]
-	var cost: int = int(skill_fireball.get("mp_cost", 0))
-	
+	var cost: int = int(skill_data.get("mp_cost", 0))
+
 	if current_hero.stats.get("MP", 0) < cost:
-		_log("❌ Not enough MP for Fireball!")
+		_log("❌ Not enough MP for %s!" % skill_data.get("name"))
 		return
-	
-	_log("🔥 Fireball selected - choose target")
+
+	_log("✨ %s selected - choose target" % skill_data.get("name"))
 	pending_action_type = "spell"
-	pending_skill = skill_fireball.duplicate(true)
+	pending_skill = skill_data.duplicate(true)
 	spell_bubble.visible = false
 	_start_enemy_target_selection()
+
+
+func _on_fireball_selected() -> void:
+	# This function is now deprecated and replaced by _on_skill_selected.
+	# We can remove it in a future cleanup pass.
+	var fireball_skill = _fetch_skill("fireball")
+	_on_skill_selected(fireball_skill)
+
 
 func _start_enemy_target_selection() -> void:
 	var alive_enemies: Array = []

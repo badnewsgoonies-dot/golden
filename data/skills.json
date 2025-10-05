@@ -3,12 +3,33 @@
     "name": "Slash",
     "type": "damage",
     "stat": "ATK",
-    "power": 1.2,
+    "power": 1.0,
     "acc": 0.95,
     "crit": 0.05,
-    "element": "earth",
+    "element": "physical",
     "mp_cost": 0,
     "effects": []
+  },
+  "poison_dart": {
+    "name": "Poison Dart",
+    "type": "damage",
+    "stat": "ATK",
+    "power": 0.5,
+    "acc": 1.0,
+    "crit": 0.0,
+    "element": "physical",
+    "mp_cost": 8,
+    "effects": [
+      {
+        "id": "poison",
+        "name": "Poison",
+        "chance": 1.0,
+        "duration": 3,
+        "metadata": {
+          "damage": 8
+        }
+      }
+    ]
   },
   "fireball": {
     "name": "Fireball",
@@ -18,7 +39,26 @@
     "acc": 0.95,
     "crit": 0.05,
     "element": "fire",
-    "mp_cost": 6,
-    "effects": [{"apply": "burn", "chance": 1.0, "duration": 3}]
+    "mp_cost": 12,
+    "effects": []
+  },
+  "stun_bash": {
+    "name": "Stun Bash",
+    "type": "damage",
+    "stat": "ATK",
+    "power": 0.8,
+    "acc": 0.9,
+    "crit": 0.0,
+    "element": "physical",
+    "mp_cost": 10,
+    "effects": [
+      {
+        "id": "stun",
+        "name": "Stun",
+        "chance": 0.75,
+        "duration": 1,
+        "metadata": {}
+      }
+    ]
   }
 }
