@@ -9,7 +9,7 @@ var max_stats: Dictionary = {}
 var stats: Dictionary = {}
 var resist: Dictionary = {}
 var statuses: Array[Status] = []
-var skills: Array[String] = []
+@export var skills: Array[String] = []
 
 var stunned: bool = false
 

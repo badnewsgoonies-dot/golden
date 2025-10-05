@@ -21,6 +21,11 @@ const CHARACTER_ART := {
 const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+const Unit = preload("res://battle/models/Unit.gd")
+const Unit = preload("res://battle/models/Unit.gd")
+const Unit = preload("res://battle/models/Unit.gd")
+const UnitResource = preload("res://battle/models/Unit.gd")
+const UnitResource = preload("res://battle/models/Unit.gd")
 
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
