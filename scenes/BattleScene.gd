@@ -1,22 +1,19 @@
 extends Node2D
 
-# P# --- # --- PRELOAD SCRIPT CLASSES ---
-const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-const Unit = preload("res://battle/models/Unit.gd")
-
-# --- UI NODE REFERENCES ---SCRIPT CLASSES ---
-const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-const Unit = preload("res://battle/models/Unit.gd")
-
-# --- UI NODE REFERENCES ---BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
+# BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
 # ✅ Foolproof error handling
 # ✅ Clear visual feedback
 # ✅ Smooth turn transitions
 # ✅ Button state management
+
+# --- PRELOAD SCRIPT CLASSES ---
+#const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+#const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+#const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+#const Unit = preload("res://battle/models/Unit.gd")
+const Action = preload("res://battle/models/Action.gd")
+const TargetSelector = preload("res://ui/TargetSelector.gd")
+
 
 # --- CONFIGURATION ---
 var keyboard_end_turn_enabled := true
@@ -28,12 +25,6 @@ const CHARACTER_ART := {
 	"mage_red": "mage_red",
 	"werewolf": "werewolf",
 }
-
-# --- PRELOAD SCRIPT CLASSES ---
-const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-const Unit = preload("res://battle/models/Unit.gd")
 
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
@@ -85,13 +76,11 @@ var battle_finished := false
 var current_acting_hero_index := 0
 var pending_action_type := ""
 var pending_skill: Dictionary = {}
-var is_selecting_target := false  # NEW: Track selection state
-var buttons_enabled := true  # NEW: Track button state
+var is_selecting_target := false
+var buttons_enabled := true
 
 var skill_slash: Dictionary = {}
 var skill_fireball: Dictionary = {}
-
-const POTION_HEAL_PCT := 0.30
 
 const POTION_HEAL_PCT := 0.30
 
