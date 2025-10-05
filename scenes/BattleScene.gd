@@ -603,7 +603,7 @@ func _on_end_turn() -> void:
 		_update_ui()
 	
 	# End of round
-	var all_units: Array = []
+	var all_units: Array[Unit] = []
 	all_units.append_array(heroes)
 	all_units.append_array(enemies)
 	for line in turn_engine.process_end_of_round(all_units):
