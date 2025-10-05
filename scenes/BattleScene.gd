@@ -643,7 +643,7 @@ func _update_ui() -> void:
 
 func _create_unit_panel(unit: Unit, is_enemy: bool) -> VBoxContainer:
 	var vbox := VBoxContainer.new()
-	vbox.theme_override_constants/separation = 4
+	vbox.add_theme_constant_override("separation", 4)
 	
 	var name_label := Label.new()
 	name_label.text = unit.name
@@ -712,7 +712,7 @@ func _create_unit_panel(unit: Unit, is_enemy: bool) -> VBoxContainer:
 		vbox.add_child(mp_bar)
 
 	var status_hbox := HBoxContainer.new()
-	status_hbox.theme_override_constants/separation = 4
+	status_hbox.add_theme_constant_override("separation", 4)
 	vbox.add_child(status_hbox)
 	
 	return vbox

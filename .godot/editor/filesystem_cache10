@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759623340
+::res://::1759634904
 BATTLE_FORMATION_CHANGES.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
 BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759560834::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
@@ -559,6 +559,8 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759558882::0::1::::SpriteAnim
 a712ee61-806f-49f6-9608-45b9fd6959b2.png::CompressedTexture2D::6544871841151166593::1759558881::1759611569::1::::<><><>0<>0<>9a25968da9625659b439bb86f9c6ce47<>res://.godot/imported/a712ee61-806f-49f6-9608-45b9fd6959b2.png-fb8ba0ae4fa4096fdaa1f293baa6af6e.ctex::
 assets_task_01k6aykgxzfj6vj7gxkjsaby4b_1759156850_img_1.webp::CompressedTexture2D::819748589826600796::1759558881::1759611569::1::::<><><>0<>0<>0df8c701c1efee7cd04ab4ba07390ec0<>res://.godot/imported/assets_task_01k6aykgxzfj6vj7gxkjsaby4b_1759156850_img_1.webp-51c547fa4c6076ec9ed0c908e43c386c.ctex::
 b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3403586726018460945::1759558881::1759611569::1::::<><><>0<>0<>94669af87436d58f0cc9a3ba29ca93d8<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-ccde70bf42811fa196955fcbd283fcbe.ctex::
+::res://NVIDIA Corporation/::1759634141
+::res://NVIDIA Corporation/umdlogs/::1759634141
 ::res://PIC BEFORE AND AFTER/::1759611568
 Current.png::CompressedTexture2D::3256508529062772865::1759558881::1759611568::1::::<><><>0<>0<>ab00ac02ea9432b353720b8d488dad0d<>res://.godot/imported/Current.png-15090ff9c8df6139b7420aae0900f749.ctex::
 Current_small.png::CompressedTexture2D::8785884572401327205::1759558881::1759611568::1::::<><><>0<>0<>ebc11da194449d679c8c6d2833b57928<>res://.godot/imported/Current_small.png-937324a042a8463a69ab3fef2b0413a7.ctex::
@@ -570,8 +572,8 @@ Desired_thumb.png::CompressedTexture2D::5772610425224863726::1759558881::1759611
 background_dark_fantasy.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 background_meadow.tscn::PackedScene::-1::1759607285::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::4161133067723001155::1759558882::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd<>uid://dlvewljxdg2s7::::res://art/battlers/werewolf/idle_f/3.png<>uid://cr8pdx1ej67qd::::res://art/battlers/hero/idle_b/1.png<>uid://cx8hxm0vfq8n1::::res://art/battlers/mage/idle_b/1.png<>uid://dpsjokc2fqhns::::res://art/battlers/healer/idle_b/1.png
-BattleScene.gd::GDScript::8322624433477628582::1759623326::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::3799088121633079161::1759622706::0::1::::<><><>0<>0<><>::uid://dqtsn5gpp5v15::::res://scenes/BattleScene.gd<>uid://bgycgebbvpb63::::res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
+BattleScene.gd::GDScript::8322624433477628582::1759634387::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.tscn::PackedScene::3799088121633079161::1759625280::0::1::::<><><>0<>0<><>::uid://dqtsn5gpp5v15::::res://scenes/BattleScene.gd<>uid://bgycgebbvpb63::::res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759558882::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759558882::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
