@@ -102,7 +102,6 @@ const HERO_POSITIONS := [
 
 # Enemies on the left side, facing right
 const ENEMY_POSITIONS := [
-<<<<<<< HEAD
 	Vector2(230, 400),   # Top-left enemy
 	Vector2(380, 500),   # Bottom-right enemy
 	Vector2(230, 600),   # Extra enemy position
@@ -113,8 +112,6 @@ const HERO_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
 const ENEMY_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
 const HERO_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
-const ENEMY_SHADOW_SCALE := Vector2(0.5, 0.25)
->>>>>>> 2b97951d36d4a9729978c856c0a56c30c79af663
 
 # Battle floor (blue diamond) configuration - isometric battlefield
 const FLOOR_POINTS := [
