@@ -1,60 +1,67 @@
 class_name EffectSystem
 extends RefCounted
 
-const Action := preload("res://battle/models/Action.gd")
-const Status := preload("res://battle/models/Status.gd")
+const Status = preload("res://battle/models/Status.gd")
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _init() -> void:
 	rng.randomize()
 
-func apply_on_hit(action: Action) -> Array[String]:
+## Applies status effects from a skill to a target unit.
+## This is called when a skill hits its target.
+func apply_effects_from_skill(skill: Dictionary, target: Unit) -> Array[String]:
 	var logs: Array[String] = []
-	var effects: Array = action.skill.get("effects", [])
-	if effects.is_empty():
+	var effects_to_apply: Array = skill.get("effects", [])
+	
+	if effects_to_apply.is_empty():
 		return logs
-	for eff_data in effects:
-		var eff: Dictionary = eff_data
-		var chance: float = float(eff.get("chance", 1.0))
+
+	for effect_data in effects_to_apply:
+		var chance: float = float(effect_data.get("chance", 1.0))
+		
+		# Check if the effect successfully lands based on its chance.
 		if rng.randf() > chance:
 			continue
-		var status: Status = Status.new({
-			"type": eff.get("apply", ""),
-			"duration": eff.get("duration", 0),
-			"value": eff.get("value", 0.0)
-		})
-		if status.type.is_empty():
+
+		# Create a new Status object from the data defined in skills.json.
+		var status_id: String = effect_data.get("id", "")
+		if status_id.is_empty():
 			continue
-		action.target.add_status(status)
-		if status.type == "stun":
-			action.target.stunned = true
-		logs.append("%s is %s" % [action.target.name, status.type.capitalize()])
+			
+		var status_name: String = effect_data.get("name", status_id.capitalize())
+		var duration: int = effect_data.get("duration", 1)
+		var metadata: Dictionary = effect_data.get("metadata", {})
+		
+		var new_status := Status.new(status_id, status_name, duration, null, metadata)
+		
+		target.add_status(new_status)
+		logs.append("%s is now %s!" % [target.name, status_name])
+		
 	return logs
 
-func tick_end_of_round(units: Array) -> Array[String]:
+
+## Processes all end-of-round effects for a list of units.
+## This is where effects like poison and burn deal their damage.
+func process_end_of_round_effects(units: Array[Unit]) -> Array[String]:
 	var logs: Array[String] = []
+	
 	for unit in units:
-		if unit == null or not unit.is_alive():
+		if not unit.is_alive():
 			continue
-		var to_remove: Array[Status] = []
-		for st in unit.statuses:
-			match st.type:
-				"burn":
-					var dmg: int = int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.05))
-					var actual: int = int(unit.take_damage(dmg))
-					logs.append("%s suffers %d burn" % [unit.name, actual])
+			
+		# Process damage-over-time effects first.
+		for status in unit.statuses:
+			match status.id:
 				"poison":
-					var dmg2: int = int(ceil(float(unit.max_stats.get("HP", unit.stats.get("HP", 0))) * 0.07))
-					var actual2: int = int(unit.take_damage(dmg2))
-					logs.append("%s takes %d poison" % [unit.name, actual2])
-				"stun":
-					pass
-			st.duration -= 1
-			if st.duration <= 0:
-				if st.type == "stun":
-					unit.stunned = false
-				to_remove.append(st)
-		for st in to_remove:
-			unit.statuses.erase(st)
+					# The damage value is stored in the status's metadata.
+					var damage: int = status.metadata.get("damage", 5)
+					unit.take_damage(damage)
+					logs.append("%s takes %d damage from poison." % [unit.name, damage])
+
+		# Then, tick down the duration of all statuses and remove expired ones.
+		var expired_statuses: Array[Status] = unit.tick_statuses()
+		for expired_status in expired_statuses:
+			logs.append("%s is no longer %s." % [unit.name, expired_status.name])
+			
 	return logs

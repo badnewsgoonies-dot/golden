@@ -552,9 +552,9 @@ func _on_end_turn() -> void:
 		if !a.actor.is_alive() or !a.target.is_alive():
 			continue
 			
-		_log("%s → %s" % [a.actor.name, a.target.name])
+		_log("%s uses %s on %s" % [a.actor.name, a.skill.get("name", "an ability"), a.target.name])
 		
-		var res: Dictionary = turn_engine.execute(a)
+		var res: Dictionary = turn_engine.execute_action(a)
 		if res.get("hit", false):
 			var dmg: int = int(res.get("damage", 0))
 			var crit: bool = bool(res.get("crit", false))
@@ -564,6 +564,10 @@ func _on_end_turn() -> void:
 				spawn_damage_popup(target_sprite, dmg, crit, false)
 				if target_sprite is AnimatedFrames:
 					(target_sprite as AnimatedFrames).play_hit()
+			
+			# Log any status effects that were applied
+			for status_log in res.get("status_logs", []):
+				_log(status_log)
 		else:
 			play_sfx("miss")
 			var target_sprite = _sprite_for_unit(a.target)
@@ -577,7 +581,7 @@ func _on_end_turn() -> void:
 	var all_units: Array = []
 	all_units.append_array(heroes)
 	all_units.append_array(enemies)
-	for line in turn_engine.end_of_round_tick(all_units):
+	for line in turn_engine.process_end_of_round(all_units):
 		_log(line)
 	
 	planned_actions.clear()
