@@ -18,12 +18,24 @@ const CHARACTER_ART := {
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
+const EnemyAI = preload("res://battle/EnemyAI.gd")
 const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # --- UI NODE REFERENCES ---
-@onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
+@onready var hero_info_container: HBoxContainer = $Ufunc _build_unit(def: Dictionary) -> Unit:
+	var u := Unit.new()
+	u.name = String(def.get("name","Unit"))
+	var s: Dictionary = def.get("stats", {})
+	var max_hp: int = int(s.get("max_hp",80))
+	var max_mp: int = int(s.get("max_mp",0))
+	u.max_stats = {"HP":max_hp,"MP":max_mp}
+	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
+	var r: Dictionary = def.get("resist", {})
+	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
+	u.skills = def.get("skills", [])
+	return ughtAnchor/PartyPanel/PartyMargin/PartyHBox
 @onready var enemy_info_container: HBoxContainer = $UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox
 @onready var active_portrait: TextureRect = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
 @onready var active_hp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
@@ -66,6 +78,7 @@ var hero_shadows: Array[Sprite2D] = []
 var enemy_shadows: Array[Sprite2D] = []
 
 var planned_actions: Array[Action] = []
+var enemy_ai: EnemyAI
 var turn_engine: TurnEngine
 var potion_used := false
 var battle_finished := false
@@ -157,6 +170,7 @@ func _ready() -> void:
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
+	enemy_ai = EnemyAI.new()
 	
 	# Hide placeholders
 	if hero_sprite_placeholder:
@@ -558,8 +572,12 @@ func _on_end_turn() -> void:
 	# Add enemy actions
 	for e in enemies:
 		if e.is_alive():
-			var target: Unit = heroes_alive[randi() % heroes_alive.size()]
-			planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
+			var action = enemy_ai.choose_action(e, heroes_alive)
+			if action:
+				planned_actions.append(action)
+			else: # Fallback if AI fails
+				var target: Unit = heroes_alive[randi() % heroes_alive.size()]
+				planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
 	
 	# Execute turn
 	var actions: Array = turn_engine.build_queue(planned_actions)
