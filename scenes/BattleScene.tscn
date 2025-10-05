@@ -524,6 +524,22 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Fireball (1 MP)"
 
+[node name="ItemBubble" type="PanelContainer" parent="UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_button_normal")
+
+[node name="ItemMargin" type="MarginContainer" parent="UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/ItemBubble"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ItemList" type="VBoxContainer" parent="UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/ItemBubble/ItemMargin"]
+layout_mode = 2
+
 [node name="Vignette" type="TextureRect" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0

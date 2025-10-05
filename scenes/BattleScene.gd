@@ -26,6 +26,7 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 # --- CONSTANTS ---
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
 const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
+const EQUIPMENT_SCENE_PATH = "res://scenes/Equipment.tscn"
 
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
@@ -42,6 +43,7 @@ const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
 @onready var btn_items: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
 @onready var btn_defend: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
 @onready var spell_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble
+@onready var item_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/ItemBubble
 
 # Stage
 @onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
@@ -62,6 +64,7 @@ var victory_buttons_container: HBoxContainer
 var btn_next_battle: Button
 var btn_shop: Button
 var btn_return_to_main: Button
+var btn_equipment: Button
 
 # Target Selector
 var target_selector: TargetSelector
@@ -115,7 +118,7 @@ var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
 
 # NEW: Spell buttons for clickable spell selection
-var spell_button_container: VBoxContainer = null
+var item_button_container: VBoxContainer = null
 
 func _ready() -> void:
 	if !has_node("Stage"):
@@ -143,6 +146,9 @@ func _ready() -> void:
 	if spell_bubble:
 		spell_bubble.visible = false
 		_setup_spell_bubble()
+	if item_bubble:
+		item_bubble.visible = false
+		_setup_item_bubble()
 	
 	# Data
 	skill_slash = _fetch_skill("slash")
@@ -152,7 +158,7 @@ func _ready() -> void:
 	var hero_characters := ["barbarian", "cleric_blue", "mage_red", "barbarian"]
 	for i in range(min(4, hero_characters.size())):
 		var hero_id: String = hero_characters[i]
-		var unit: Unit = _build_unit_from_character(hero_id)
+		var unit: Unit = _build_unit_from_character(hero_id, i) # Pass index here
 		if unit:
 			if hero_characters.count(hero_id) > 1:
 				unit.name = unit.name + " " + String.chr(65 + i)
@@ -274,11 +280,13 @@ func _create_post_battle_buttons() -> void:
 	# Create individual buttons
 	btn_next_battle = _create_styled_button("Next Battle")
 	btn_shop = _create_styled_button("Shop")
+	btn_equipment = _create_styled_button("Equipment")
 	btn_return_to_main = _create_styled_button("Return to Main Menu")
 	
 	# Add victory buttons to their container
 	victory_buttons_container.add_child(btn_next_battle)
 	victory_buttons_container.add_child(btn_shop)
+	victory_buttons_container.add_child(btn_equipment)
 	
 	# Add all post-battle UI to the main overlay VBox
 	overlay_vbox.add_child(victory_buttons_container)
@@ -287,6 +295,7 @@ func _create_post_battle_buttons() -> void:
 	# Connect signals
 	btn_next_battle.pressed.connect(_on_next_battle_pressed)
 	btn_shop.pressed.connect(_on_shop_pressed)
+	btn_equipment.pressed.connect(_on_equipment_pressed)
 	btn_return_to_main.pressed.connect(_on_return_to_main_pressed)
 
 # NEW: Helper function to create a styled button.
@@ -312,6 +321,17 @@ func _setup_spell_bubble() -> void:
 		spell_button_container = spell_list
 		# Clear any existing content
 		for child in spell_button_container.get_children():
+			child.queue_free()
+
+# NEW: Setup item bubble with clickable buttons
+func _setup_item_bubble() -> void:
+	if !item_bubble:
+		return
+	
+	var item_list = item_bubble.find_child("ItemList", true, false)
+	if item_list and item_list is VBoxContainer:
+		item_button_container = item_list
+		for child in item_button_container.get_children():
 			child.queue_free()
 
 # NEW: Show turn start message
@@ -433,14 +453,52 @@ func _on_items_pressed() -> void:
 	if battle_finished or current_acting_hero_index >= heroes.size() or is_selecting_target:
 		return
 	
-	if potion_used:
-		_log("❌ Potion already used!")
+	if !item_bubble:
 		return
+		
+	item_bubble.visible = !item_bubble.visible
 	
-	_log("🧪 Using Potion - select ally to heal")
+	if item_bubble.visible:
+		_populate_item_bubble()
+
+func _populate_item_bubble() -> void:
+	if !item_button_container or current_acting_hero_index >= heroes.size():
+		return
+		
+	for child in item_button_container.get_children():
+		child.queue_free()
+		
+	var current_hero_idx = current_acting_hero_index
+	var equipment = RunManager.hero_equipment.get(current_hero_idx, {})
+	var quick_items = [equipment.get("quick_item_1"), equipment.get("quick_item_2")]
+	
+	var has_items = false
+	for item_id in quick_items:
+		if item_id and !item_id.is_empty():
+			var item_data = DataRegistry.items.get(item_id, {})
+			var item_name = item_data.get("name", "Unknown Item")
+			
+			var btn := Button.new()
+			btn.text = item_name
+			btn.pressed.connect(_on_quick_item_selected.bind(item_id, current_hero_idx))
+			item_button_container.add_child(btn)
+			has_items = true
+			
+	if !has_items:
+		var label = Label.new()
+		label.text = "No quick items equipped."
+		item_button_container.add_child(label)
+
+func _on_quick_item_selected(item_id: String, hero_idx: int):
+	item_bubble.visible = false
+	var item_data = DataRegistry.items.get(item_id, {})
+	
+	# For now, assume all quick items are like potions
+	_log("🧪 Using %s - select ally to heal" % item_data.get("name", "Item"))
 	pending_action_type = "item"
-	pending_skill = {"id": "potion", "name": "Potion", "type": "heal"}
+	pending_skill = {"id": item_id, "name": item_data.get("name"), "type": "heal", "slot": "quick_item_1" if RunManager.hero_equipment[hero_idx]["quick_item_1"] == item_id else "quick_item_2"}
 	_start_ally_target_selection()
+
 
 func _on_defend_pressed() -> void:
 	if current_acting_hero_index >= heroes.size() or is_selecting_target:
@@ -553,19 +611,27 @@ func _on_target_selected(target_sprite: Node2D) -> void:
 			_enable_all_buttons()
 	
 	elif pending_action_type == "item":
-		if pending_skill.get("id") == "potion":
-			var cur: int = int(target_unit.stats.get("HP",0))
-			var max: int = int(target_unit.max_stats.get("HP",cur))
-			if cur >= max:
-				_log("❌ %s's HP is already full!" % target_unit.name)
-				_enable_all_buttons()
-				return
-			
-			var healed: int = target_unit.heal(int(ceil(max * POTION_HEAL_PCT)))
-			potion_used = true
-			_log("✓ %s healed %s for %d HP!" % [current_hero.name, target_unit.name, healed])
-			_update_ui()
-			_advance_to_next_hero()
+		var item_id = pending_skill.get("id")
+		var item_data = DataRegistry.items.get(item_id, {})
+		var heal_percent = item_data.get("power", 0.3) # Default to 30% if not specified
+
+		var cur: int = int(target_unit.stats.get("HP",0))
+		var max: int = int(target_unit.max_stats.get("HP",cur))
+		if cur >= max:
+			_log("❌ %s's HP is already full!" % target_unit.name)
+			_enable_all_buttons()
+			return
+		
+		var healed: int = target_unit.heal(int(ceil(max * heal_percent)))
+		
+		# Consume the item from the hero's quick slot
+		var hero_idx = current_acting_hero_index
+		var slot = pending_skill.get("slot")
+		RunManager.hero_equipment[hero_idx][slot] = ""
+		
+		_log("✓ %s used %s on %s for %d HP!" % [current_hero.name, item_data.get("name"), target_unit.name, healed])
+		_update_ui()
+		_advance_to_next_hero()
 	
 	# Clear pending
 	pending_action_type = ""
@@ -745,7 +811,7 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 		
 		var name_label: Label = unit_box.get_node_or_null("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyLabel" + str(i+1))
 		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
-		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1))
+		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyMPBar" + str(i+1))
 		
 		if name_label:
 			name_label.text = unit.name
@@ -769,11 +835,39 @@ func _fetch_skill(id: String) -> Dictionary:
 		return DataRegistry.skills[id].duplicate(true)
 	return {"id":id,"name":id.capitalize(),"type":"damage","stat":"ATK","power":1.0,"acc":0.95,"crit":0.05,"element":"earth","mp_cost":0,"effects":[]}
 
-func _build_unit_from_character(id: String) -> Unit:
+func _build_unit_from_character(id: String, hero_index: int) -> Unit:
 	var def: Dictionary = DataRegistry.characters.get(id, {})
 	if def.is_empty():
-		def = {"name":"Pyro Adept","stats":{"max_hp":90,"max_mp":40,"atk":10,"def":8,"agi":12,"focus":16},"resist":{"fire":0.5,"water":1.5,"earth":1.0,"air":1.0}}
-	return _build_unit(def)
+		def = {"name":"Default Hero","stats":{"max_hp":100,"max_mp":20,"atk":12,"def":8,"agi":10,"focus":10}}
+	
+	var u := Unit.new()
+	u.character_id = id
+	u.name = String(def.get("name", "Unit"))
+	
+	# Get stats with equipment bonuses from RunManager
+	var final_stats = RunManager.get_hero_stats(hero_index)
+
+	# Set stats and max_stats
+	var max_hp: int = int(final_stats.get("max_hp", 100))
+	var max_mp: int = int(final_stats.get("max_mp", 20))
+	u.max_stats = {"HP": max_hp, "MP": max_mp}
+	
+	u.stats = {
+		"HP": max_hp,
+		"MP": max_mp,
+		"ATK": int(final_stats.get("atk", 10)),
+		"DEF": int(final_stats.get("def", 10)),
+		"AGI": int(final_stats.get("agi", 10)),
+		"FOCUS": int(final_stats.get("focus", 10))
+	}
+
+	var r: Dictionary = def.get("resist", {})
+	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
+	
+	var skill_list: Array = def.get("skills", [])
+	u.skills.assign(skill_list)
+	
+	return u
 
 func _build_unit_from_enemy(id: String) -> Unit:
 	var def: Dictionary = DataRegistry.enemies.get(id, {})
@@ -1002,6 +1096,7 @@ func _on_battle_result_shown() -> void:
 	victory_buttons_container.visible = false
 	btn_next_battle.visible = false
 	btn_shop.visible = false
+	btn_equipment.visible = false
 	btn_return_to_main.visible = false
 	
 	# Show appropriate buttons based on victory/defeat
@@ -1009,6 +1104,7 @@ func _on_battle_result_shown() -> void:
 		victory_buttons_container.visible = true
 		btn_next_battle.visible = true
 		btn_shop.visible = true
+		btn_equipment.visible = true
 	else:
 		btn_return_to_main.visible = true
 
@@ -1017,6 +1113,7 @@ func _on_next_battle_pressed() -> void:
 	# Disable all buttons to prevent double-clicking
 	btn_next_battle.disabled = true
 	btn_shop.disabled = true
+	btn_equipment.disabled = true
 	
 	# Reload the battle scene for a new fight
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
@@ -1025,9 +1122,19 @@ func _on_shop_pressed() -> void:
 	# Disable all buttons to prevent double-clicking
 	btn_next_battle.disabled = true
 	btn_shop.disabled = true
+	btn_equipment.disabled = true
 	
 	# Go to the shop
 	get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+
+func _on_equipment_pressed() -> void:
+	# Disable all buttons to prevent double-clicking
+	btn_next_battle.disabled = true
+	btn_shop.disabled = true
+	btn_equipment.disabled = true
+	
+	# Go to the equipment screen
+	get_tree().change_scene_to_file(EQUIPMENT_SCENE_PATH)
 
 func _on_return_to_main_pressed() -> void:
 	btn_return_to_main.disabled = true

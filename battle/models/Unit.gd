@@ -119,3 +119,40 @@ func apply_upgrade(upgrade_data: Dictionary) -> void:
 				var old_hp = int(stats.get("HP", 0))
 				var new_max_hp = int(max_stats.get("HP", 0))
 				stats["HP"] = new_max_hp # Fully heal on HP upgrade
+
+# Helper to create a Unit from a definition dictionary
+static func _make_unit_from_def(def: Dictionary, equipment_stats: Dictionary = {}) -> Unit:
+	var u := Unit.new()
+	u.name = String(def.get("name", "Unit"))
+	u.character_id = def.get("id", "")
+	
+	var s: Dictionary = def.get("stats", {}).duplicate(true)
+	
+	# Apply equipment stats
+	for stat_name in equipment_stats:
+		s[stat_name] = s.get(stat_name, 0) + equipment_stats[stat_name]
+		
+	var max_hp: int = int(s.get("max_hp", 80))
+	var max_mp: int = int(s.get("max_mp", 0))
+	
+	u.max_stats = {"HP": max_hp, "MP": max_mp}
+	u.stats = {
+		"HP": max_hp, "MP": max_mp,
+		"ATK": int(s.get("atk", 10)),
+		"DEF": int(s.get("def", 8)),
+		"AGI": int(s.get("agi", 10)),
+		"FOCUS": int(s.get("focus", 8))
+	}
+	
+	var r: Dictionary = def.get("resist", {})
+	u.resist = {
+		"fire": float(r.get("fire", 1.0)),
+		"water": float(r.get("water", 1.0)),
+		"earth": float(r.get("earth", 1.0)),
+		"air": float(r.get("air", 1.0))
+	}
+	
+	var skill_list: Array = def.get("skills", [])
+	u.skills.assign(skill_list)
+	
+	return u
