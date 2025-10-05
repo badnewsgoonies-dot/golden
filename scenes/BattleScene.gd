@@ -94,33 +94,33 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - JRPG style diagonal formation
 # Heroes in lower-left, staggered for depth
 const HERO_POSITIONS := [
-	Vector2(320, 800),   # Front-most hero
-	Vector2(220, 840),   # Back-left
-	Vector2(420, 840),   # Back-right
-	Vector2(520, 880)    # Furthest back
+	Vector2(400, 700),   # Front-most hero
+	Vector2(320, 740),   # Back-left
+	Vector2(480, 740),   # Back-right
+	Vector2(560, 780)    # Furthest back
 ]
 
 # Enemies in upper-right, staggered for depth
 const ENEMY_POSITIONS := [
-	Vector2(950, 540),   # Front-most enemy
-	Vector2(850, 580),  # Back-left
-	Vector2(1050, 580),  # Back-right
-	Vector2(750, 620)    # Furthest back
+	Vector2(1100, 400),   # Front-most enemy
+	Vector2(1000, 440),  # Back-left
+	Vector2(1200, 440),  # Back-right
+	Vector2(900, 480)    # Furthest back
 ]
 
-const HERO_SCALE := Vector2(1.5, 1.5)
-const ENEMY_SCALE := Vector2(1.5, 1.5)
-const HERO_SHADOW_SCALE := Vector2(0.8, 0.4)
-const ENEMY_SHADOW_SCALE := Vector2(0.8, 0.4)
+const HERO_SCALE := Vector2(0.8, 0.8)
+const ENEMY_SCALE := Vector2(0.8, 0.8)
+const HERO_SHADOW_SCALE := Vector2(0.5, 0.25)
+const ENEMY_SHADOW_SCALE := Vector2(0.5, 0.25)
 
 # Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(100, 960),
-	Vector2(1820, 960),
-	Vector2(1280, 400),
-	Vector2(640, 400)
+	Vector2(640, 300),   # Top
+	Vector2(1100, 540),  # Right
+	Vector2(640, 780),   # Bottom
+	Vector2(180, 540)    # Left
 ]
-const FLOOR_COLOR := Color(0.15, 0.2, 0.45, 0.75)
+const FLOOR_COLOR := Color(0.2, 0.3, 0.6, 0.4)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
