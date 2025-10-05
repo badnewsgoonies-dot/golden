@@ -91,19 +91,19 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - JRPG style side-view
+# Formation positions - JRPG style side-view (in a row)
 const HERO_POSITIONS := [
-	Vector2(320, 760),
-	Vector2(440, 720),
-	Vector2(560, 780),
-	Vector2(680, 740)
+	Vector2(200, 650),
+	Vector2(340, 650),
+	Vector2(480, 650),
+	Vector2(620, 650)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(950, 540),
-	Vector2(1070, 580),
-	Vector2(1190, 520),
-	Vector2(1030, 640)
+	Vector2(850, 550),
+	Vector2(1000, 550),
+	Vector2(1150, 550),
+	Vector2(1300, 550)
 ]
 
 const HERO_SCALE := Vector2(0.75, 0.75)
