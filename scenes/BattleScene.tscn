@@ -384,9 +384,9 @@ grow_vertical = 0
 [node name="ActiveCharacterPanel" type="PanelContainer" parent="UI/HUD/BottomLeftAnchor"]
 layout_mode = 0
 offset_left = 24.0
-offset_top = 880.0
+offset_top = 340.0
 offset_right = 344.0
-offset_bottom = 1056.0
+offset_bottom = 516.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cyan_panel")
 
 [node name="ActiveMargin" type="MarginContainer" parent="UI/HUD/BottomLeftAnchor/ActiveCharacterPanel"]
