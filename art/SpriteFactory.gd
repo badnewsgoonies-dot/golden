@@ -73,7 +73,7 @@ static func make_arrow(width: int = 16, height: int = 12, color: Color = Color(1
 	# Arrow tip (triangle)
 	for y in range(base_y, tip_y + 1):
 		var progress: float = float(y - base_y) / float(tip_y - base_y)
-		var half_width: int = int((1.0 - progress) * (w / 2 - 2))
+		var half_width: int = int((1.0 - progress) * float(w / 2 - 2))
 		for x in range(cx - half_width, cx + half_width + 1):
 			if x >= 0 and x < w:
 				_set_px(img, x, y, color)
