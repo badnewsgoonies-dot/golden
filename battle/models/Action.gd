@@ -1,8 +1,6 @@
 class_name Action
 extends RefCounted
 
-const Unit := preload("res://battle/models/Unit.gd")
-
 var actor: Unit
 var skill: Dictionary
 var target: Unit
