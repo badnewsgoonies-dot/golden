@@ -8,7 +8,10 @@ var character_id: String = ""  # Added to track the original character/enemy ID 
 var stats: Dictionary = {}
 var max_stats: Dictionary = {}
 var resist: Dictionary = {}
-var statuses: Array[Status] = []
+var statuses: Array[Status] = [] # This will hold active status effects.
+
+# DEPRECATED: The 'buffs' dictionary and 'stunned' boolean will be replaced by the new Status system.
+# We leave them for now to ensure the project still runs, and will remove them in a later step.
 var buffs: Dictionary = {
 	"ATK": 1.0,
 	"DEF": 1.0,
@@ -49,44 +52,51 @@ func spend_mp(amount: int) -> bool:
 	stats["MP"] = mp - amount
 	return true
 
-func restore_mp(amount: int) -> int:
-	var mp: int = int(stats.get("MP", 0))
-	var max_mp: int = int(max_stats.get("MP", mp))
-	var restored: int = int(clamp(amount, 0, max_mp - mp))
-	stats["MP"] = min(max_mp, mp + restored)
-	return restored
+## Adds a new status effect to the unit.
+## If the unit already has a status with the same ID, it will be removed and replaced.
+## This prevents stacking the same effect (e.g., being poisoned twice).
+func add_status(new_status: Status) -> void:
+	# First, remove any existing status with the same ID to prevent duplicates.
+	remove_status(new_status.id)
+	statuses.append(new_status)
 
-func add_status(status: Status) -> void:
-	statuses.append(status)
-
-func has_status(status_type: String) -> bool:
-	for st in statuses:
-		if st.type == status_type:
+## Checks if the unit currently has a status with the given ID.
+func has_status(status_id: String) -> bool:
+	for s in statuses:
+		if s.id == status_id:
 			return true
 	return false
 
-func remove_status(status_type: String) -> void:
-	statuses = statuses.filter(func(st: Status):
-		return st.type != status_type
+## Removes a status effect from the unit by its ID.
+func remove_status(status_id: String) -> void:
+	statuses = statuses.filter(func(s: Status):
+		return s.id != status_id
 	)
 
+## Processes all active statuses at the end of a turn.
+## It calls the 'tick' method on each status, which decrements its duration.
+## If a status expires, it is removed from the unit.
 func tick_statuses() -> Array[Status]:
 	var expired: Array[Status] = []
-	for st in statuses.duplicate():
-		if not st.tick():
-			expired.append(st)
-			statuses.erase(st)
+	var remaining_statuses: Array[Status] = []
+	
+	for s in statuses:
+		# The tick() method returns true if the status has expired.
+		if s.tick():
+			expired.append(s)
+		else:
+			remaining_statuses.append(s)
+			
+	statuses = remaining_statuses
 	return expired
 
-func get_status_types() -> Array[String]:
-	var types: Array[String] = []
-	for st in statuses:
-		if st == null:
-			continue
-		if st.type.is_empty():
-			continue
-		types.append(st.type)
-	return types
+## Returns an array of all active status effect IDs.
+func get_status_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for s in statuses:
+		if s != null and not s.id.is_empty():
+			ids.append(s.id)
+	return ids
 
 func apply_upgrade(upgrade_data: Dictionary) -> void:
 	var type: String = upgrade_data.get("type", "")
