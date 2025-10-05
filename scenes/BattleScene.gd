@@ -1,6 +1,18 @@
 extends Node2D
 
-# POLISHED BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
+# P# --- # --- PRELOAD SCRIPT CLASSES ---
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+const Unit = preload("res://battle/models/Unit.gd")
+
+# --- UI NODE REFERENCES ---SCRIPT CLASSES ---
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+const Unit = preload("res://battle/models/Unit.gd")
+
+# --- UI NODE REFERENCES ---BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
 # ✅ Foolproof error handling
 # ✅ Clear visual feedback
 # ✅ Smooth turn transitions
@@ -18,11 +30,10 @@ const CHARACTER_ART := {
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
-# Scripts with class_name are globally available and do not need to be preloaded.
-#const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-#const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-#const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-#const Unit = preload("res://battle/models/Unit.gd")
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+const Unit = preload("res://battle/models/Unit.gd")
 
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
@@ -59,6 +70,28 @@ var target_selector: TargetSelector
 # Runtime objects
 var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
+
+var heroes: Array[Unit] = []
+var enemies: Array[Unit] = []
+var hero_sprites: Array[AnimatedFrames] = []
+var enemy_sprites: Array[AnimatedFrames] = []
+var hero_shadows: Array[Sprite2D] = []
+var enemy_shadows: Array[Sprite2D] = []
+
+var planned_actions: Array[Action] = []
+var turn_engine: TurnEngine
+var potion_used := false
+var battle_finished := false
+var current_acting_hero_index := 0
+var pending_action_type := ""
+var pending_skill: Dictionary = {}
+var is_selecting_target := false  # NEW: Track selection state
+var buttons_enabled := true  # NEW: Track button state
+
+var skill_slash: Dictionary = {}
+var skill_fireball: Dictionary = {}
+
+const POTION_HEAL_PCT := 0.30
 
 const POTION_HEAL_PCT := 0.30
 
