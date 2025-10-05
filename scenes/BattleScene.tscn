@@ -125,11 +125,11 @@ position = Vector2(0, 0)
 [node name="Floor" type="Polygon2D" parent="Stage"]
 z_index = 50
 color = Color(0.3, 0.4, 0.7, 1.0)
-polygon = PackedVector2Array(200, 400, 640, 600, 1080, 400, 640, 200)
+polygon = PackedVector2Array(-800, 400, 640, 1300, 2080, 400, 640, -500)
 
 [node name="FloorOutline" type="Line2D" parent="Stage"]
 z_index = 51
-points = PackedVector2Array(200, 400, 640, 600, 1080, 400, 640, 200, 200, 400)
+points = PackedVector2Array(-800, 400, 640, 1300, 2080, 400, 640, -500, -800, 400)
 width = 5.0
 default_color = Color(0.5, 0.7, 1.0, 1.0)
 
