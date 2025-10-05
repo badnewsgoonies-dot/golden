@@ -18,9 +18,17 @@ func choose_action(actor: Unit, living_heroes: Array[Unit]) -> Action:
 
 	# --- Step 1: Gather available skills and analyze targets ---
 	var available_skills: Array[Dictionary] = []
+	
+	# Safety check: ensure actor has skills
+	if actor.skills == null or actor.skills.is_empty():
+		# Fall back to basic attack
+		var fallback_skill = DataRegistry.get_skill("slash")
+		var fallback_target = living_heroes[_rng.randi() % living_heroes.size()]
+		return Action.new(actor, fallback_skill, fallback_target)
+	
 	for skill_id in actor.skills:
 		var skill_data = DataRegistry.get_skill(skill_id)
-		if actor.get_stat("MP") >= skill_data.get("mp_cost", 0):
+		if actor.stats.get("MP", 0) >= skill_data.get("mp_cost", 0):
 			available_skills.append(skill_data)
 
 	# --- Step 2: Score potential actions ---
@@ -49,11 +57,14 @@ func _score_action(actor: Unit, target: Unit, skill: Dictionary) -> float:
 	
 	# --- Base Score: Damage Potential ---
 	# Prioritize skills that deal more damage.
-	score += float(skill.get("power", 1.0)) * actor.get_stat(skill.get("stat", "ATK"))
+	score += float(skill.get("power", 1.0)) * actor.stats.get(skill.get("stat", "ATK"), 10)
 
 	# --- Target Prioritization: Low Health ---
 	# Add a significant bonus for targeting low-health heroes.
-	var health_percentage = float(target.get_stat("HP")) / float(target.max_stats.get("HP", 1))
+	var max_hp = target.max_stats.get("HP", 1)
+	if max_hp <= 0:
+		max_hp = 1  # Prevent division by zero
+	var health_percentage = float(target.stats.get("HP", 0)) / float(max_hp)
 	if health_percentage < 0.5:
 		score *= 1.5 # 50% score bonus for targets below half health
 
