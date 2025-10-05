@@ -23,6 +23,10 @@ const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
+# --- CONSTANTS ---
+const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
+const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
+
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
 @onready var enemy_info_container: HBoxContainer = $UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox
@@ -51,6 +55,13 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 @onready var overlay_fade: ColorRect = $Overlay/Fade
 @onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
 @onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
+@onready var overlay_vbox: VBoxContainer = $Overlay/CenterContainer/VBoxContainer
+
+# --- DYNAMIC UI NODES ---
+var victory_buttons_container: HBoxContainer
+var btn_next_battle: Button
+var btn_shop: Button
+var btn_return_to_main: Button
 
 # Target Selector
 var target_selector: TargetSelector
@@ -116,6 +127,9 @@ func _ready() -> void:
 	$UI.add_child(target_selector)
 	target_selector.target_selected.connect(_on_target_selected)
 	target_selector.selection_cancelled.connect(_on_selection_cancelled)
+	
+	# --- Create Post-Battle UI ---
+	_create_post_battle_buttons()
 	
 	# Connect UI buttons
 	if btn_attack:
@@ -248,6 +262,44 @@ func _ready() -> void:
 	_log("%d Heroes vs %d Enemies" % [heroes.size(), enemies.size()])
 	_update_ui()
 	_show_turn_start()
+
+# NEW: Create and configure the post-battle buttons programmatically.
+func _create_post_battle_buttons() -> void:
+	# Create container for victory buttons
+	victory_buttons_container = HBoxContainer.new()
+	victory_buttons_container.alignment = HBoxContainer.ALIGNMENT_CENTER
+	victory_buttons_container.add_theme_constant_override("separation", 20)
+	victory_buttons_container.visible = false # Initially hidden
+	
+	# Create individual buttons
+	btn_next_battle = _create_styled_button("Next Battle")
+	btn_shop = _create_styled_button("Shop")
+	btn_return_to_main = _create_styled_button("Return to Main Menu")
+	
+	# Add victory buttons to their container
+	victory_buttons_container.add_child(btn_next_battle)
+	victory_buttons_container.add_child(btn_shop)
+	
+	# Add all post-battle UI to the main overlay VBox
+	overlay_vbox.add_child(victory_buttons_container)
+	overlay_vbox.add_child(btn_return_to_main)
+	
+	# Connect signals
+	btn_next_battle.pressed.connect(_on_next_battle_pressed)
+	btn_shop.pressed.connect(_on_shop_pressed)
+	btn_return_to_main.pressed.connect(_on_return_to_main_pressed)
+
+# NEW: Helper function to create a styled button.
+func _create_styled_button(text: String) -> Button:
+	var btn := Button.new()
+	btn.text = text
+	btn.visible = false # Initially hidden
+	# Basic styling (can be enhanced with themes)
+	btn.custom_minimum_size = Vector2(200, 50)
+	# Add hover effect (example)
+	btn.mouse_entered.connect(func(): btn.modulate = Color(1.2, 1.2, 1.2))
+	btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
+	return btn
 
 # NEW: Setup spell bubble with clickable buttons
 func _setup_spell_bubble() -> void:
@@ -635,7 +687,9 @@ func _check_end() -> void:
 	
 	if enemies_alive.is_empty():
 		_log("\n🎉 VICTORY! All enemies defeated!")
-		show_battle_result(true, 0, [])
+		var gold_reward = 50 # Example gold reward
+		GameManager.gold += gold_reward
+		show_battle_result(true, 100, ["Goblin Ear", "Rusty Dagger"]) # Example XP and loot
 		battle_finished = true
 	elif heroes_alive.is_empty():
 		_log("\n💀 DEFEAT... All heroes have fallen.")
@@ -919,23 +973,62 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	battle_finished = true
 	battle_victory = victory
 	planned_actions.clear()
+	
+	# Disable battle UI
+	_disable_all_buttons()
+	keyboard_end_turn_enabled = false
+	
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
 	overlay_title.text = "Victory!" if victory else "Defeat"
-	var names: PackedStringArray = PackedStringArray()
-	for e in loot:
-		names.append(str(e))
-	var loot_text: String = "—" if names.is_empty() else ", ".join(names)
+	
+	# Format loot text
+	var loot_text: String = "—"
+	if loot.size() > 0:
+		var names: PackedStringArray = PackedStringArray()
+		for e in loot:
+			names.append(str(e))
+		loot_text = ", ".join(names)
+	
 	overlay_subtitle.text = ("XP +%d\nLoot: %s" % [xp, loot_text]) if victory else "You fall in battle."
+	
 	var t: Tween = create_tween()
 	t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
 	t.tween_interval(0.1)
 	t.finished.connect(_on_battle_result_shown)
 
 func _on_battle_result_shown() -> void:
-	keyboard_end_turn_enabled = false
-	var heroes_alive := heroes.filter(func(h): return h.is_alive())
-	if !heroes_alive.is_empty():
-		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
+	# Hide all post-battle buttons first
+	victory_buttons_container.visible = false
+	btn_next_battle.visible = false
+	btn_shop.visible = false
+	btn_return_to_main.visible = false
+	
+	# Show appropriate buttons based on victory/defeat
+	if battle_victory:
+		victory_buttons_container.visible = true
+		btn_next_battle.visible = true
+		btn_shop.visible = true
 	else:
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+		btn_return_to_main.visible = true
+
+# NEW: Button handlers for post-battle choices
+func _on_next_battle_pressed() -> void:
+	# Disable all buttons to prevent double-clicking
+	btn_next_battle.disabled = true
+	btn_shop.disabled = true
+	
+	# Reload the battle scene for a new fight
+	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
+
+func _on_shop_pressed() -> void:
+	# Disable all buttons to prevent double-clicking
+	btn_next_battle.disabled = true
+	btn_shop.disabled = true
+	
+	# Go to the shop
+	get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+
+func _on_return_to_main_pressed() -> void:
+	btn_return_to_main.disabled = true
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
