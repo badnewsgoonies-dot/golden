@@ -1,7 +1,7 @@
 extends Node2D
 
 # UPDATED BATTLE SCENE WITH PROPER TARGET SELECTION
-# This integrates CommandMenu and TargetSelector components
+# Uses existing UI buttons instead of creating duplicates
 
 # --- CONFIGURATION ---
 var keyboard_end_turn_enabled := true
@@ -28,6 +28,14 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 @onready var active_mp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel
 @onready var active_mp_bar: ProgressBar = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar
 
+# Bottom HUD - Action Panel (EXISTING UI BUTTONS)
+@onready var btn_attack: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack
+@onready var btn_spells: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells
+@onready var btn_items: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
+@onready var btn_defend: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
+@onready var spell_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble
+@onready var spell_list_label: Label = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin/SpellList/SpellLabel
+
 # Stage
 @onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
 @onready var enemy_sprite_placeholder: Sprite2D = $Stage/EnemySprite
@@ -41,8 +49,7 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 @onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
 @onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
 
-# NEW: Command Menu and Target Selector
-var command_menu: CommandMenu
+# NEW: Target Selector (no duplicate CommandMenu!)
 var target_selector: TargetSelector
 
 # Runtime objects
@@ -71,15 +78,17 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions
 const HERO_POSITIONS := [
-	Vector2(1250, 540), # Front
-	Vector2(1400, 440), # Mid Top
-	Vector2(1400, 640), # Mid Bottom
-	Vector2(1550, 540)  # Back
+	Vector2(1200, 350),
+	Vector2(1300, 450),
+	Vector2(1400, 550),
+	Vector2(1500, 650)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(670, 540),
-	Vector2(520, 540)
+	Vector2(150, 350),
+	Vector2(250, 450),
+	Vector2(50, 450),
+	Vector2(150, 550)
 ]
 
 const HERO_SCALE := Vector2(0.36, 0.36)
@@ -96,17 +105,23 @@ func _ready() -> void:
 		print("ERROR: BattleScene missing required Stage node!")
 		return
 	
-	# Initialize Command Menu
-	command_menu = CommandMenu.new()
-	$UI.add_child(command_menu)
-	command_menu.menu_action.connect(_on_menu_action)
-	command_menu.attack_requested.connect(_on_attack_requested)
-	
-	# Initialize Target Selector
+	# Initialize Target Selector (NO CommandMenu - use existing buttons!)
 	target_selector = TargetSelector.new()
 	$UI.add_child(target_selector)
 	target_selector.target_selected.connect(_on_target_selected)
 	target_selector.selection_cancelled.connect(_on_selection_cancelled)
+	
+	# Connect EXISTING UI buttons
+	if btn_attack:
+		btn_attack.pressed.connect(_on_attack)
+	if btn_spells:
+		btn_spells.pressed.connect(_on_spells_pressed)
+	if btn_items:
+		btn_items.pressed.connect(_on_items_pressed)
+	if btn_defend:
+		btn_defend.pressed.connect(_on_defend_pressed)
+	if spell_bubble:
+		spell_bubble.visible = false
 	
 	# Data
 	skill_slash = _fetch_skill("slash")
@@ -230,90 +245,69 @@ func _ready() -> void:
 	_log("Battle starts! %d heroes vs %d enemies" % [heroes.size(), enemies.size()])
 	_log("Heroes: " + ", ".join(heroes.map(func(h): return h.name)))
 	_log("Enemies: " + ", ".join(enemies.map(func(e): return e.name)))
-	_log("=== NEW TARGET SELECTION SYSTEM ACTIVE ===")
+	_log("=== TARGET SELECTION SYSTEM ACTIVE ===")
 	_update_ui()
-	_show_command_menu_for_current_hero()
 
-# NEW: Show command menu for current acting hero
-func _show_command_menu_for_current_hero() -> void:
-	if current_acting_hero_index >= heroes.size() or battle_finished:
-		return
-	
-	var current_hero: Unit = heroes[current_acting_hero_index]
-	_log("Turn: %s" % current_hero.name)
-	
-	# Get hero's spells and items
-	var spells: Array = []
-	var items: Array = []
-	
-	# Add fireball spell if hero has MP
-	if current_hero.stats.get("MP", 0) >= int(skill_fireball.get("mp_cost", 0)):
-		spells.append(skill_fireball.duplicate(true))
-	
-	# Add potion if not used
-	if !potion_used:
-		items.append({"id": "potion", "name": "Potion", "type": "heal", "target": "ally"})
-	
-	command_menu.show_for_actor(current_hero.name, spells, items)
-
-# NEW: Handle Attack button press
-func _on_attack_requested() -> void:
+# ATTACK: Use existing button, trigger target selection
+func _on_attack() -> void:
 	if battle_finished or current_acting_hero_index >= heroes.size():
 		return
 	
-	command_menu.hide_menu()
 	pending_action_type = "attack"
 	pending_skill = skill_slash.duplicate(true)
 	_start_enemy_target_selection()
 
-# NEW: Handle menu actions (spells, items, defend)
-func _on_menu_action(kind: String, id: String) -> void:
+# SPELLS: Show spell bubble (existing UI)
+func _on_spells_pressed() -> void:
+	if spell_bubble:
+		spell_bubble.visible = !spell_bubble.visible
+		
+		# If opening, populate with available spells
+		if spell_bubble.visible and current_acting_hero_index < heroes.size():
+			var current_hero: Unit = heroes[current_acting_hero_index]
+			var spell_text := ""
+			
+			# Check if can cast fireball
+			if current_hero.stats.get("MP", 0) >= int(skill_fireball.get("mp_cost", 0)):
+				spell_text = "Fireball (15 MP)"
+			else:
+				spell_text = "No MP for spells"
+			
+			if spell_list_label:
+				spell_list_label.text = spell_text
+
+# ITEMS: Check potion availability
+func _on_items_pressed() -> void:
+	if !potion_used:
+		pending_action_type = "item"
+		pending_skill = {"id": "potion", "name": "Potion", "type": "heal"}
+		_start_ally_target_selection()
+	else:
+		_log("The potion bottle is empty.")
+
+# DEFEND: Immediate action
+func _on_defend_pressed() -> void:
+	if current_acting_hero_index >= heroes.size():
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	_log("%s braces for impact (Defend)." % current_hero.name)
+	var defend_skill := {"id": "defend", "name": "Defend", "type": "defend"}
+	planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
+	_advance_to_next_hero()
+
+# Handle spell selection from bubble (you'll need to wire this up in your UI)
+func _on_fireball_selected() -> void:
 	if battle_finished or current_acting_hero_index >= heroes.size():
 		return
-	
 	var current_hero: Unit = heroes[current_acting_hero_index]
-	command_menu.hide_menu()
-	
-	if kind == "defend":
-		_log("%s braces for impact (Defend)." % current_hero.name)
-		var defend_skill := {"id": "defend", "name": "Defend", "type": "defend"}
-		planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
-		_advance_to_next_hero()
-	
-	elif kind == "spells":
-		# Find the spell
-		var spell: Dictionary = {}
-		if id == "fireball":
-			spell = skill_fireball.duplicate(true)
-		
-		if spell.is_empty():
-			_log("Unknown spell: %s" % id)
-			_show_command_menu_for_current_hero()
-			return
-		
-		# Check MP cost
-		var mp_cost: int = int(spell.get("mp_cost", 0))
-		if current_hero.stats.get("MP", 0) < mp_cost:
-			_log("Not enough MP for %s!" % spell.get("name", "spell"))
-			_show_command_menu_for_current_hero()
-			return
-		
+	var cost: int = int(skill_fireball.get("mp_cost", 0))
+	if current_hero.stats.get("MP", 0) >= cost:
 		pending_action_type = "spell"
-		pending_skill = spell
+		pending_skill = skill_fireball.duplicate(true)
+		spell_bubble.visible = false
 		_start_enemy_target_selection()
-	
-	elif kind == "items":
-		# Handle item usage
-		if id == "potion":
-			if potion_used:
-				_log("The potion bottle is empty.")
-				_show_command_menu_for_current_hero()
-				return
-			
-			# Potion targets allies - show ally selection
-			pending_action_type = "item"
-			pending_skill = {"id": "potion", "name": "Potion", "type": "heal"}
-			_start_ally_target_selection()
+	else:
+		_log("Not enough MP for Fireball!")
 
 # NEW: Start target selection for enemies
 func _start_enemy_target_selection() -> void:
@@ -324,7 +318,6 @@ func _start_enemy_target_selection() -> void:
 	
 	if alive_enemies.is_empty():
 		_log("No enemies to target!")
-		_show_command_menu_for_current_hero()
 		return
 	
 	_log("[color=lime]→ Select your target! Arrow keys to choose, Enter to confirm, Esc to cancel.[/color]", Color.WHITE, true)
@@ -339,7 +332,6 @@ func _start_ally_target_selection() -> void:
 	
 	if alive_heroes.is_empty():
 		_log("No allies to target!")
-		_show_command_menu_for_current_hero()
 		return
 	
 	_log("[color=lime]→ Select target ally! Arrow keys to choose, Enter to confirm, Esc to cancel.[/color]", Color.WHITE, true)
@@ -367,7 +359,6 @@ func _on_target_selected(target_sprite: Node2D) -> void:
 	
 	if target_unit == null or !target_unit.is_alive():
 		_log("Invalid target!")
-		_show_command_menu_for_current_hero()
 		return
 	
 	# Handle different action types
@@ -377,7 +368,6 @@ func _on_target_selected(target_sprite: Node2D) -> void:
 		_advance_to_next_hero()
 	
 	elif pending_action_type == "spell":
-		# Check and deduct MP
 		var mp_cost: int = int(pending_skill.get("mp_cost", 0))
 		if current_hero.stats.get("MP", 0) >= mp_cost:
 			planned_actions.append(Action.new(current_hero, pending_skill, target_unit))
@@ -385,16 +375,13 @@ func _on_target_selected(target_sprite: Node2D) -> void:
 			_advance_to_next_hero()
 		else:
 			_log("Not enough MP!")
-			_show_command_menu_for_current_hero()
 	
 	elif pending_action_type == "item":
 		if pending_skill.get("id") == "potion":
-			# Use potion on target
 			var cur: int = int(target_unit.stats.get("HP",0))
 			var max: int = int(target_unit.max_stats.get("HP",cur))
 			if cur >= max:
 				_log("%s's HP is already full!" % target_unit.name)
-				_show_command_menu_for_current_hero()
 				return
 			
 			var healed: int = target_unit.heal(int(ceil(max * POTION_HEAL_PCT)))
@@ -411,7 +398,6 @@ func _on_target_selected(target_sprite: Node2D) -> void:
 func _on_selection_cancelled() -> void:
 	pending_action_type = ""
 	pending_skill = {}
-	_show_command_menu_for_current_hero()
 
 # NEW: Advance to next hero or end turn
 func _advance_to_next_hero() -> void:
@@ -420,13 +406,10 @@ func _advance_to_next_hero() -> void:
 		_on_end_turn()
 	else:
 		_update_ui()
-		_show_command_menu_for_current_hero()
 
 func _on_end_turn() -> void:
 	if battle_finished:
 		return
-	
-	command_menu.hide_menu()
 	
 	# Check if any units are still alive
 	var heroes_alive := heroes.filter(func(h): return h.is_alive())
@@ -493,8 +476,6 @@ func _on_end_turn() -> void:
 	current_acting_hero_index = 0
 	_check_end()
 	_update_ui()
-	if !battle_finished:
-		_show_command_menu_for_current_hero()
 
 func _check_end() -> void:
 	if battle_finished:
@@ -788,7 +769,6 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 		return
 	battle_finished = true
 	battle_victory = victory
-	command_menu.hide_menu()
 	planned_actions.clear()
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
