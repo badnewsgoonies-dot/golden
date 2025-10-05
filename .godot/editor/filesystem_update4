@@ -1,2 +1,3 @@
 res://scenes/BattleScene.gd
 res://autoload/DataRegistry.gd
+res://art/SpriteFactory.gd
