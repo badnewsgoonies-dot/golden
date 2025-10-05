@@ -1,14 +1,7 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759643954
-BATTLE_FORMATION_CHANGES.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
-BATTLE_LAYOUT_CHANGES.md::TextFile::-1::1759560834::0::1::::<><><>0<>0<><>::
-BATTLE_UI_FIXES_COMPLETE.md::TextFile::-1::1759636798::0::1::::<><><>0<>0<><>::
+::res://::1759647286
+BATTLE_MENU_IMPLEMENTATION.md::TextFile::-1::1759645924::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
-FIXES_APPLIED.md::TextFile::-1::1759636398::0::1::::<><><>0<>0<><>::
-MOBILE_APP_GUIDE.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
-MOBILE_PREVIEW_GUIDE.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
-PHONE_APP_SETUP.md::TextFile::-1::1759558881::0::1::::<><><>0<>0<><>::
-WARNING_CLEANUP_GUIDE.md::TextFile::-1::1759636533::0::1::::<><><>0<>0<><>::
 ::res://app/::1759638602
 manifest.json::JSON::-1::1759558881::0::1::::<><><>0<>0<><>::
 ::res://art/::1759638608
@@ -515,9 +508,11 @@ target_arrow.png::CompressedTexture2D::8842930395228776704::1759558882::17596115
 ::res://autoload/::1759643933
 AudioService.gd::GDScript::6139316943950983922::1759558882::0::1::::<>Node<><>0<>0<><>::
 DataRegistry.gd::GDScript::1869354952928479482::1759636078::0::1::::<>Node<><>0<>0<><>::
-GameManager.gd::GDScript::1729807557281203855::1759643933::0::1::::<>Node<><>0<>0<><>::
+GameManager.gd::GDScript::1729807557281203855::1759644197::0::1::::<>Node<><>0<>0<><>::
 RunManager.gd::GDScript::9001988606965223525::1759612900::0::1::::<>Node<><>0<>0<><>::
 SaveService.gd::GDScript::2519183938991418370::1759558882::0::1::::<>Node<><>0<>0<><>::
+::res://backups/::1759646979
+BattleScene_ORIGINAL_BACKUP.gd::GDScript::4230268344104139765::1759643923::0::1::::<>Node2D<><>0<>0<><>::
 ::res://battle/::1759638608
 EffectSystem.gd::GDScript::9015215051369088139::1759558882::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
 Formula.gd::GDScript::1848258574000662490::1759558882::0::1::::Formula<>RefCounted<><>0<>0<><>::
@@ -538,13 +533,6 @@ upgrades.json::JSON::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://docs/::1759638608
 AI_Godot4_Guide.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 BATTLE_CONTROLS.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
-::res://errors/::1759638608
-Capture.JPG::CompressedTexture2D::8494496166714288162::1759558882::1759611570::1::::<><><>0<>0<>bb2f367005e5a6d90132da19e055d849<>res://.godot/imported/Capture.JPG-0f4f6d43a968395c973b94b9837f6c17.ctex::
-Capture.PNG::CompressedTexture2D::5441905508402472233::1759567660::1759611570::1::::<><><>0<>0<>1658b20cc41aaa23f020b2b4f610dded<>res://.godot/imported/Capture.PNG-c75dfe776529e3e1a57dd6f9107edcb3.ctex::
-pture.PNG::CompressedTexture2D::8189537708618562344::1759558882::1759611569::1::::<><><>0<>0<>fc5918daa3c7f372bde17f2f22f734e0<>res://.godot/imported/pture.PNG-d89058eba0b18e9db9377d721bf90f01.ctex::
-re.PNG::CompressedTexture2D::779451174187748842::1759558882::1759611569::1::::<><><>0<>0<>6d76f88a205c6c5b206c239d19946dee<>res://.godot/imported/re.PNG-b54168600f2d21cad2849552a1374272.ctex::
-ture.PNG::CompressedTexture2D::4100299816483108141::1759558882::1759611569::1::::<><><>0<>0<>38945cf32ad36c35b39891fda8ffbe94<>res://.godot/imported/ture.PNG-14f79650c1c57d04620c209a006f02d3.ctex::
-ure.PNG::CompressedTexture2D::4319280674404312125::1759558882::1759611569::1::::<><><>0<>0<>ca8df217405b892628bf739f75ff8364<>res://.godot/imported/ure.PNG-dda36f7337e2afb66907f8082ffaba32.ctex::
 ::res://exports/::1759638608
 README.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://exports/html5/::1759638609
@@ -557,26 +545,12 @@ index.manifest.json::JSON::-1::1759559777::0::1::::<><><>0<>0<><>::
 index.png::CompressedTexture2D::4820114166655216156::1759559777::1759611569::1::::<><><>0<>0<>96947887d010e7cf3672bb3ec8783f06<>res://.godot/imported/index.png-debdbe78eaf4905ec73a9250475e03b3.ctex::
 ::res://fx/::1759638611
 SpriteAnimator.gd::GDScript::9192173146037707020::1759558882::0::1::::SpriteAnimator<>Node<><>0<>0<><>::
-::res://New folder/::1759638612
-8078c11f-21de-4e7d-852d-5766d9234731.png::CompressedTexture2D::1601733822705907496::1759558881::1759611569::1::::<><><>0<>0<>10aa50f1edfe730992341ebdeaff0c0f<>res://.godot/imported/8078c11f-21de-4e7d-852d-5766d9234731.png-11f8988e6bc14cb4054be053811f0da4.ctex::
-a712ee61-806f-49f6-9608-45b9fd6959b2.png::CompressedTexture2D::6544871841151166593::1759558881::1759611569::1::::<><><>0<>0<>9a25968da9625659b439bb86f9c6ce47<>res://.godot/imported/a712ee61-806f-49f6-9608-45b9fd6959b2.png-fb8ba0ae4fa4096fdaa1f293baa6af6e.ctex::
-assets_task_01k6aykgxzfj6vj7gxkjsaby4b_1759156850_img_1.webp::CompressedTexture2D::819748589826600796::1759558881::1759611569::1::::<><><>0<>0<>0df8c701c1efee7cd04ab4ba07390ec0<>res://.godot/imported/assets_task_01k6aykgxzfj6vj7gxkjsaby4b_1759156850_img_1.webp-51c547fa4c6076ec9ed0c908e43c386c.ctex::
-b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png::CompressedTexture2D::3403586726018460945::1759558881::1759611569::1::::<><><>0<>0<>94669af87436d58f0cc9a3ba29ca93d8<>res://.godot/imported/b39cb8d7-7bb0-4d32-84c1-6bb9af64a2ed.png-ccde70bf42811fa196955fcbd283fcbe.ctex::
-::res://NVIDIA Corporation/::1759638612
-::res://NVIDIA Corporation/umdlogs/::1759634141
-::res://PIC BEFORE AND AFTER/::1759638612
-Current.png::CompressedTexture2D::3256508529062772865::1759558881::1759611568::1::::<><><>0<>0<>ab00ac02ea9432b353720b8d488dad0d<>res://.godot/imported/Current.png-15090ff9c8df6139b7420aae0900f749.ctex::
-Current_small.png::CompressedTexture2D::8785884572401327205::1759558881::1759611568::1::::<><><>0<>0<>ebc11da194449d679c8c6d2833b57928<>res://.godot/imported/Current_small.png-937324a042a8463a69ab3fef2b0413a7.ctex::
-Current_thumb.png::CompressedTexture2D::4900536679010685932::1759558881::1759611568::1::::<><><>0<>0<>2c2be129f04e7fb54a6976cc2a180573<>res://.godot/imported/Current_thumb.png-c5c9b3225e5f7b3ea5be774b51dd0b8c.ctex::
-Desired.png::CompressedTexture2D::6971517926116130680::1759558881::1759611568::1::::<><><>0<>0<>8913ef5c63ddde1cd17470baec55126e<>res://.godot/imported/Desired.png-0ed9eb110dbcc48d1a2ede08a847c874.ctex::
-Desired_small.png::CompressedTexture2D::9001073066296482551::1759558881::1759611568::1::::<><><>0<>0<>d454e3e9c00d05707a3291e60c0e5e8a<>res://.godot/imported/Desired_small.png-27761851f985d56f0eff6a7bd2538d52.ctex::
-Desired_thumb.png::CompressedTexture2D::5772610425224863726::1759558881::1759611568::1::::<><><>0<>0<>3daa0388790718927392957eb1f7d05a<>res://.godot/imported/Desired_thumb.png-19758cac87701d02da4c2f4c999454dd.ctex::
-::res://scenes/::1759641302
+::res://scenes/::1759646979
 background_dark_fantasy.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 background_meadow.tscn::PackedScene::-1::1759607285::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::4161133067723001155::1759558882::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd<>uid://dlvewljxdg2s7::::res://art/battlers/werewolf/idle_f/3.png<>uid://cr8pdx1ej67qd::::res://art/battlers/hero/idle_b/1.png<>uid://cx8hxm0vfq8n1::::res://art/battlers/mage/idle_b/1.png<>uid://dpsjokc2fqhns::::res://art/battlers/healer/idle_b/1.png
-BattleScene.gd::GDScript::8322624433477628582::1759643923::0::1::::<>Node2D<><>0<>0<><>::
-BattleScene.tscn::PackedScene::3799088121633079161::1759643749::0::1::::<><><>0<>0<><>::uid://dqtsn5gpp5v15::::res://scenes/BattleScene.gd<>uid://bgycgebbvpb63::::res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
+BattleScene.gd::GDScript::8322624433477628582::1759647120::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.tscn::PackedScene::3799088121633079161::1759646309::0::1::::<><><>0<>0<><>::uid://dqtsn5gpp5v15::::res://scenes/BattleScene.gd<>uid://bgycgebbvpb63::::res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759558882::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759558882::0::1::::<>Control<><>0<>0<><>::
 Fork.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::res://scenes/Fork.gd
@@ -617,6 +591,6 @@ battle_theme.tres::Theme::-1::1759558882::0::1::::<><><>0<>0<><>::
 CommandMenu.gd::GDScript::6169794612215573323::1759558882::0::1::::CommandMenu<>Control<><>0<>0<><>::
 DamagePopup.gd::GDScript::7418915318074808031::1759558882::0::1::::<>Label<><>0<>0<><>::
 DamagePopup.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::res://ui/DamagePopup.gd
-TargetSelector.gd::GDScript::308375213718999042::1759622479::0::1::::TargetSelector<>Control<><>0<>0<><>::
+TargetSelector.gd::GDScript::308375213718999042::1759646851::0::1::::TargetSelector<>Control<><>0<>0<><>::
 TriangleTail.gd::GDScript::6608720511667477273::1759558882::0::1::::TriangleTail<>Control<><>0<>0<><>::
 unit_info_box.tscn::PackedScene::-1::1759612900::0::1::::<><><>0<>0<><>::
