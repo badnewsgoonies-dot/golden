@@ -128,18 +128,18 @@ color = Color(0.02, 0.01, 0.03, 1)
 color = Color(0.7, 0.65, 0.8, 1)
 
 [node name="Stage" type="Node2D" parent="."]
-position = Vector2(0, -220)
+position = Vector2(0, 0)
 
 [node name="Floor" type="Polygon2D" parent="Stage"]
-z_index = -1
-color = Color(0.06, 0.05, 0.08, 0.9)
-polygon = PackedVector2Array(220, 840, 1200, 840, 1080, 440, 360, 440)
+z_index = 50
+color = Color(0.3, 0.4, 0.7, 1.0)
+polygon = PackedVector2Array(200, 400, 640, 600, 1080, 400, 640, 200)
 
 [node name="FloorOutline" type="Line2D" parent="Stage"]
-z_index = -1
-points = PackedVector2Array(220, 840, 1200, 840, 1080, 440, 360, 440, 220, 840)
-width = 3.0
-default_color = Color(0.4, 0.5, 0.8, 0.8)
+z_index = 51
+points = PackedVector2Array(200, 400, 640, 600, 1080, 400, 640, 200, 200, 400)
+width = 5.0
+default_color = Color(0.5, 0.7, 1.0, 1.0)
 
 [node name="HeroShadow" type="Sprite2D" parent="Stage"]
 position = Vector2(320, 780)

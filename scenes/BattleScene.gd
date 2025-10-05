@@ -29,7 +29,7 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 # --- UI NODE REFERENCES ---
 # `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
 
-# Top HUD - Party Panel (top right)
+# Top HUD - Party Panel (top right)6
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
 
 # Top HUD - Enemy Panel (top left)
@@ -91,36 +91,36 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - JRPG style diagonal formation
-# Heroes in lower-left, staggered for depth
+# Formation positions - Isometric battlefield formation with proper spacing
+# Heroes on the right side, facing left
 const HERO_POSITIONS := [
-	Vector2(320, 800),   # Front-most hero
-	Vector2(220, 840),   # Back-left
-	Vector2(420, 840),   # Back-right
-	Vector2(520, 880)    # Furthest back
+	Vector2(900, 600),   # Front-bottom hero
+	Vector2(1050, 500),  # Right hero
+	Vector2(900, 400),   # Back-top hero  
+	Vector2(750, 500)    # Left hero
 ]
 
-# Enemies in upper-right, staggered for depth
+# Enemies on the left side, facing right
 const ENEMY_POSITIONS := [
-	Vector2(950, 540),   # Front-most enemy
-	Vector2(850, 580),  # Back-left
-	Vector2(1050, 580),  # Back-right
-	Vector2(750, 620)    # Furthest back
+	Vector2(230, 400),   # Top-left enemy
+	Vector2(380, 500),   # Bottom-right enemy
+	Vector2(230, 600),   # Extra enemy position
+	Vector2(380, 300)    # Extra enemy position
 ]
 
-const HERO_SCALE := Vector2(1.5, 1.5)
-const ENEMY_SCALE := Vector2(1.5, 1.5)
-const HERO_SHADOW_SCALE := Vector2(0.8, 0.4)
-const ENEMY_SHADOW_SCALE := Vector2(0.8, 0.4)
+const HERO_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
+const ENEMY_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
+const HERO_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
+const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
 
-# Battle floor (blue diamond) configuration
+# Battle floor (blue diamond) configuration - isometric battlefield
 const FLOOR_POINTS := [
-	Vector2(100, 960),
-	Vector2(1820, 960),
-	Vector2(1280, 400),
-	Vector2(640, 400)
+	Vector2(150, 430),   # Left point
+	Vector2(640, 650),   # Bottom point  
+	Vector2(1130, 430),  # Right point
+	Vector2(640, 210)    # Top point
 ]
-const FLOOR_COLOR := Color(0.15, 0.2, 0.45, 0.75)
+const FLOOR_COLOR := Color(0.2, 0.3, 0.6, 1.0)  # Solid blue color
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -167,24 +167,6 @@ func _ready() -> void:
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
-
-	# Create battle floor (blue diamond) under Stage once
-	if has_node("Stage"):
-		var stage := $Stage
-		var floor := stage.get_node_or_null("BattleFloor")
-		if floor == null:
-			floor = Polygon2D.new()
-			floor.name = "BattleFloor"
-			stage.add_child(floor)
-			stage.move_child(floor, 0)  # Move to front of children (rendered first)
-		
-		var pts := PackedVector2Array()
-		for p in FLOOR_POINTS:
-			pts.append(p)
-		
-		(floor as Polygon2D).polygon = pts
-		(floor as Polygon2D).color = FLOOR_COLOR
-		(floor as Polygon2D).z_index = -100 # Draw way behind everything
 	
 	# Create selector arrow (initially hidden)
 	selector_arrow = SelectorArrow.new()
@@ -223,7 +205,7 @@ func _ready() -> void:
 			
 		var sprite := AnimatedFrames.new()
 		sprite.character = hero_folder
-		sprite.set_facing_back(true)  # Heroes face away from camera
+		sprite.set_facing_back(false)  # Heroes face the camera (forward)
 		sprite.centered = true  # Center the sprite on the position BEFORE adding to tree
 		sprite.position = pos
 		sprite.scale = HERO_SCALE
@@ -806,8 +788,8 @@ func _shadow_base_scale(u: Unit) -> Vector2:
 	return Vector2(0.4, 0.2) # Fallback to default scale
 
 func _attack_offset(u: Unit) -> Vector2:
-	# Adjust offsets for new formation scale
-	return Vector2(-66, -12) if u in heroes else Vector2(70, -10) if u in enemies else Vector2.ZERO
+	# Adjust offsets for isometric battlefield with smaller sprites
+	return Vector2(-50, 0) if u in heroes else Vector2(50, 0) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
 	if u==null:
