@@ -29,7 +29,7 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 # --- UI NODE REFERENCES ---
 # `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
 
-# Top HUD - Party Panel (top right)
+# Top HUD - Party Panel (top right)6
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
 
 # Top HUD - Enemy Panel (top left)
