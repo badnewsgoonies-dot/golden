@@ -1,4 +1,4 @@
-﻿{
+{
   "slash": {
     "name": "Slash",
     "type": "damage",
@@ -10,6 +10,7 @@
     "mp_cost": 0,
     "effects": []
   },
+  
   "poison_dart": {
     "name": "Poison Dart",
     "type": "damage",
@@ -26,11 +27,15 @@
         "chance": 1.0,
         "duration": 3,
         "metadata": {
-          "damage": 8
+          "damage": 8,
+          "category": "DOT",
+          "stack_type": "intensity",
+          "max_stacks": 3
         }
       }
     ]
   },
+  
   "fireball": {
     "name": "Fireball",
     "type": "damage",
@@ -40,8 +45,21 @@
     "crit": 0.05,
     "element": "fire",
     "mp_cost": 12,
-    "effects": []
+    "effects": [
+      {
+        "id": "burn",
+        "name": "Burn",
+        "chance": 0.3,
+        "duration": 2,
+        "metadata": {
+          "damage": 10,
+          "category": "DOT",
+          "stack_type": "refresh"
+        }
+      }
+    ]
   },
+  
   "stun_bash": {
     "name": "Stun Bash",
     "type": "damage",
@@ -57,7 +75,11 @@
         "name": "Stun",
         "chance": 0.75,
         "duration": 1,
-        "metadata": {}
+        "metadata": {
+          "category": "CONTROL",
+          "stack_type": "none",
+          "priority": 1
+        }
       }
     ]
   }
