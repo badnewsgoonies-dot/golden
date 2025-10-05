@@ -82,15 +82,15 @@ const POTION_HEAL_PCT := 0.30
 
 # Formation positions
 const HERO_POSITIONS := [
-	Vector2(1150, 670),
-	Vector2(1270, 600),
-	Vector2(1374, 530),
-	Vector2(1502, 460)
+	Vector2(1088, 780),
+	Vector2(1216, 720),
+	Vector2(1344, 660),
+	Vector2(1472, 600)
 ]
 
 const ENEMY_POSITIONS := [
-	Vector2(510, 220),
-	Vector2(630, 160)
+	Vector2(448, 600),
+	Vector2(576, 540)
 ]
 
 const HERO_SCALE := Vector2(0.36, 0.36)
