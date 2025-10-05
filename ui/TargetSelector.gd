@@ -99,7 +99,6 @@ func _update_selectors() -> void:
 		if i == _selected_index:
 			var base_y = selector.position.y
 			var tween = create_tween()
-			tween.set_loops()
 			tween.tween_property(selector, "position:y", base_y - 10, 0.4).set_trans(Tween.TRANS_SINE)
 			tween.tween_property(selector, "position:y", base_y, 0.4).set_trans(Tween.TRANS_SINE)
 
