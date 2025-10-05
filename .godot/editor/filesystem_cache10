@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759647286
+::res://::1759647767
 BATTLE_MENU_IMPLEMENTATION.md::TextFile::-1::1759645924::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://app/::1759638602
@@ -511,7 +511,7 @@ DataRegistry.gd::GDScript::1869354952928479482::1759636078::0::1::::<>Node<><>0<
 GameManager.gd::GDScript::1729807557281203855::1759644197::0::1::::<>Node<><>0<>0<><>::
 RunManager.gd::GDScript::9001988606965223525::1759612900::0::1::::<>Node<><>0<>0<><>::
 SaveService.gd::GDScript::2519183938991418370::1759558882::0::1::::<>Node<><>0<>0<><>::
-::res://backups/::1759646979
+::res://backups/::1759647287
 BattleScene_ORIGINAL_BACKUP.gd::GDScript::4230268344104139765::1759643923::0::1::::<>Node2D<><>0<>0<><>::
 ::res://battle/::1759638608
 EffectSystem.gd::GDScript::9015215051369088139::1759558882::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
@@ -530,9 +530,6 @@ example_units.gd::GDScript::1126065583066013675::1759558882::0::1::::<>RefCounte
 items.json::JSON::-1::1759607281::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1759607281::0::1::::<><><>0<>0<><>::
 upgrades.json::JSON::-1::1759558882::0::1::::<><><>0<>0<><>::
-::res://docs/::1759638608
-AI_Godot4_Guide.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
-BATTLE_CONTROLS.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://exports/::1759638608
 README.md::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
 ::res://exports/html5/::1759638609
