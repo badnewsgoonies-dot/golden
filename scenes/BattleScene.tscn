@@ -199,6 +199,40 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 16
 
+[node name="Enemy1" type="VBoxContainer" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox"]
+layout_mode = 2
+
+[node name="EnemyLabel1" type="Label" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+layout_mode = 2
+text = "Enemy 1"
+horizontal_alignment = 1
+
+[node name="EnemyHPBar1" type="ProgressBar" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox/Enemy1"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="Enemy2" type="VBoxContainer" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox"]
+layout_mode = 2
+
+[node name="EnemyLabel2" type="Label" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+layout_mode = 2
+text = "Enemy 2"
+horizontal_alignment = 1
+
+[node name="EnemyHPBar2" type="ProgressBar" parent="UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox/Enemy2"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
 [node name="TopRightAnchor" type="Control" parent="UI/HUD"]
 layout_mode = 1
 anchors_preset = 1
@@ -232,6 +266,110 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 2
+
+[node name="Hero1" type="VBoxContainer" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
+
+[node name="HeroLabel1" type="Label" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+layout_mode = 2
+text = "Hero 1"
+horizontal_alignment = 1
+
+[node name="HeroHPBar1" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 120.0
+value = 120.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar1" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero1"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 40.0
+value = 40.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="Hero2" type="VBoxContainer" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
+
+[node name="HeroLabel2" type="Label" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+layout_mode = 2
+text = "Hero 2"
+horizontal_alignment = 1
+
+[node name="HeroHPBar2" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 120.0
+value = 120.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar2" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero2"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 40.0
+value = 40.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="Hero3" type="VBoxContainer" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
+
+[node name="HeroLabel3" type="Label" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+layout_mode = 2
+text = "Hero 3"
+horizontal_alignment = 1
+
+[node name="HeroHPBar3" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 120.0
+value = 120.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar3" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero3"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 40.0
+value = 40.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
+
+[node name="Hero4" type="VBoxContainer" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox"]
+layout_mode = 2
+
+[node name="HeroLabel4" type="Label" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+layout_mode = 2
+text = "Hero 4"
+horizontal_alignment = 1
+
+[node name="HeroHPBar4" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 120.0
+value = 120.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_bar_fill")
+
+[node name="HeroMPBar4" type="ProgressBar" parent="UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox/Hero4"]
+custom_minimum_size = Vector2(100, 8)
+layout_mode = 2
+max_value = 40.0
+value = 40.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mp_bar_fill")
 
 [node name="BottomLeftAnchor" type="Control" parent="UI/HUD"]
 layout_mode = 1
