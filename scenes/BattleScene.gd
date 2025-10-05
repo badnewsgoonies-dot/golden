@@ -118,6 +118,7 @@ var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
 
 # NEW: Spell buttons for clickable spell selection
+var spell_button_container: VBoxContainer = null
 var item_button_container: VBoxContainer = null
 
 func _ready() -> void:
