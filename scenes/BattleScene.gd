@@ -108,19 +108,19 @@ const ENEMY_POSITIONS := [
 	Vector2(700, 410)    # Enemy 4
 ]
 
-const HERO_SCALE := Vector2(1.5, 1.5)
-const ENEMY_SCALE := Vector2(1.5, 1.5)
-const HERO_SHADOW_SCALE := Vector2(0.8, 0.4)
-const ENEMY_SHADOW_SCALE := Vector2(0.8, 0.4)
+const HERO_SCALE := Vector2(2.5, 2.5)
+const ENEMY_SCALE := Vector2(2.5, 2.5)
+const HERO_SHADOW_SCALE := Vector2(1.2, 0.6)
+const ENEMY_SHADOW_SCALE := Vector2(1.2, 0.6)
 
-# Battle floor (blue diamond) configuration
+# Isometric battlefield floor (blue diamond)
 const FLOOR_POINTS := [
-	Vector2(100, 960),
-	Vector2(1820, 960),
-	Vector2(1280, 400),
-	Vector2(640, 400)
+	Vector2(640, 250),   # Top point
+	Vector2(950, 450),   # Right point
+	Vector2(640, 650),   # Bottom point
+	Vector2(330, 450),   # Left point
 ]
-const FLOOR_COLOR := Color(0.15, 0.2, 0.45, 0.75)
+const FLOOR_COLOR := Color(0.25, 0.5, 0.9, 0.92)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
