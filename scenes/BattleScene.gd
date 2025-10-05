@@ -559,7 +559,22 @@ func _on_end_turn() -> void:
 	for e in enemies:
 		if e.is_alive():
 			var target: Unit = heroes_alive[randi() % heroes_alive.size()]
-			planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
+			var action_skill = skill_slash.duplicate(true) # Default attack
+
+			# NEW: Enemy AI to decide on using a skill
+			if not e.skills.is_empty() and randf() < 0.75: # 75% chance to use a skill
+				var skill_id_to_use = e.skills.pick_random()
+				var chosen_skill = _fetch_skill(skill_id_to_use)
+				
+				# Basic check if skill is usable (e.g. MP cost)
+				var mp_cost = int(chosen_skill.get("mp_cost", 0))
+				if e.get_stat("MP") >= mp_cost:
+					action_skill = chosen_skill
+					_log("🧠 %s decides to use %s!" % [e.name, action_skill.name])
+				else:
+					_log("🧠 %s wanted to use %s, but not enough MP." % [e.name, chosen_skill.name])
+
+			planned_actions.append(Action.new(e, action_skill, target))
 	
 	# Execute turn
 	var actions: Array = turn_engine.build_queue(planned_actions)
@@ -768,6 +783,7 @@ func _build_unit(def: Dictionary) -> Unit:
 	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
 	var r: Dictionary = def.get("resist", {})
 	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
+	u.skills = def.get("skills", [])
 	return u
 
 func _update_sprites() -> void:

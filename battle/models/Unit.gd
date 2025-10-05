@@ -5,10 +5,13 @@ const Status := preload("res://battle/models/Status.gd")
 
 var name: String = ""
 var character_id: String = ""  # Added to track the original character/enemy ID for sprite mapping
-var stats: Dictionary = {}
 var max_stats: Dictionary = {}
+var stats: Dictionary = {}
 var resist: Dictionary = {}
-var statuses: Array[Status] = [] # This will hold active status effects.
+var statuses: Array[Status] = []
+var skills: Array[String] = []
+
+var stunned: bool = false
 
 # DEPRECATED: The 'buffs' dictionary and 'stunned' boolean will be replaced by the new Status system.
 # We leave them for now to ensure the project still runs, and will remove them in a later step.
@@ -18,8 +21,6 @@ var buffs: Dictionary = {
 	"AGI": 1.0,
 	"FOCUS": 1.0
 }
-var stunned: bool = false
-var skills: Array[String] = []
 
 func is_alive() -> bool:
 	return int(stats.get("HP", 0)) > 0
