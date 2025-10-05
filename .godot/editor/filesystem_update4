@@ -1,6 +1,0 @@
-res://battle/models/Unit.gd
-res://scenes/BattleScene.gd
-res://battle/EffectSystem.gd
-res://battle/TurnEngine.gd
-res://battle/models/Action.gd
-res://battle/models/Status.gd
