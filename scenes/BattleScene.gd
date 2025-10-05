@@ -91,21 +91,21 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions - JRPG style diagonal formation
-# Heroes in lower-left, staggered for depth
+# ISOMETRIC BATTLEFIELD POSITIONS  
+# Heroes positioned at bottom-right (backs to camera)
 const HERO_POSITIONS := [
-	Vector2(320, 800),   # Front-most hero
-	Vector2(220, 840),   # Back-left
-	Vector2(420, 840),   # Back-right
-	Vector2(520, 880)    # Furthest back
+	Vector2(750, 580),   # Hero 1 - closest to camera
+	Vector2(650, 530),   # Hero 2 
+	Vector2(850, 530),   # Hero 3
+	Vector2(550, 480),   # Hero 4 - furthest from camera
 ]
 
-# Enemies in upper-right, staggered for depth
+# Enemies positioned at top-left (facing camera)
 const ENEMY_POSITIONS := [
-	Vector2(950, 540),   # Front-most enemy
-	Vector2(850, 580),  # Back-left
-	Vector2(1050, 580),  # Back-right
-	Vector2(750, 620)    # Furthest back
+	Vector2(500, 320),   # Enemy 1
+	Vector2(600, 370),   # Enemy 2
+	Vector2(400, 370),   # Enemy 3
+	Vector2(700, 410)    # Enemy 4
 ]
 
 const HERO_SCALE := Vector2(1.5, 1.5)
