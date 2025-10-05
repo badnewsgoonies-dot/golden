@@ -40,7 +40,7 @@ func start_selection(target_sprites: Array) -> void:
 	
 	_update_selectors()
 
-func hide() -> void:
+func end_selection() -> void:
 	visible = false
 	_clear_selectors()
 	
@@ -152,7 +152,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handled = true
 	elif event.is_action_pressed("ui_cancel"):
 		selection_cancelled.emit()
-		hide()
+		end_selection()
 		handled = true
 	
 	if handled:
@@ -168,7 +168,7 @@ func _move_selection(delta: int) -> void:
 func _confirm_selection() -> void:
 	if _selected_index >= 0 and _selected_index < _targets.size():
 		target_selected.emit(_targets[_selected_index])
-		hide()
+		end_selection()
 
 func get_selected_target() -> Node2D:
 	if _selected_index >= 0 and _selected_index < _targets.size():

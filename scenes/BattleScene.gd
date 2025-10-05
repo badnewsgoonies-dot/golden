@@ -48,7 +48,7 @@ func _ready() -> void:
 	add_child(turn_engine)
 	spells_container.hide()
 	items_container.hide()
-	target_selector.hide()
+	target_selector.visible = false
 	_build_units()
 	_build_sprites()
 	_connect_buttons()
