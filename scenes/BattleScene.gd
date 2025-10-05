@@ -94,31 +94,31 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - Isometric battlefield formation with proper spacing
 # Heroes on the right side, facing left
 const HERO_POSITIONS := [
-	Vector2(900, 600),   # Front-bottom hero
-	Vector2(1050, 500),  # Right hero
-	Vector2(900, 400),   # Back-top hero  
-	Vector2(750, 500)    # Left hero
+	Vector2(850, 450),
+	Vector2(900, 500),
+	Vector2(950, 550),
+	Vector2(1000, 600)
 ]
 
 # Enemies on the left side, facing right
 const ENEMY_POSITIONS := [
-	Vector2(230, 400),   # Top-left enemy
-	Vector2(380, 500),   # Bottom-right enemy
-	Vector2(230, 600),   # Extra enemy position
-	Vector2(380, 300)    # Extra enemy position
+	Vector2(250, 450),
+	Vector2(300, 500),
+	Vector2(350, 550),
+	Vector2(400, 600)
 ]
 
-const HERO_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
-const ENEMY_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
-const HERO_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
-const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
+const HERO_SCALE := Vector2(0.36, 0.36)
+const ENEMY_SCALE := Vector2(0.36, 0.36)
+const HERO_SHADOW_SCALE := Vector2(0.18, 0.09)
+const ENEMY_SHADOW_SCALE := Vector2(0.18, 0.09)
 
 # Battle floor (blue diamond) configuration - isometric battlefield
 const FLOOR_POINTS := [
-	Vector2(200, 400),   # Left point
-	Vector2(640, 600),   # Bottom point  
-	Vector2(1080, 400),  # Right point
-	Vector2(640, 200)    # Top point
+	Vector2(-460, 400),  # Left point
+	Vector2(640, 1100),  # Bottom point
+	Vector2(1740, 400),  # Right point
+	Vector2(640, -300)   # Top point
 ]
 const FLOOR_COLOR := Color(0.3, 0.4, 0.7, 1.0)  # Solid blue color
 
