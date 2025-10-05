@@ -1,32 +1,51 @@
 extends Node2D
 
-# UPDATED BATTLE SCENE WITH PROPER TARGET SELECTION
-# This integrates CommandMenu and TargetSelector components
+# It manages character and enemy units, their sprites, UI elements, and the turn-based logic.
 
 # --- CONFIGURATION ---
+# Set to true to allow ending the turn with a keyboard key (e.g., 'E')
 var keyboard_end_turn_enabled := true
 
 # --- ART ASSETS MAPPING ---
+# Maps character/enemy IDs to their corresponding folder names in `art/battlers/`
+# This allows using different art for units with the same name (e.g., color variations).
 const CHARACTER_ART := {
 	"barbarian": "barbarian",
 	"cleric_blue": "cleric_blue",
 	"mage_red": "mage_red",
 	"werewolf": "werewolf",
+	# Add other character mappings here
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
+# These are now referenced directly via their `class_name` if available.
 const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # --- UI NODE REFERENCES ---
+# `@onready` ensures the nodes are fetched from the scene tree when the script is ready.
+
+# Top HUD - Party Panel (top right)6
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
+
+# Top HUD - Enemy Panel (top left)
 @onready var enemy_info_container: HBoxContainer = $UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox
+
+# Bottom HUD - Active Character Panel (left)
 @onready var active_portrait: TextureRect = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
 @onready var active_hp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
 @onready var active_hp_bar: ProgressBar = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPBar
 @onready var active_mp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel
 @onready var active_mp_bar: ProgressBar = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar
+
+# Bottom HUD - Action Panel (right)
+@onready var btn_attack: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack
+@onready var btn_spells: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells
+@onready var btn_items: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
+@onready var btn_defend: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
+@onready var spell_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble
+@onready var spell_list_label: Label = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble/SpellMargin/SpellList/SpellLabel
 
 # Stage
 @onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
@@ -41,27 +60,27 @@ const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 @onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
 @onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
 
-# NEW: Command Menu and Target Selector
-var command_menu: CommandMenu
-var target_selector: TargetSelector
-
 # Runtime objects
 var hero_sprite: AnimatedFrames
 var enemy_sprite: AnimatedFrames
+# command_menu removed - using built-in UI
+var selector_arrow: SelectorArrow
 
-var heroes: Array[Unit] = []
-var enemies: Array[Unit] = []
-var hero_sprites: Array[AnimatedFrames] = []
-var enemy_sprites: Array[AnimatedFrames] = []
-var hero_shadows: Array[Sprite2D] = []
-var enemy_shadows: Array[Sprite2D] = []
+var heroes: Array[Unit] = []  # Support for multiple heroes
+var enemies: Array[Unit] = []  # Support for multiple enemies
+var hero_sprites: Array[AnimatedFrames] = []  # Sprites for all heroes
+var enemy_sprites: Array[AnimatedFrames] = []  # Sprites for all enemies
+var hero_shadows: Array[Sprite2D] = []  # Shadows for all heroes
+var enemy_shadows: Array[Sprite2D] = []  # Shadows for all enemies
 
 var planned_actions: Array[Action] = []
 var turn_engine: TurnEngine
 var potion_used := false
 var battle_finished := false
-var current_acting_hero_index := 0
-var pending_action_type := ""  # "attack", "spell", or "item"
+var selecting_target := false
+var selected_enemy_index := 0
+var selected_hero_index := 0  # For when selecting hero targets
+var current_acting_hero_index := 0  # Which hero is currently acting
 var pending_skill: Dictionary = {}
 
 var skill_slash: Dictionary = {}
@@ -69,19 +88,21 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# Formation positions
+# Formation positions - Isometric battlefield formation with proper spacing
+# Heroes on the right side, facing left
 const HERO_POSITIONS := [
-	Vector2(1200, 350),
-	Vector2(1300, 450),
-	Vector2(1400, 550),
-	Vector2(1500, 650)
+	Vector2(1200, 350),  # Top-most hero
+	Vector2(1300, 450),  # Upper-middle hero
+	Vector2(1400, 550),  # Lower-middle hero
+	Vector2(1500, 650)   # Bottom-most hero
 ]
 
+# Enemies on the left side, facing right
 const ENEMY_POSITIONS := [
-	Vector2(150, 350),
-	Vector2(250, 450),
-	Vector2(50, 450),
-	Vector2(150, 550)
+	Vector2(150, 350),   # Top-most enemy
+	Vector2(250, 450),   # Upper-middle enemy
+	Vector2(50, 450),    # Lower-middle enemy (front)
+	Vector2(150, 550)    # Bottom-most enemy
 ]
 
 const HERO_SCALE := Vector2(0.36, 0.36)
@@ -89,61 +110,77 @@ const ENEMY_SCALE := Vector2(0.36, 0.36)
 const HERO_SHADOW_SCALE := Vector2(0.18, 0.09)
 const ENEMY_SHADOW_SCALE := Vector2(0.18, 0.09)
 
+# Battle floor (blue diamond) configuration - isometric battlefield
+const FLOOR_POINTS := [
+	Vector2(-800, 400),  # Far-left point
+	Vector2(640, 1300),  # Far-bottom point
+	Vector2(2080, 400),  # Far-right point
+	Vector2(640, -500)   # Far-top point
+]
+const FLOOR_COLOR := Color(0.3, 0.4, 0.7, 1.0)  # Solid blue color
+
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
 
 func _ready() -> void:
-	# Safety check
+	# Safety check for required nodes
 	if !has_node("Stage"):
 		print("ERROR: BattleScene missing required Stage node!")
 		return
-	
-	# Initialize Command Menu
-	command_menu = CommandMenu.new()
-	$UI.add_child(command_menu)
-	command_menu.menu_action.connect(_on_menu_action)
-	command_menu.attack_requested.connect(_on_attack_requested)
-	
-	# Initialize Target Selector
-	target_selector = TargetSelector.new()
-	$UI.add_child(target_selector)
-	target_selector.target_selected.connect(_on_target_selected)
-	target_selector.selection_cancelled.connect(_on_selection_cancelled)
-	
+		
 	# Data
 	skill_slash = _fetch_skill("slash")
 	skill_fireball = _fetch_skill("fireball")
 	
-	# Initialize heroes
-	var hero_characters := ["barbarian", "cleric_blue", "mage_red", "barbarian"]
-	for i in range(min(4, hero_characters.size())):
+	# Initialize heroes - use available characters
+	var hero_characters := ["barbarian", "cleric_blue", "mage_red", "barbarian"] # Changed to 4 heroes
+	for i in range(min(4, hero_characters.size())): # Changed to 4
 		var hero_id: String = hero_characters[i]
 		var unit: Unit = _build_unit_from_character(hero_id)
 		if unit:
+			# Give them distinct names if they are the same type
 			if hero_characters.count(hero_id) > 1:
 				unit.name = unit.name + " " + String.chr(65 + i)
 			heroes.append(unit)
 		else:
 			print("ERROR: Failed to create hero unit from character: %s" % hero_id)
 	
+	# Initialize main hero reference for compatibility
 	if GameManager.current_hero_unit == null and heroes.size() > 0:
 		GameManager.current_hero_unit = heroes[0]
-	
-	# Initialize enemies
-	var enemy_types := ["werewolf", "werewolf"]
-	for i in range(min(2, enemy_types.size())):
+		
+	# Initialize enemies (positioned in front of heroes)
+	var enemy_types := ["werewolf", "werewolf"] # Changed to 2 enemies
+	for i in range(min(2, enemy_types.size())): # Changed to 2
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
 		if unit:
-			unit.name = unit.name + " " + String.chr(65 + i)
+			# Give them distinct names
+			unit.name = unit.name + " " + String.chr(65 + i)  # A, B, C
 			enemies.append(unit)
 		else:
 			print("ERROR: Failed to create enemy unit: %s" % enemy_id)
-	
+
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
 	
+	# Create selector arrow (initially hidden)
+	selector_arrow = SelectorArrow.new()
+	# Prefer authored UI arrow asset; fallback to procedural if missing
+	var ui_arrow_path := "res://art/ui/selector_arrow.png"
+	if FileAccess.file_exists(ui_arrow_path):
+		selector_arrow.texture = load(ui_arrow_path)
+	else:
+		selector_arrow.texture = SpriteFactory.make_arrow(32, 24, Color(1.0, 1.0, 0.0))
+	selector_arrow.visible = false
+	selector_arrow.z_index = 1000
+	selector_arrow.scale = Vector2(2.0, 2.0)
+	if has_node("Stage"):
+		$Stage.add_child(selector_arrow)
+	else:
+		print("ERROR: Stage node not found, cannot add selector arrow!")
+
 	# Hide placeholder sprites
 	if hero_sprite_placeholder:
 		hero_sprite_placeholder.visible = false
@@ -158,28 +195,32 @@ func _ready() -> void:
 	for i in range(heroes.size()):
 		var unit: Unit = heroes[i]
 		var pos: Vector2 = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
+		
+		# Correctly determine the art folder from the unit's ID
 		var hero_id: String = hero_characters[i]
 		var hero_folder: String = CHARACTER_ART.get(hero_id, hero_id)
-		
+			
 		var sprite := AnimatedFrames.new()
 		sprite.character = hero_folder
-		sprite.set_facing_back(false)
-		sprite.centered = true
+		sprite.set_facing_back(false)  # Heroes face the camera (forward)
+		sprite.centered = true  # Center the sprite on the position BEFORE adding to tree
 		sprite.position = pos
 		sprite.scale = HERO_SCALE
 		sprite.visible = true
-		sprite.z_index = 60 + i
-		$Stage.add_child(sprite)
+		sprite.z_index = 60 + i  # Above floor (50) but below UI
+		$Stage.add_child(sprite)  # This triggers _ready() which calls _build_frames()
+		# Don't call _build_frames() or _apply_orientation() manually - _ready() does it
 		hero_sprites.append(sprite)
-		await get_tree().process_frame
+		await get_tree().process_frame  # Wait one frame for _ready() to complete
 		
+		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = HERO_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 52 + i
+		shadow.z_index = 52 + i  # Just above the floor
 		$Stage.add_child(shadow)
 		hero_shadows.append(shadow)
 	
@@ -187,248 +228,141 @@ func _ready() -> void:
 	for i in range(enemies.size()):
 		var unit: Unit = enemies[i]
 		var pos: Vector2 = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
+		
+		# Correctly determine the art folder from the unit's ID
 		var enemy_id: String = enemy_types[i]
 		var enemy_folder: String = CHARACTER_ART.get(enemy_id, enemy_id)
-		
+
 		var sprite := AnimatedFrames.new()
 		sprite.character = enemy_folder
-		sprite.set_facing_back(false)
-		sprite.centered = true
+		sprite.set_facing_back(false)  # Enemies face camera
+		sprite.centered = true  # Center the sprite on the position BEFORE adding to tree
 		sprite.position = pos
 		sprite.scale = ENEMY_SCALE
 		sprite.visible = true
-		sprite.z_index = 65 + i
-		$Stage.add_child(sprite)
+		sprite.z_index = 65 + i  # Above floor and heroes
+		$Stage.add_child(sprite)  # This triggers _ready() which calls _build_frames()
+		# Don't call _build_frames() or _apply_orientation() manually - _ready() does it
 		enemy_sprites.append(sprite)
-		await get_tree().process_frame
+		await get_tree().process_frame  # Wait one frame for _ready() to complete
 		
+		# Create shadow
 		var shadow := Sprite2D.new()
 		shadow.texture = SpriteFactory.make_shadow(80, 24)
 		shadow.centered = true
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = ENEMY_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 52 + i
+		shadow.z_index = 52 + i  # Just above the floor
 		$Stage.add_child(shadow)
 		enemy_shadows.append(shadow)
 	
-	# For compatibility
+	# For compatibility, set single hero/enemy sprites
 	if hero_sprites.size() > 0:
 		hero_sprite = hero_sprites[0]
 	if enemy_sprites.size() > 0:
 		enemy_sprite = enemy_sprites[0]
-	
+
 	# FX/overlay
 	if has_node("Overlay"):
 		$Overlay.visible = false
 	if overlay_fade:
 		overlay_fade.modulate.a = 0.0
-	sfx_streams = {
-		"hit": _make_tone(420.0,0.14,0.35),
-		"crit": _make_tone(660.0,0.2,0.4),
-		"miss": _make_tone(240.0,0.16,0.3)
-	}
-	
+	sfx_streams = {"hit": _make_tone(420.0,0.14,0.35), "crit": _make_tone(660.0,0.2,0.4), "miss": _make_tone(240.0,0.16,0.3)}
+
+	# Setup new UI buttons
+	if btn_attack:
+		btn_attack.pressed.connect(_on_attack)
+	if btn_spells:
+		btn_spells.pressed.connect(_on_spells_pressed)
+	if btn_items:
+		btn_items.pressed.connect(_on_items_pressed)
+	if btn_defend:
+		btn_defend.pressed.connect(_on_defend_pressed)
+	if spell_bubble:
+		spell_bubble.visible = false
+
+	# Command menu removed - using built-in UI buttons
+
 	_log("Battle starts! %d heroes vs %d enemies" % [heroes.size(), enemies.size()])
 	_log("Heroes: " + ", ".join(heroes.map(func(h): return h.name)))
 	_log("Enemies: " + ", ".join(enemies.map(func(e): return e.name)))
-	_log("=== NEW TARGET SELECTION SYSTEM ACTIVE ===")
+	_log("=== TARGET SELECTION SYSTEM LOADED ===")
 	_update_ui()
-	_show_command_menu_for_current_hero()
 
-# NEW: Show command menu for current acting hero
-func _show_command_menu_for_current_hero() -> void:
-	if current_acting_hero_index >= heroes.size() or battle_finished:
-		return
-	
-	var current_hero: Unit = heroes[current_acting_hero_index]
-	_log("Turn: %s" % current_hero.name)
-	
-	# Get hero's spells and items
-	var spells: Array = []
-	var items: Array = []
-	
-	# Add fireball spell if hero has MP
-	if current_hero.stats.get("MP", 0) >= int(skill_fireball.get("mp_cost", 0)):
-		spells.append(skill_fireball.duplicate(true))
-	
-	# Add potion if not used
+func _on_spells_pressed() -> void:
+	if spell_bubble:
+		spell_bubble.visible = !spell_bubble.visible
+
+func _on_items_pressed() -> void:
 	if !potion_used:
-		items.append({"id": "potion", "name": "Potion", "type": "heal", "target": "ally"})
-	
-	command_menu.show_for_actor(current_hero.name, spells, items)
+		_on_potion()
+	else:
+		_log("The potion bottle is empty.")
 
-# NEW: Handle Attack button press
-func _on_attack_requested() -> void:
-	if battle_finished or current_acting_hero_index >= heroes.size():
+func _on_defend_pressed() -> void:
+	if current_acting_hero_index >= heroes.size():
 		return
-	
-	command_menu.hide_menu()
-	pending_action_type = "attack"
-	pending_skill = skill_slash.duplicate(true)
-	_start_enemy_target_selection()
-
-# NEW: Handle menu actions (spells, items, defend)
-func _on_menu_action(kind: String, id: String) -> void:
-	if battle_finished or current_acting_hero_index >= heroes.size():
-		return
-	
 	var current_hero: Unit = heroes[current_acting_hero_index]
-	command_menu.hide_menu()
-	
-	if kind == "defend":
-		_log("%s braces for impact (Defend)." % current_hero.name)
-		var defend_skill := {"id": "defend", "name": "Defend", "type": "defend"}
-		planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
-		_advance_to_next_hero()
-	
-	elif kind == "spells":
-		# Find the spell
-		var spell: Dictionary = {}
-		if id == "fireball":
-			spell = skill_fireball.duplicate(true)
-		
-		if spell.is_empty():
-			_log("Unknown spell: %s" % id)
-			_show_command_menu_for_current_hero()
-			return
-		
-		# Check MP cost
-		var mp_cost: int = int(spell.get("mp_cost", 0))
-		if current_hero.stats.get("MP", 0) < mp_cost:
-			_log("Not enough MP for %s!" % spell.get("name", "spell"))
-			_show_command_menu_for_current_hero()
-			return
-		
-		pending_action_type = "spell"
-		pending_skill = spell
-		_start_enemy_target_selection()
-	
-	elif kind == "items":
-		# Handle item usage
-		if id == "potion":
-			if potion_used:
-				_log("The potion bottle is empty.")
-				_show_command_menu_for_current_hero()
-				return
-			
-			# Potion targets allies - show ally selection
-			pending_action_type = "item"
-			pending_skill = {"id": "potion", "name": "Potion", "type": "heal"}
-			_start_ally_target_selection()
-
-# NEW: Start target selection for enemies
-func _start_enemy_target_selection() -> void:
-	var alive_enemies: Array = []
-	for i in range(enemies.size()):
-		if enemies[i].is_alive():
-			alive_enemies.append(enemy_sprites[i])
-	
-	if alive_enemies.is_empty():
-		_log("No enemies to target!")
-		_show_command_menu_for_current_hero()
-		return
-	
-	_log("[color=lime]→ Select your target! Arrow keys to choose, Enter to confirm, Esc to cancel.[/color]", Color.WHITE, true)
-	target_selector.start_selection(alive_enemies)
-
-# NEW: Start target selection for allies
-func _start_ally_target_selection() -> void:
-	var alive_heroes: Array = []
-	for i in range(heroes.size()):
-		if heroes[i].is_alive():
-			alive_heroes.append(hero_sprites[i])
-	
-	if alive_heroes.is_empty():
-		_log("No allies to target!")
-		_show_command_menu_for_current_hero()
-		return
-	
-	_log("[color=lime]→ Select target ally! Arrow keys to choose, Enter to confirm, Esc to cancel.[/color]", Color.WHITE, true)
-	target_selector.start_selection(alive_heroes)
-
-# NEW: Handle target selection confirmation
-func _on_target_selected(target_sprite: Node2D) -> void:
-	if battle_finished or current_acting_hero_index >= heroes.size():
-		return
-	
-	var current_hero: Unit = heroes[current_acting_hero_index]
-	var target_unit: Unit = null
-	
-	# Find which unit was targeted
-	for i in range(enemy_sprites.size()):
-		if enemy_sprites[i] == target_sprite:
-			target_unit = enemies[i]
-			break
-	
-	if target_unit == null:
-		for i in range(hero_sprites.size()):
-			if hero_sprites[i] == target_sprite:
-				target_unit = heroes[i]
-				break
-	
-	if target_unit == null or !target_unit.is_alive():
-		_log("Invalid target!")
-		_show_command_menu_for_current_hero()
-		return
-	
-	# Handle different action types
-	if pending_action_type == "attack":
-		planned_actions.append(Action.new(current_hero, pending_skill, target_unit))
-		_log("Planned: %s will attack %s" % [current_hero.name, target_unit.name])
-		_advance_to_next_hero()
-	
-	elif pending_action_type == "spell":
-		# Check and deduct MP
-		var mp_cost: int = int(pending_skill.get("mp_cost", 0))
-		if current_hero.stats.get("MP", 0) >= mp_cost:
-			planned_actions.append(Action.new(current_hero, pending_skill, target_unit))
-			_log("Planned: %s will cast %s on %s" % [current_hero.name, pending_skill.get("name", "spell"), target_unit.name])
-			_advance_to_next_hero()
-		else:
-			_log("Not enough MP!")
-			_show_command_menu_for_current_hero()
-	
-	elif pending_action_type == "item":
-		if pending_skill.get("id") == "potion":
-			# Use potion on target
-			var cur: int = int(target_unit.stats.get("HP",0))
-			var max: int = int(target_unit.max_stats.get("HP",cur))
-			if cur >= max:
-				_log("%s's HP is already full!" % target_unit.name)
-				_show_command_menu_for_current_hero()
-				return
-			
-			var healed: int = target_unit.heal(int(ceil(max * POTION_HEAL_PCT)))
-			potion_used = true
-			_log("%s uses Potion on %s and heals %d HP." % [current_hero.name, target_unit.name, healed])
-			_update_ui()
-			_advance_to_next_hero()
-	
-	# Clear pending action
-	pending_action_type = ""
-	pending_skill = {}
-
-# NEW: Handle target selection cancellation
-func _on_selection_cancelled() -> void:
-	pending_action_type = ""
-	pending_skill = {}
-	_show_command_menu_for_current_hero()
-
-# NEW: Advance to next hero or end turn
-func _advance_to_next_hero() -> void:
+	_log("%s braces for impact (Defend)." % current_hero.name)
+	# Queue defend action
+	var defend_skill := {"id": "defend", "name": "Defend", "type": "defend"}
+	planned_actions.append(Action.new(current_hero, defend_skill, current_hero))
+	# Move to next hero
 	current_acting_hero_index += 1
 	if current_acting_hero_index >= heroes.size():
 		_on_end_turn()
 	else:
+		_log("Now selecting action for %s" % heroes[current_acting_hero_index].name)
 		_update_ui()
-		_show_command_menu_for_current_hero()
+
+func _on_attack() -> void:
+	if !battle_finished and current_acting_hero_index < heroes.size() and !selecting_target:
+		pending_skill = skill_slash
+		_start_target_selection()
+
+func _on_fireball() -> void:
+	if battle_finished or current_acting_hero_index >= heroes.size() or selecting_target:
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	var cost: int = int(skill_fireball.get("mp_cost", 0))
+	if int(current_hero.stats.get("MP",0)) >= cost:
+		pending_skill = skill_fireball
+		_start_target_selection()
+	else:
+		_log("Not enough MP for Fireball!")
+
+func _on_potion() -> void:
+	if battle_finished or current_acting_hero_index >= heroes.size():
+		return
+	if potion_used:
+		_log("The potion bottle is empty.")
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	var cur: int = int(current_hero.stats.get("HP",0))
+	var max: int = int(current_hero.max_stats.get("HP",cur))
+	if cur >= max:
+		_log("HP is already full!")
+		return
+	var healed: int = current_hero.heal(int(ceil(max * POTION_HEAL_PCT)))
+	potion_used = true
+	_log("%s uses Potion and heals %d HP." % [current_hero.name, healed])
+	_update_ui()
+	# Move to next hero
+	current_acting_hero_index += 1
+	if current_acting_hero_index >= heroes.size():
+		_on_end_turn()
+
+func _queue_hero_action(skill: Dictionary, target: Unit) -> void:
+	if current_acting_hero_index >= heroes.size():
+		return
+	var current_hero: Unit = heroes[current_acting_hero_index]
+	planned_actions.append(Action.new(current_hero, skill.duplicate(true), target))
+	_log("Planned: %s uses %s on %s" % [current_hero.name, String(skill.get("name","Action")), target.name])
 
 func _on_end_turn() -> void:
 	if battle_finished:
 		return
-	
-	command_menu.hide_menu()
 	
 	# Check if any units are still alive
 	var heroes_alive := heroes.filter(func(h): return h.is_alive())
@@ -441,12 +375,14 @@ func _on_end_turn() -> void:
 	for i in range(heroes.size()):
 		var h: Unit = heroes[i]
 		if h.is_alive() and not planned_actions.any(func(a): return a.actor == h):
+			# Default to attacking a random enemy
 			var target: Unit = enemies_alive[randi() % enemies_alive.size()]
 			planned_actions.append(Action.new(h, skill_slash.duplicate(true), target))
 	
 	# Add enemy actions
 	for e in enemies:
 		if e.is_alive():
+			# Enemies target random alive heroes
 			var target: Unit = heroes_alive[randi() % heroes_alive.size()]
 			planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
 	
@@ -463,6 +399,7 @@ func _on_end_turn() -> void:
 	# Execute actions
 	for a in actions:
 		if a.actor == null or a.target == null:
+			print("WARNING: Action has null actor or target, skipping")
 			continue
 		if !a.actor.is_alive() or !a.target.is_alive():
 			continue
@@ -483,20 +420,141 @@ func _on_end_turn() -> void:
 				spawn_damage_popup(target_sprite, 0, false, true)
 		await _play_attack_animation(a, res)
 		_update_ui()
-	
+		
 	# End of round
 	var all_units: Array = []
 	all_units.append_array(heroes)
 	all_units.append_array(enemies)
 	for line in turn_engine.end_of_round_tick(all_units):
 		_log(line)
-	
+		
 	planned_actions.clear()
-	current_acting_hero_index = 0
+	current_acting_hero_index = 0  # Reset for next round
 	_check_end()
 	_update_ui()
-	if !battle_finished:
-		_show_command_menu_for_current_hero()
+
+func _unhandled_input(e: InputEvent) -> void:
+	if battle_finished:
+		return
+	
+	# Handle target selection input
+	if selecting_target:
+		if e.is_action_pressed("ui_left") or e.is_action_pressed("ui_up"):
+			_change_target_selection(-1)
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_right") or e.is_action_pressed("ui_down"):
+			_change_target_selection(1)
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_accept") or e.is_action_pressed("ui_action_1"):
+			_confirm_target_selection()
+			get_viewport().set_input_as_handled()
+		elif e.is_action_pressed("ui_cancel"):
+			_cancel_target_selection()
+			get_viewport().set_input_as_handled()
+		return
+	
+	# Normal input handling when not selecting target
+	if e.is_action_pressed("ui_action_1"):
+		_on_attack()
+	elif e.is_action_pressed("ui_action_2"):
+		_on_fireball()
+	elif e.is_action_pressed("ui_action_3"):
+		_on_potion()
+	elif e.is_action_pressed("ui_action_4") and keyboard_end_turn_enabled:
+		_on_end_turn()
+
+func _start_target_selection() -> void:
+	_log("[color=lime]→ Select your target! Use arrow keys, press Enter to confirm.[/color]", Color.WHITE, true)
+	# Command menu handling removed - using built-in UI
+	
+	# Filter out dead enemies
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty():
+		_log("No targets available!")
+		# Show built-in UI buttons instead
+		return
+	
+	selecting_target = true
+	selected_enemy_index = 0
+	_update_selector_arrow()
+
+func _change_target_selection(direction: int) -> void:
+	if !selecting_target:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty():
+		return
+	
+	selected_enemy_index = (selected_enemy_index + direction) % alive_enemies.size()
+	if selected_enemy_index < 0:
+		selected_enemy_index = alive_enemies.size() - 1
+	
+	_update_selector_arrow()
+
+func _update_selector_arrow() -> void:
+	if !selector_arrow:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
+		selector_arrow.visible = false
+		return
+	
+	var target_enemy: Unit = alive_enemies[selected_enemy_index]
+	var target_sprite: AnimatedFrames = _sprite_for_unit(target_enemy)
+	
+	if target_sprite:
+		selector_arrow.visible = true
+		selector_arrow.position = target_sprite.position + Vector2(0, -80)
+		_log("[color=yellow]Targeting: %s[/color]" % target_enemy.name, Color.WHITE, true)
+	else:
+		selector_arrow.visible = false
+
+func _confirm_target_selection() -> void:
+	if !selecting_target:
+		return
+	
+	var alive_enemies: Array[Unit] = []
+	for e in enemies:
+		if e.is_alive():
+			alive_enemies.append(e)
+	
+	if alive_enemies.is_empty() or selected_enemy_index >= alive_enemies.size():
+		_cancel_target_selection()
+		return
+	
+	var target_enemy: Unit = alive_enemies[selected_enemy_index]
+	selecting_target = false
+	selector_arrow.visible = false
+	
+	# Queue the action with the selected target
+	_queue_hero_action(pending_skill, target_enemy)
+	
+	# Move to next hero or end turn
+	current_acting_hero_index += 1
+	if current_acting_hero_index >= heroes.size():
+		_on_end_turn()
+	else:
+		_log("Now selecting action for %s" % heroes[current_acting_hero_index].name)
+		_update_ui()
+
+func _cancel_target_selection() -> void:
+	selecting_target = false
+	selector_arrow.visible = false
+	pending_skill = {}
 
 func _check_end() -> void:
 	if battle_finished:
@@ -515,15 +573,18 @@ func _check_end() -> void:
 		battle_finished = true
 
 func _update_ui() -> void:
+	# Show current hero in active character panel
 	var current_hero: Unit = null
 	if current_acting_hero_index < heroes.size():
 		current_hero = heroes[current_acting_hero_index]
 	elif heroes.size() > 0:
 		current_hero = heroes[0]
-	
+		
+	# Update top panels - hero and enemy info
 	_update_info_panel(hero_info_container, heroes, "Hero")
 	_update_info_panel(enemy_info_container, enemies, "Enemy")
 	
+	# Update bottom-left active character panel
 	if current_hero:
 		if active_hp_label:
 			active_hp_label.text = "HP: %d/%d" % [current_hero.stats.get("HP",0), current_hero.max_stats.get("HP",0)]
@@ -537,42 +598,46 @@ func _update_ui() -> void:
 			active_mp_bar.value = current_hero.stats.get("MP",0)
 		if active_portrait:
 			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
-	
+			
 	_update_sprites()
+	# refresh_status_hud() # This is now handled by the info panels
 
 func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
 	if !container:
 		return
-	
+
 	var child_count = container.get_child_count()
-	
+
 	for i in range(max(child_count, unit_list.size())):
 		if i >= unit_list.size():
+			# Hide extra UI elements if the list is smaller
 			if i < child_count:
 				container.get_child(i).visible = false
 			continue
-		
+
 		if i >= child_count:
+			# This case should ideally not happen if the scene is set up correctly
+			# for the max number of units.
 			print("Warning: Not enough UI containers for all units.")
 			break
-		
+
 		var unit: Unit = unit_list[i]
 		var unit_box: VBoxContainer = container.get_child(i) as VBoxContainer
 		if not unit_box:
 			print("Error: UI element for unit %d is not a VBoxContainer." % i)
 			continue
 		unit_box.visible = true
-		
+
 		var name_label: Label = unit_box.get_node_or_null("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyLabel" + str(i+1))
 		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
-		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1))
-		
+		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) # Enemies might not have this
+
 		if name_label:
 			name_label.text = unit.name
 		if hp_bar:
 			hp_bar.max_value = unit.max_stats.get("HP", 1)
 			hp_bar.value = unit.stats.get("HP", 0)
-		
+
 		if mp_bar:
 			if unit.max_stats.get("MP", 0) > 0:
 				mp_bar.visible = true
@@ -582,6 +647,7 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 				mp_bar.visible = false
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
+	# Log to console only since we removed the log view
 	print(msg)
 
 func _fetch_skill(id: String) -> Dictionary:
@@ -614,6 +680,7 @@ func _build_unit(def: Dictionary) -> Unit:
 	return u
 
 func _update_sprites() -> void:
+	# Update all hero sprites
 	for i in range(heroes.size()):
 		if i < hero_sprites.size() and hero_sprites[i]:
 			hero_sprites[i].modulate = _base_modulate_for(heroes[i])
@@ -621,14 +688,15 @@ func _update_sprites() -> void:
 			hero_sprites[i].position = pos
 			hero_sprites[i].z_index = 100 + i
 			hero_sprites[i].scale = HERO_SCALE
-			hero_sprites[i].set_facing_back(true)
+			hero_sprites[i].set_facing_back(true)  # Heroes face away
 		if i < hero_shadows.size() and hero_shadows[i]:
 			hero_shadows[i].modulate = _shadow_color_for(heroes[i])
 			var pos = HERO_POSITIONS[min(i, HERO_POSITIONS.size() - 1)]
 			hero_shadows[i].position = pos + Vector2(0, 20)
 			hero_shadows[i].z_index = 100 + i - 1
 			hero_shadows[i].scale = HERO_SHADOW_SCALE
-	
+			
+	# Update all enemy sprites
 	for i in range(enemies.size()):
 		if i < enemy_sprites.size() and enemy_sprites[i]:
 			enemy_sprites[i].modulate = _base_modulate_for(enemies[i])
@@ -636,7 +704,7 @@ func _update_sprites() -> void:
 			enemy_sprites[i].position = pos
 			enemy_sprites[i].z_index = 200 + i
 			enemy_sprites[i].scale = ENEMY_SCALE
-			enemy_sprites[i].set_facing_back(false)
+			enemy_sprites[i].set_facing_back(false)  # Enemies face camera
 		if i < enemy_shadows.size() and enemy_shadows[i]:
 			enemy_shadows[i].modulate = _shadow_color_for(enemies[i])
 			var pos = ENEMY_POSITIONS[min(i, ENEMY_POSITIONS.size() - 1)]
@@ -644,12 +712,37 @@ func _update_sprites() -> void:
 			enemy_shadows[i].z_index = 200 + i - 1
 			enemy_shadows[i].scale = ENEMY_SHADOW_SCALE
 	
+	# Legacy single sprite support
 	if hero_sprite and heroes.size() > 0:
 		hero_sprite.modulate = _base_modulate_for(heroes[0])
 	if enemy_sprite and enemies.size() > 0:
 		enemy_sprite.modulate = _base_modulate_for(enemies[0])
 
+func _swap_for_animated_sprite(old_sprite: Sprite2D, character: String, facing_back: bool) -> AnimatedFrames:
+	if old_sprite == null:
+		return null
+	var parent: Node = old_sprite.get_parent()
+	var idx: int = -1
+	if parent:
+		idx = parent.get_children().find(old_sprite)
+	var a: AnimatedFrames = AnimatedFrames.new()
+	a.centered = old_sprite.centered
+	a.position = old_sprite.position
+	# Apply sprite scale if old sprite doesn't have custom scale
+	a.scale = old_sprite.scale if old_sprite.scale != Vector2.ONE else Vector2(1.0, 1.0)
+	a.z_index = old_sprite.z_index
+	a.flip_h = old_sprite.flip_h
+	a.character = character
+	a.set_facing_back(facing_back)
+	if parent:
+		parent.add_child(a)
+		if idx>=0:
+			parent.move_child(a, idx)
+	old_sprite.queue_free()
+	return a
+
 func _sprite_for_unit(u: Unit) -> AnimatedFrames:
+	# Find sprite for this unit
 	var idx: int = heroes.find(u)
 	if idx >= 0 and idx < hero_sprites.size():
 		return hero_sprites[idx]
@@ -658,9 +751,11 @@ func _sprite_for_unit(u: Unit) -> AnimatedFrames:
 	if idx >= 0 and idx < enemy_sprites.size():
 		return enemy_sprites[idx]
 	
+	# Fallback for compatibility
 	return hero_sprite if u in heroes else enemy_sprite if u in enemies else null
 
 func _shadow_for_unit(u: Unit) -> Sprite2D:
+	# Find shadow for this unit
 	var idx: int = heroes.find(u)
 	if idx >= 0 and idx < hero_shadows.size():
 		return hero_shadows[idx]
@@ -668,10 +763,11 @@ func _shadow_for_unit(u: Unit) -> Sprite2D:
 	idx = enemies.find(u)
 	if idx >= 0 and idx < enemy_shadows.size():
 		return enemy_shadows[idx]
-	
+		
 	return null
 
 func _origin_for_unit(u: Unit) -> Vector2:
+	# Get original position for this unit
 	var sprite: AnimatedFrames = _sprite_for_unit(u)
 	if sprite:
 		var idx: int = heroes.find(u)
@@ -686,9 +782,10 @@ func _shadow_base_scale(u: Unit) -> Vector2:
 	var shadow_sprite = _shadow_for_unit(u)
 	if shadow_sprite:
 		return shadow_sprite.scale
-	return Vector2(0.4, 0.2)
+	return Vector2(0.4, 0.2) # Fallback to default scale
 
 func _attack_offset(u: Unit) -> Vector2:
+	# Adjust offsets for isometric battlefield with smaller sprites
 	return Vector2(-50, 0) if u in heroes else Vector2(50, 0) if u in enemies else Vector2.ZERO
 
 func _base_modulate_for(u: Unit) -> Color:
@@ -746,6 +843,35 @@ func _shake_sprite(u: Unit) -> void:
 	t.tween_property(s, "position", o, 0.08)
 	await t.finished
 
+func refresh_status_hud() -> void:
+	# This function is now deprecated in favor of _update_info_panel
+	pass
+
+func _populate_status_container(container: HBoxContainer, unit: Unit) -> void:
+	if container==null:
+		return
+	for c in container.get_children():
+		c.queue_free()
+	if unit==null:
+		return
+	var seen: Dictionary = {}
+	for name in unit.get_status_types():
+		var key: String = String(name).to_lower()
+		if seen.has(key):
+			continue
+		seen[key] = true
+		var r: TextureRect = TextureRect.new()
+		r.texture = _get_status_icon(key)
+		r.size = Vector2(18,18)
+		r.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		container.add_child(r)
+
+func _get_status_icon(status_name: String) -> Texture2D:
+	var key: String = status_name.to_lower()
+	if !status_icon_cache.has(key):
+		status_icon_cache[key] = SpriteFactory.make_status_icon(key)
+	return status_icon_cache[key]
+
 func spawn_damage_popup(node: Node2D, amount: int, crit:=false, miss:=false) -> void:
 	if node==null or popups_container==null or fx_controller==null:
 		return
@@ -783,15 +909,15 @@ func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStre
 	w.loop_mode = AudioStreamWAV.LOOP_DISABLED
 	return w
 
-var battle_victory: bool = false
+var battle_victory: bool = false  # Store victory state
 
 func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	if battle_finished:
 		return
 	battle_finished = true
-	battle_victory = victory
-	command_menu.hide_menu()
+	battle_victory = victory  # Store the victory state
 	planned_actions.clear()
+	# refresh_status_hud() # Deprecated
 	$Overlay.visible = true
 	overlay_fade.modulate.a = 0.0
 	overlay_title.text = "Victory!" if victory else "Defeat"
@@ -808,7 +934,7 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 func _on_battle_result_shown() -> void:
 	keyboard_end_turn_enabled = false
 	var heroes_alive := heroes.filter(func(h): return h.is_alive())
-	if !heroes_alive.is_empty():
+	if !heroes_alive.is_empty(): # If victory, go to upgrade selection
 		get_tree().change_scene_to_file("res://scenes/UpgradeSelection.tscn")
-	else:
-		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	else: # If defeat, go back to main menu or game over screen
+		get_tree().change_scene_to_file("res://scenes/Main.tscn") # Or a dedicated game over scene
