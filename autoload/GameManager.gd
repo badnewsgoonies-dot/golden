@@ -1,6 +1,6 @@
 extends Node
 
-const Unit = preload("res://battle/models/Unit.gd")
+Qconst Unit = preload("res://battle/models/Unit.gd")
 
 var rng := RandomNumberGenerator.new()
 var rng_seed: int = 0

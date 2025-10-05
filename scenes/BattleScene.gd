@@ -18,12 +18,9 @@ const CHARACTER_ART := {
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
-const Unit = preload("res://battle/models/Unit.gd")
+# These are now referenced directly via their `class_name` if available.
 const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const Action = preload("res://battle/models/Action.gd")
-const TurnEngine = preload("res://battle/TurnEngine.gd")
-const SpriteFactory = preload("res://art/SpriteFactory.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # --- UI NODE REFERENCES ---
