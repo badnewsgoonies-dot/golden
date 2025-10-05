@@ -94,17 +94,10 @@ const POTION_HEAL_PCT := 0.30
 # Formation positions - Isometric battlefield formation with proper spacing
 # Heroes on the right side, facing left
 const HERO_POSITIONS := [
-<<<<<<< HEAD
 	Vector2(900, 600),   # Front-bottom hero
 	Vector2(1050, 500),  # Right hero
 	Vector2(900, 400),   # Back-top hero  
 	Vector2(750, 500)    # Left hero
-=======
-	Vector2(400, 700),   # Front-most hero
-	Vector2(320, 740),   # Back-left
-	Vector2(480, 740),   # Back-right
-	Vector2(560, 780)    # Furthest back
->>>>>>> 2b97951d36d4a9729978c856c0a56c30c79af663
 ]
 
 # Enemies on the left side, facing right
@@ -120,36 +113,19 @@ const HERO_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
 const ENEMY_SCALE := Vector2(1.2, 1.2)  # Doubled from 0.6
 const HERO_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
 const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
-=======
-	Vector2(1100, 400),   # Front-most enemy
-	Vector2(1000, 440),  # Back-left
-	Vector2(1200, 440),  # Back-right
-	Vector2(900, 480)    # Furthest back
-]
-
-const HERO_SCALE := Vector2(0.8, 0.8)
-const ENEMY_SCALE := Vector2(0.8, 0.8)
-const HERO_SHADOW_SCALE := Vector2(0.5, 0.25)
 const ENEMY_SHADOW_SCALE := Vector2(0.5, 0.25)
 >>>>>>> 2b97951d36d4a9729978c856c0a56c30c79af663
 
 # Battle floor (blue diamond) configuration - isometric battlefield
 const FLOOR_POINTS := [
-<<<<<<< HEAD
-	Vector2(150, 430),   # Left point
-	Vector2(640, 650),   # Bottom point  
-	Vector2(1130, 430),  # Right point
-	Vector2(640, 210)    # Top point
+# Battle floor (blue diamond) configuration - isometric battlefield
+const FLOOR_POINTS := [
+	Vector2(200, 400),   # Left point
+	Vector2(640, 600),   # Bottom point  
+	Vector2(1080, 400),  # Right point
+	Vector2(640, 200)    # Top point
 ]
-const FLOOR_COLOR := Color(0.2, 0.3, 0.6, 1.0)  # Solid blue color
-=======
-	Vector2(640, 300),   # Top
-	Vector2(1100, 540),  # Right
-	Vector2(640, 780),   # Bottom
-	Vector2(180, 540)    # Left
-]
-const FLOOR_COLOR := Color(0.2, 0.3, 0.6, 0.4)
->>>>>>> 2b97951d36d4a9729978c856c0a56c30c79af663
+const FLOOR_COLOR := Color(0.3, 0.4, 0.7, 1.0)  # Solid blue color
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
