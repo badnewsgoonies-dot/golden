@@ -239,7 +239,7 @@ func _ready() -> void:
 		sprite.position = pos
 		sprite.scale = HERO_SCALE
 		sprite.visible = true
-		sprite.z_index = 100 + i  # Use relative z-index instead of absolute position
+		sprite.z_index = 60 + i  # Above floor (50) but below UI
 		$Stage.add_child(sprite)  # This triggers _ready() which calls _build_frames()
 		# Don't call _build_frames() or _apply_orientation() manually - _ready() does it
 		hero_sprites.append(sprite)
@@ -252,7 +252,7 @@ func _ready() -> void:
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = HERO_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 100 + i - 1  # Just below the sprite
+		shadow.z_index = 52 + i  # Just above the floor
 		$Stage.add_child(shadow)
 		hero_shadows.append(shadow)
 	
@@ -272,7 +272,7 @@ func _ready() -> void:
 		sprite.position = pos
 		sprite.scale = ENEMY_SCALE
 		sprite.visible = true
-		sprite.z_index = 200 + i  # Use relative z-index instead of absolute position
+		sprite.z_index = 65 + i  # Above floor and heroes
 		$Stage.add_child(sprite)  # This triggers _ready() which calls _build_frames()
 		# Don't call _build_frames() or _apply_orientation() manually - _ready() does it
 		enemy_sprites.append(sprite)
@@ -285,7 +285,7 @@ func _ready() -> void:
 		shadow.position = pos + Vector2(0, 20)
 		shadow.scale = ENEMY_SHADOW_SCALE
 		shadow.modulate = Color(0, 0, 0, 0.5)
-		shadow.z_index = 200 + i - 1  # Just below the sprite
+		shadow.z_index = 52 + i  # Just above the floor
 		$Stage.add_child(shadow)
 		enemy_shadows.append(shadow)
 	
