@@ -10,11 +10,5 @@
     "stats": {"max_hp": 85, "max_mp": 0, "atk": 11, "def": 6, "agi": 9, "focus": 10},
     "skills": ["slash"],
     "resist": {"fire": 1.5, "water": 0.5, "earth": 1.0, "air": 1.0}
-  },
-	"werewolf": {
-		"name": "Werewolf",
-		"stats": { "max_hp": 150, "max_mp": 20, "atk": 15, "def": 10, "agi": 12, "focus": 8 },
-		"resist": { "fire": 1.5, "water": 0.8, "earth": 1.0, "air": 1.0 },
-		"skills": ["stun_bash"]
-	}
+  }
 }

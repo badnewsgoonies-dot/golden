@@ -1,19 +1,10 @@
 extends Node2D
 
-# BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
+# POLISHED BATTLE SCENE - TARGET SELECTION SYSTEM v2.0
 # ✅ Foolproof error handling
 # ✅ Clear visual feedback
 # ✅ Smooth turn transitions
 # ✅ Button state management
-
-# --- PRELOAD SCRIPT CLASSES ---
-#const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-#const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-#const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
-#const Unit = preload("res://battle/models/Unit.gd")
-const Action = preload("res://battle/models/Action.gd")
-const TargetSelector = preload("res://ui/TargetSelector.gd")
-
 
 # --- CONFIGURATION ---
 var keyboard_end_turn_enabled := true
@@ -25,6 +16,11 @@ const CHARACTER_ART := {
 	"mage_red": "mage_red",
 	"werewolf": "werewolf",
 }
+
+# --- PRELOAD SCRIPT CLASSES ---
+const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
+const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # --- UI NODE REFERENCES ---
 @onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
@@ -76,8 +72,8 @@ var battle_finished := false
 var current_acting_hero_index := 0
 var pending_action_type := ""
 var pending_skill: Dictionary = {}
-var is_selecting_target := false
-var buttons_enabled := true
+var is_selecting_target := false  # NEW: Track selection state
+var buttons_enabled := true  # NEW: Track button state
 
 var skill_slash: Dictionary = {}
 var skill_fireball: Dictionary = {}
@@ -563,22 +559,7 @@ func _on_end_turn() -> void:
 	for e in enemies:
 		if e.is_alive():
 			var target: Unit = heroes_alive[randi() % heroes_alive.size()]
-			var action_skill = skill_slash.duplicate(true) # Default attack
-
-			# NEW: Enemy AI to decide on using a skill
-			if not e.skills.is_empty() and randf() < 0.75: # 75% chance to use a skill
-				var skill_id_to_use = e.skills.pick_random()
-				var chosen_skill = _fetch_skill(skill_id_to_use)
-				
-				# Basic check if skill is usable (e.g. MP cost)
-				var mp_cost = int(chosen_skill.get("mp_cost", 0))
-				if e.get_stat("MP") >= mp_cost:
-					action_skill = chosen_skill
-					_log("🧠 %s decides to use %s!" % [e.name, action_skill.name])
-				else:
-					_log("🧠 %s wanted to use %s, but not enough MP." % [e.name, chosen_skill.name])
-
-			planned_actions.append(Action.new(e, action_skill, target))
+			planned_actions.append(Action.new(e, skill_slash.duplicate(true), target))
 	
 	# Execute turn
 	var actions: Array = turn_engine.build_queue(planned_actions)
@@ -622,7 +603,7 @@ func _on_end_turn() -> void:
 		_update_ui()
 	
 	# End of round
-	var all_units: Array[Unit] = []
+	var all_units: Array = []
 	all_units.append_array(heroes)
 	all_units.append_array(enemies)
 	for line in turn_engine.process_end_of_round(all_units):
@@ -719,44 +700,6 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 			else:
 				mp_bar.visible = false
 
-		# Find or create the status icon container
-		var status_container: HBoxContainer = unit_box.get_node_or_null("StatusIcons")
-		if not status_container:
-			status_container = HBoxContainer.new()
-			status_container.name = "StatusIcons"
-			# Add it after the last element in the box
-			unit_box.add_child(status_container)
-			if mp_bar:
-				unit_box.move_child(status_container, mp_bar.get_index() + 1)
-			elif hp_bar:
-				unit_box.move_child(status_container, hp_bar.get_index() + 1)
-			else:
-				unit_box.move_child(status_container, name_label.get_index() + 1)
-		
-		# Update status icons
-		if status_container:
-			# Clear old icons
-			for child in status_container.get_children():
-				child.queue_free()
-			
-			# Add new icons
-			for s in unit.statuses:
-				var icon_tex: Texture2D = _get_status_icon(s.id)
-				var icon_rect := TextureRect.new()
-				icon_rect.texture = icon_tex
-				icon_rect.custom_minimum_size = Vector2(16, 16)
-				icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-				icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				status_container.add_child(icon_rect)
-
-func _get_status_icon(id: String) -> Texture2D:
-	if status_icon_cache.has(id):
-		return status_icon_cache[id]
-	
-	var icon := SpriteFactory.make_status_icon(id)
-	status_icon_cache[id] = icon
-	return icon
-
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	print(msg)
 
@@ -787,7 +730,6 @@ func _build_unit(def: Dictionary) -> Unit:
 	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
 	var r: Dictionary = def.get("resist", {})
 	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
-	u.skills = def.get("skills", [])
 	return u
 
 func _update_sprites() -> void:

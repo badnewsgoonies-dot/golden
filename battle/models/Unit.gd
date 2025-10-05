@@ -5,13 +5,10 @@ const Status := preload("res://battle/models/Status.gd")
 
 var name: String = ""
 var character_id: String = ""  # Added to track the original character/enemy ID for sprite mapping
-var max_stats: Dictionary = {}
 var stats: Dictionary = {}
+var max_stats: Dictionary = {}
 var resist: Dictionary = {}
-var statuses: Array[Status] = []
-@export var skills: Array[String] = []
-
-var stunned: bool = false
+var statuses: Array[Status] = [] # This will hold active status effects.
 
 # DEPRECATED: The 'buffs' dictionary and 'stunned' boolean will be replaced by the new Status system.
 # We leave them for now to ensure the project still runs, and will remove them in a later step.
@@ -21,6 +18,8 @@ var buffs: Dictionary = {
 	"AGI": 1.0,
 	"FOCUS": 1.0
 }
+var stunned: bool = false
+var skills: Array[String] = []
 
 func is_alive() -> bool:
 	return int(stats.get("HP", 0)) > 0
@@ -60,13 +59,6 @@ func add_status(new_status: Status) -> void:
 	# First, remove any existing status with the same ID to prevent duplicates.
 	remove_status(new_status.id)
 	statuses.append(new_status)
-
-## Gets a status by ID (returns null if not found)
-func get_status(status_id: String) -> Status:
-	for s in statuses:
-		if s.id == status_id:
-			return s
-	return null
 
 ## Checks if the unit currently has a status with the given ID.
 func has_status(status_id: String) -> bool:

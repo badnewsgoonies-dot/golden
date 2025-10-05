@@ -67,7 +67,7 @@ func execute_action(action: Action) -> Dictionary:
 
 	# --- Apply Status Effects ---
 	if damage_dealt > 0:
-		var status_logs: Array[String] = effect_system.apply_effects_from_skill(action.skill, action.actor, action.target)
+		var status_logs: Array[String] = effect_system.apply_effects_from_skill(action.skill, action.target)
 		result["status_logs"] = status_logs
 		
 	return result
