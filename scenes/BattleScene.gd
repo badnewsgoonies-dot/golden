@@ -115,8 +115,6 @@ const ENEMY_SHADOW_SCALE := Vector2(0.6, 0.3)  # Proportionally bigger
 
 # Battle floor (blue diamond) configuration - isometric battlefield
 const FLOOR_POINTS := [
-# Battle floor (blue diamond) configuration - isometric battlefield
-const FLOOR_POINTS := [
 	Vector2(200, 400),   # Left point
 	Vector2(640, 600),   # Bottom point  
 	Vector2(1080, 400),  # Right point
