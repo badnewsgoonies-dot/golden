@@ -686,6 +686,12 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
 		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1))
 		
+		var status_container: HBoxContainer = unit_box.get_node_or_null("StatusIcons")
+		if not status_container:
+			status_container = HBoxContainer.new()
+			status_container.name = "StatusIcons"
+			unit_box.add_child(status_container)
+		
 		if name_label:
 			name_label.text = unit.name
 		if hp_bar:
@@ -699,6 +705,30 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 				mp_bar.value = unit.stats.get("MP", 0)
 			else:
 				mp_bar.visible = false
+		
+		# Update status icons
+		if status_container:
+			# Clear old icons
+			for child in status_container.get_children():
+				child.queue_free()
+			
+			# Add new icons
+			for s in unit.statuses:
+				var icon_tex: Texture2D = _get_status_icon(s.id)
+				var icon_rect := TextureRect.new()
+				icon_rect.texture = icon_tex
+				icon_rect.custom_minimum_size = Vector2(16, 16)
+				icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				status_container.add_child(icon_rect)
+
+func _get_status_icon(id: String) -> Texture2D:
+	if status_icon_cache.has(id):
+		return status_icon_cache[id]
+	
+	var icon := SpriteFactory.make_status_icon(id)
+	status_icon_cache[id] = icon
+	return icon
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	print(msg)
