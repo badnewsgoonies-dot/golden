@@ -686,12 +686,6 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
 		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1))
 		
-		var status_container: HBoxContainer = unit_box.get_node_or_null("StatusIcons")
-		if not status_container:
-			status_container = HBoxContainer.new()
-			status_container.name = "StatusIcons"
-			unit_box.add_child(status_container)
-		
 		if name_label:
 			name_label.text = unit.name
 		if hp_bar:
@@ -705,6 +699,20 @@ func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_
 				mp_bar.value = unit.stats.get("MP", 0)
 			else:
 				mp_bar.visible = false
+
+		# Find or create the status icon container
+		var status_container: HBoxContainer = unit_box.get_node_or_null("StatusIcons")
+		if not status_container:
+			status_container = HBoxContainer.new()
+			status_container.name = "StatusIcons"
+			# Add it after the last element in the box
+			unit_box.add_child(status_container)
+			if mp_bar:
+				unit_box.move_child(status_container, mp_bar.get_index() + 1)
+			elif hp_bar:
+				unit_box.move_child(status_container, hp_bar.get_index() + 1)
+			else:
+				unit_box.move_child(status_container, name_label.get_index() + 1)
 		
 		# Update status icons
 		if status_container:
