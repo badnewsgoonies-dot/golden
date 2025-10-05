@@ -42,9 +42,9 @@ func _load_json_dict(path: String) -> Dictionary:
                     continue
                 var key: String = ""
                 if entry.has("id"):
-                    key = str(entry["id"])
+                    key = str(entry.get("id", ""))
                 elif entry.has("name"):
-                    key = str(entry["name"])
+                    key = str(entry.get("name", ""))
                 else:
                     key = str(dict.size())
                 dict[key] = entry
