@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759698259
+::res://::1759700374
 BATTLE_MENU_IMPLEMENTATION.md::TextFile::-1::1759645924::0::1::::<><><>0<>0<><>::
 BATTLE_POLISH_v2.md::TextFile::-1::1759648417::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759558882::0::1::::<><><>0<>0<><>::
@@ -515,8 +515,9 @@ RunManager.gd::GDScript::9001988606965223525::1759612900::0::1::::<>Node<><>0<>0
 SaveService.gd::GDScript::2519183938991418370::1759558882::0::1::::<>Node<><>0<>0<><>::
 ::res://backups/::1759647287
 BattleScene_ORIGINAL_BACKUP.gd::GDScript::4230268344104139765::1759643923::0::1::::<>Node2D<><>0<>0<><>::
-::res://battle/::1759689498
+::res://battle/::1759700073
 EffectSystem.gd::GDScript::9015215051369088139::1759698120::0::1::::EffectSystem<>RefCounted<><>0<>0<><>::
+EnemyAI.gd::GDScript::1605920542424574527::1759700064::0::1::::EnemyAI<>RefCounted<><>0<>0<><>::
 Formula.gd::GDScript::1848258574000662490::1759558882::0::1::::Formula<>RefCounted<><>0<>0<><>::
 TurnEngine.gd::GDScript::1600127830131858564::1759698120::0::1::::TurnEngine<>Node<><>0<>0<><>::
 ::res://battle/models/::1759689498
@@ -527,7 +528,7 @@ Unit.gd::GDScript::2311536089322643174::1759698120::0::1::::Unit<>RefCounted<><>
 characters.json::JSON::-1::1759607281::0::1::::<><><>0<>0<><>::
 config.gd::GDScript::2921269395567463457::1759558882::0::1::::BattleConfig<>Resource<><>0<>0<><>::
 encounters.json::JSON::-1::1759558882::0::1::::<><><>0<>0<><>::
-enemies.json::JSON::-1::1759698120::0::1::::<><><>0<>0<><>::
+enemies.json::JSON::-1::1759700129::0::1::::<><><>0<>0<><>::
 example_units.gd::GDScript::1126065583066013675::1759558882::0::1::::<>RefCounted<><>0<>0<><>::
 items.json::JSON::-1::1759607281::0::1::::<><><>0<>0<><>::
 skills.json::JSON::-1::1759698120::0::1::::<><><>0<>0<><>::
@@ -548,7 +549,7 @@ SpriteAnimator.gd::GDScript::9192173146037707020::1759558882::0::1::::SpriteAnim
 background_dark_fantasy.tscn::PackedScene::-1::1759558882::0::1::::<><><>0<>0<><>::
 background_meadow.tscn::PackedScene::-1::1759607285::0::1::::<><><>0<>0<><>::
 Battle.tscn::PackedScene::4161133067723001155::1759558882::0::1::::<><><>0<>0<><>::res://scripts/Battle.gd<>uid://dlvewljxdg2s7::::res://art/battlers/werewolf/idle_f/3.png<>uid://cr8pdx1ej67qd::::res://art/battlers/hero/idle_b/1.png<>uid://cx8hxm0vfq8n1::::res://art/battlers/mage/idle_b/1.png<>uid://dpsjokc2fqhns::::res://art/battlers/healer/idle_b/1.png
-BattleScene.gd::GDScript::8322624433477628582::1759698239::0::1::::<>Node2D<><>0<>0<><>::
+BattleScene.gd::GDScript::8322624433477628582::1759700289::0::1::::<>Node2D<><>0<>0<><>::
 BattleScene.tscn::PackedScene::3799088121633079161::1759686758::0::1::::<><><>0<>0<><>::uid://dqtsn5gpp5v15::::res://scenes/BattleScene.gd<>uid://bgycgebbvpb63::::res://scripts/FX.gd<>res://scenes/background_dark_fantasy.tscn
 Boot.tscn::PackedScene::8924253083737201428::1759558882::0::1::::<><><>0<>0<><>::uid://cnxn2aypxhpsj::::res://scripts/Boot.gd
 Fork.gd::GDScript::2096703912353249737::1759558882::0::1::::<>Control<><>0<>0<><>::

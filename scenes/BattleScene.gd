@@ -24,18 +24,7 @@ const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
 
 # --- UI NODE REFERENCES ---
-@onready var hero_info_container: HBoxContainer = $Ufunc _build_unit(def: Dictionary) -> Unit:
-	var u := Unit.new()
-	u.name = String(def.get("name","Unit"))
-	var s: Dictionary = def.get("stats", {})
-	var max_hp: int = int(s.get("max_hp",80))
-	var max_mp: int = int(s.get("max_mp",0))
-	u.max_stats = {"HP":max_hp,"MP":max_mp}
-	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
-	var r: Dictionary = def.get("resist", {})
-	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
-	u.skills = def.get("skills", [])
-	return ughtAnchor/PartyPanel/PartyMargin/PartyHBox
+@onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
 @onready var enemy_info_container: HBoxContainer = $UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox
 @onready var active_portrait: TextureRect = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
 @onready var active_hp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
@@ -748,6 +737,8 @@ func _build_unit(def: Dictionary) -> Unit:
 	u.stats = {"HP":max_hp,"MP":max_mp,"ATK":int(s.get("atk",10)),"DEF":int(s.get("def",8)),"AGI":int(s.get("agi",10)),"FOCUS":int(s.get("focus",8))}
 	var r: Dictionary = def.get("resist", {})
 	u.resist = {"fire":float(r.get("fire",1.0)),"water":float(r.get("water",1.0)),"earth":float(r.get("earth",1.0)),"air":float(r.get("air",1.0))}
+	var skill_list: Array = def.get("skills", [])
+	u.skills.assign(skill_list)
 	return u
 
 func _update_sprites() -> void:

@@ -1,9 +1,17 @@
 CHECK HERE/golden/
 
+# Godot 4.x cache and imported assets
+.godot/
+
 # Godot binaries (too large for GitHub)
 tools/godot/*.zip
 tools/godot/Godot_v*
+
 # Ignore large template files
 templates.tpz
 *.tpz
 godot*.zip
+
+# OS-specific
+.DS_Store
+Thumbs.db
