@@ -91,36 +91,36 @@ var skill_fireball: Dictionary = {}
 
 const POTION_HEAL_PCT := 0.30
 
-# ISOMETRIC BATTLEFIELD POSITIONS  
-# Heroes positioned at bottom-right (backs to camera)
+# Formation positions - JRPG style diagonal formation
+# Heroes in lower-left, staggered for depth
 const HERO_POSITIONS := [
-	Vector2(750, 580),   # Hero 1 - closest to camera
-	Vector2(650, 530),   # Hero 2 
-	Vector2(850, 530),   # Hero 3
-	Vector2(550, 480),   # Hero 4 - furthest from camera
+	Vector2(320, 800),   # Front-most hero
+	Vector2(220, 840),   # Back-left
+	Vector2(420, 840),   # Back-right
+	Vector2(520, 880)    # Furthest back
 ]
 
-# Enemies positioned at top-left (facing camera)
+# Enemies in upper-right, staggered for depth
 const ENEMY_POSITIONS := [
-	Vector2(500, 320),   # Enemy 1
-	Vector2(600, 370),   # Enemy 2
-	Vector2(400, 370),   # Enemy 3
-	Vector2(700, 410)    # Enemy 4
+	Vector2(950, 540),   # Front-most enemy
+	Vector2(850, 580),  # Back-left
+	Vector2(1050, 580),  # Back-right
+	Vector2(750, 620)    # Furthest back
 ]
 
-const HERO_SCALE := Vector2(2.5, 2.5)
-const ENEMY_SCALE := Vector2(2.5, 2.5)
-const HERO_SHADOW_SCALE := Vector2(1.2, 0.6)
-const ENEMY_SHADOW_SCALE := Vector2(1.2, 0.6)
+const HERO_SCALE := Vector2(1.5, 1.5)
+const ENEMY_SCALE := Vector2(1.5, 1.5)
+const HERO_SHADOW_SCALE := Vector2(0.8, 0.4)
+const ENEMY_SHADOW_SCALE := Vector2(0.8, 0.4)
 
-# Isometric battlefield floor (blue diamond)
+# Battle floor (blue diamond) configuration
 const FLOOR_POINTS := [
-	Vector2(640, 250),   # Top point
-	Vector2(950, 450),   # Right point
-	Vector2(640, 650),   # Bottom point
-	Vector2(330, 450),   # Left point
+	Vector2(100, 960),
+	Vector2(1820, 960),
+	Vector2(1280, 400),
+	Vector2(640, 400)
 ]
-const FLOOR_COLOR := Color(0.25, 0.5, 0.9, 0.92)
+const FLOOR_COLOR := Color(0.15, 0.2, 0.45, 0.75)
 
 var status_icon_cache: Dictionary[String, Texture2D] = {}
 var sfx_streams: Dictionary[String, AudioStream] = {}
@@ -594,128 +594,79 @@ func _check_end() -> void:
 		battle_finished = true
 
 func _update_ui() -> void:
-	# Ensure containers are clean before repopulating
-	for n in hero_info_container.get_children():
-		n.queue_free()
-	for n in enemy_info_container.get_children():
-		n.queue_free()
-
-	# Create and populate hero panels
-	for i in range(heroes.size()):
-		var unit: Unit = heroes[i]
-		var panel = _create_unit_panel(unit, false)
-		hero_info_container.add_child(panel)
-
-	# Create and populate enemy panels
-	for i in range(enemies.size()):
-		var unit: Unit = enemies[i]
-		var panel = _create_unit_panel(unit, true)
-		enemy_info_container.add_child(panel)
-
-	# Update active character panel
+	# Show current hero in active character panel
+	var current_hero: Unit = null
 	if current_acting_hero_index < heroes.size():
-		var active_hero: Unit = heroes[current_acting_hero_index]
-		if active_hero and active_hero.is_alive():
-			active_hp_label.text = "HP: %d/%d" % [active_hero.stats.HP, active_hero.max_stats.HP]
-			active_hp_bar.max_value = active_hero.max_stats.HP
-			active_hp_bar.value = active_hero.stats.HP
-			active_mp_label.text = "MP: %d/%d" % [active_hero.stats.MP, active_hero.max_stats.MP]
-			active_mp_bar.max_value = active_hero.max_stats.MP
-			active_mp_bar.value = active_hero.stats.MP
+		current_hero = heroes[current_acting_hero_index]
+	elif heroes.size() > 0:
+		current_hero = heroes[0]
+		
+	# Update top panels - hero and enemy info
+	_update_info_panel(hero_info_container, heroes, "Hero")
+	_update_info_panel(enemy_info_container, enemies, "Enemy")
+	
+	# Update bottom-left active character panel
+	if current_hero:
+		if active_hp_label:
+			active_hp_label.text = "HP: %d/%d" % [current_hero.stats.get("HP",0), current_hero.max_stats.get("HP",0)]
+		if active_mp_label:
+			active_mp_label.text = "MP: %d/%d" % [current_hero.stats.get("MP",0), current_hero.max_stats.get("MP",0)]
+		if active_hp_bar:
+			active_hp_bar.max_value = current_hero.max_stats.get("HP",0)
+			active_hp_bar.value = current_hero.stats.get("HP",0)
+		if active_mp_bar:
+			active_mp_bar.max_value = current_hero.max_stats.get("MP",0)
+			active_mp_bar.value = current_hero.stats.get("MP",0)
+		if active_portrait:
+			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
 			
-			var portrait_path := "res://art/portraits/%s_portrait.png" % CHARACTER_ART.get(active_hero.character_id, active_hero.character_id)
-			if FileAccess.file_exists(portrait_path):
-				active_portrait.texture = load(portrait_path)
+	_update_sprites()
+	# refresh_status_hud() # This is now handled by the info panels
+
+func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
+	if !container:
+		return
+
+	var child_count = container.get_child_count()
+
+	for i in range(max(child_count, unit_list.size())):
+		if i >= unit_list.size():
+			# Hide extra UI elements if the list is smaller
+			if i < child_count:
+				container.get_child(i).visible = false
+			continue
+
+		if i >= child_count:
+			# This case should ideally not happen if the scene is set up correctly
+			# for the max number of units.
+			print("Warning: Not enough UI containers for all units.")
+			break
+
+		var unit: Unit = unit_list[i]
+		var unit_box: VBoxContainer = container.get_child(i) as VBoxContainer
+		if not unit_box:
+			print("Error: UI element for unit %d is not a VBoxContainer." % i)
+			continue
+		unit_box.visible = true
+
+		var name_label: Label = unit_box.get_node_or_null("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyLabel" + str(i+1))
+		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
+		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) # Enemies might not have this
+
+		if name_label:
+			name_label.text = unit.name
+		if hp_bar:
+			hp_bar.max_value = unit.max_stats.get("HP", 1)
+			hp_bar.value = unit.stats.get("HP", 0)
+
+		if mp_bar:
+			if unit.max_stats.get("MP", 0) > 0:
+				mp_bar.visible = true
+				mp_bar.max_value = unit.max_stats.get("MP", 1)
+				mp_bar.value = unit.stats.get("MP", 0)
 			else:
-				active_portrait.texture = SpriteFactory.make_portrait_placeholder(active_hero.character_id)
-		else:
-			active_hp_label.text = "HP: --"
-			active_mp_label.text = "MP: --"
-			active_hp_bar.value = 0
-			active_mp_bar.value = 0
-			active_portrait.texture = null
-	else:
-		active_hp_label.text = "HP: --"
-		active_mp_label.text = "MP: --"
-		active_hp_bar.value = 0
-		active_mp_bar.value = 0
-		active_portrait.texture = null
+				mp_bar.visible = false
 
-func _create_unit_panel(unit: Unit, is_enemy: bool) -> VBoxContainer:
-	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 4)
-	
-	var name_label := Label.new()
-	name_label.text = unit.name
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.modulate = Color(0.9, 0.9, 0.95, 1)
-	vbox.add_child(name_label)
-	
-	var hp_bar := ProgressBar.new()
-	hp_bar.custom_minimum_size = Vector2(120, 12)
-	
-	# It's better to define styles in the scene or a theme resource, but for a quick fix:
-	var hp_style_bg = StyleBoxFlat.new()
-	hp_style_bg.bg_color = Color(0.1, 0.08, 0.12, 0.9)
-	hp_style_bg.border_width_left = 2
-	hp_style_bg.border_width_top = 2
-	hp_style_bg.border_width_right = 2
-	hp_style_bg.border_width_bottom = 2
-	hp_style_bg.border_color = Color(0.3, 0.25, 0.35, 0.8)
-	hp_style_bg.corner_radius_top_left = 6
-	hp_style_bg.corner_radius_top_right = 6
-	hp_style_bg.corner_radius_bottom_right = 6
-	hp_style_bg.corner_radius_bottom_left = 6
-	hp_bar.add_theme_stylebox_override("background", hp_style_bg)
-
-	var hp_style_fill = StyleBoxFlat.new()
-	hp_style_fill.bg_color = Color(0.85, 0.15, 0.2, 1)
-	hp_style_fill.border_width_left = 1
-	hp_style_fill.border_width_top = 1
-	hp_style_fill.border_width_right = 1
-	hp_style_fill.border_width_bottom = 1
-	hp_style_fill.border_color = Color(0.95, 0.4, 0.4, 0.6)
-	hp_style_fill.corner_radius_top_left = 5
-	hp_style_fill.corner_radius_top_right = 5
-	hp_style_fill.corner_radius_bottom_right = 5
-	hp_style_fill.corner_radius_bottom_left = 5
-	hp_bar.add_theme_stylebox_override("fill", hp_style_fill)
-	
-	hp_bar.max_value = unit.max_stats.HP
-	hp_bar.value = unit.stats.HP
-	hp_bar.show_percentage = false
-	vbox.add_child(hp_bar)
-	
-	if not is_enemy:
-		var mp_bar := ProgressBar.new()
-		mp_bar.custom_minimum_size = Vector2(120, 12)
-		
-		var mp_style_bg = hp_style_bg.duplicate()
-		mp_bar.add_theme_stylebox_override("background", mp_style_bg)
-		
-		var mp_style_fill = StyleBoxFlat.new()
-		mp_style_fill.bg_color = Color(0.25, 0.65, 0.85, 1)
-		mp_style_fill.border_width_left = 1
-		mp_style_fill.border_width_top = 1
-		mp_style_fill.border_width_right = 1
-		mp_style_fill.border_width_bottom = 1
-		mp_style_fill.border_color = Color(0.5, 0.8, 0.95, 0.6)
-		mp_style_fill.corner_radius_top_left = 5
-		mp_style_fill.corner_radius_top_right = 5
-		mp_style_fill.corner_radius_bottom_right = 5
-		mp_style_fill.corner_radius_bottom_left = 5
-		mp_bar.add_theme_stylebox_override("fill", mp_style_fill)
-
-		mp_bar.max_value = unit.max_stats.MP
-		mp_bar.value = unit.stats.MP
-		mp_bar.show_percentage = false
-		vbox.add_child(mp_bar)
-
-	var status_hbox := HBoxContainer.new()
-	status_hbox.add_theme_constant_override("separation", 4)
-	vbox.add_child(status_hbox)
-	
-	return vbox
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	# Log to console only since we removed the log view
 	print(msg)
