@@ -61,6 +61,13 @@ func add_status(new_status: Status) -> void:
 	remove_status(new_status.id)
 	statuses.append(new_status)
 
+## Gets a status by ID (returns null if not found)
+func get_status(status_id: String) -> Status:
+	for s in statuses:
+		if s.id == status_id:
+			return s
+	return null
+
 ## Checks if the unit currently has a status with the given ID.
 func has_status(status_id: String) -> bool:
 	for s in statuses:
