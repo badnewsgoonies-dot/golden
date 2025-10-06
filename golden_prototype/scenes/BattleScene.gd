@@ -1036,32 +1036,90 @@ func _check_end() -> void:
 		show_battle_result(false)
 		battle_finished = true
 
+# Called by TurnEngine when the battle is won.
+func _on_battle_won() -> void:
+	# TODO: Replace with a real victory screen/popup
+	# For now, just print a message and transition.
+	print("[Battle] Player won!")
+	_award_post_battle_equipment()
+	#get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
+	_show_victory_popup()
+
+func _show_victory_popup() -> void:
+	if not is_instance_valid(victory_popup):
+		push_error("Victory popup is not valid")
+		return
+	victory_popup.show()
+
+func _on_victory_next_battle() -> void:
+	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
+
+func _on_victory_equipment() -> void:
+	get_tree().change_scene_to_file(EQUIPMENT_SCENE_PATH)
+
+func _on_victory_shop() -> void:
+	get_tree().change_scene_to_file(SHOP_SCENE_PATH)
+
 func _award_post_battle_equipment() -> void:
-	# Build list of equipment ids from DataRegistry.items
-	var options: Array[String] = []
+	var all_equipment: Array[String] = []
 	for id in DataRegistry.items.keys():
-		var def = DataRegistry.items[id]
-		if def.has("slot") and def.slot in ["weapon","armor","accessory"]:
-			options.append(id)
+		var def: Dictionary = DataRegistry.items[id]
+		if def.has("slot") and def.slot in ["weapon", "armor", "accessory"]:
+			all_equipment.append(id)
+	
+	if all_equipment.is_empty():
+		push_warning("No equipment found in DataRegistry, cannot award loot.")
+		return
+
+	all_equipment.shuffle()
+	var options = all_equipment.slice(0, 3)
+	
 	if options.is_empty():
 		return
-	# Pick one simple deterministic choice for now (e.g., first or round-robin).
-	var rng := RandomNumberGenerator.new()
-	rng.randomize()
-	var chosen_id := options[rng.randi() % options.size()]
-	RunManager.inventory[chosen_id] = int(RunManager.inventory.get(chosen_id, 0)) + 1
-	print("[Loot] Awarded equipment: ", chosen_id)
-	print("[Shop Preview] ", options.slice(0, 3))func _update_ui() -> void:
-	var current_hero: Unit = null
+
+	var chosen_item_id: String = options[0]
+	RunManager.inventory[chosen_item_id] = int(RunManager.inventory.get(chosen_item_id, 0)) + 1
+	print("[Battle] Awarded item: %s" % chosen_item_id)
+	print("[Battle] Player inventory is now: ", RunManager.inventory)
+	
+	# Optional: Save the game state if SaveService is available
+	if Engine.has_singleton("SaveService"):
+		var snapshot := {
+			"inventory": RunManager.inventory,
+			"gold": (Engine.has_singleton("GameManager") ? GameManager.gold : 0)
+		}
+		SaveService.save_snapshot(snapshot)
+		print("[Battle] Game state saved.")
+
+
+func _update_ui() -> void:
+	# --- Update Top-Right Party HUD ---
+	if hero_info_container:
+		for i in range(hero_info_container.get_child_count()):
+			var hero_hbox: HBoxContainer = hero_info_container.get_child(i) as HBoxContainer
+			if not hero_hbox:
+				continue
+			var hero: Unit = heroes[i]
+			var hp_bar: ProgressBar = hero_hbox.get_node("HeroHPBar") as ProgressBar
+			var mp_bar: ProgressBar = hero_hbox.get_node("HeroMPBar") as ProgressBar
+			var name_label: Label = hero_hbox.get_node("HeroLabel") as Label
+			
+			if hero.is_alive():
+				hp_bar.value = hero.stats.get("HP", 0)
+				hp_bar.max_value = hero.max_stats.get("HP", 0)
+				mp_bar.value = hero.stats.get("MP", 0)
+				mp_bar.max_value = hero.max_stats.get("MP", 0)
+				name_label.text = hero.name
+			else:
+				hp_bar.value = 0
+				hp_bar.max_value = 1
+				mp_bar.value = 0
+				mp_bar.max_value = 1
+				name_label.text = hero.name + " (Fallen)"
+
+	# --- Update Bottom-Left Active Hero Display ---
 	if current_acting_hero_index < heroes.size():
-		current_hero = heroes[current_acting_hero_index]
-	elif heroes.size() > 0:
-		current_hero = heroes[0]
-	
-	_update_info_panel(hero_info_container, heroes, "Hero")
-	_update_info_panel(enemy_info_container, enemies, "Enemy")
-	
-	if current_hero:
+		var current_hero: Unit = heroes[current_acting_hero_index]
 		if active_hp_label:
 			active_hp_label.text = "HP: %d/%d" % [current_hero.stats.get("HP",0), current_hero.max_stats.get("HP",0)]
 		if active_mp_label:
@@ -1074,48 +1132,6 @@ func _award_post_battle_equipment() -> void:
 			active_mp_bar.value = current_hero.stats.get("MP",0)
 		if active_portrait:
 			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
-	
-	_update_sprites()
-	_update_debug_status()
-
-func _update_info_panel(container: HBoxContainer, unit_list: Array[Unit], label_prefix: String) -> void:
-	if !container:
-		return
-	
-	var child_count = container.get_child_count()
-	
-	for i in range(max(child_count, unit_list.size())):
-		if i >= unit_list.size():
-			if i < child_count:
-				container.get_child(i).visible = false
-			continue
-		
-		if i >= child_count:
-			break
-		
-		var unit: Unit = unit_list[i]
-		var unit_box: VBoxContainer = container.get_child(i) as VBoxContainer
-		if not unit_box:
-			continue
-		unit_box.visible = true
-		
-		var name_label: Label = unit_box.get_node_or_null("HeroLabel" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyLabel" + str(i+1))
-		var hp_bar: ProgressBar = unit_box.get_node_or_null("HeroHPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyHPBar" + str(i+1))
-		var mp_bar: ProgressBar = unit_box.get_node_or_null("HeroMPBar" + str(i+1)) if label_prefix == "Hero" else unit_box.get_node_or_null("EnemyMPBar" + str(i+1))
-		
-		if name_label:
-			name_label.text = unit.name
-		if hp_bar:
-			hp_bar.max_value = unit.max_stats.get("HP", 1)
-			hp_bar.value = unit.stats.get("HP", 0)
-		
-		if mp_bar:
-			if unit.max_stats.get("MP", 0) > 0:
-				mp_bar.visible = true
-				mp_bar.max_value = unit.max_stats.get("MP", 1)
-				mp_bar.value = unit.stats.get("MP", 0)
-			else:
-				mp_bar.visible = false
 
 func _log(msg: String, color: Color = Color(1,1,1), rich := false) -> void:
 	print(msg)
