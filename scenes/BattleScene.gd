@@ -958,3 +958,57 @@ func _make_tone(hz: float, duration: float, volume_db: float = 0.0) -> AudioStre
 	# For real games, use pre-made AudioStreamGenerator or load files.
 	# This is a placeholder for simple feedback.
 	return null
+
+# --- Fallback Post-Battle Menu (for prototype without overlay) ---
+
+func _scene_exists(path: String) -> bool:
+	return ResourceLoader.exists(path)
+
+func _ensure_fallback_victory_menu() -> void:
+	# Only use fallback if the polished overlay VBox is NOT in the scene
+	if has_node("Overlay/CenterContainer/VBoxContainer"):
+		print("[Victory] Using polished overlay buttons")
+		return
+	
+	# Don't create twice
+	if has_node("FallbackVictoryMenu"):
+		return
+	
+	print("[Victory] Creating fallback menu (no overlay found)")
+	
+	var pm := PopupMenu.new()
+	pm.name = "FallbackVictoryMenu"
+	add_child(pm)
+	
+	var id := 0
+	pm.add_item("Next Battle", id)
+	id += 1
+	
+	if _scene_exists("res://scenes/Shop.tscn"):
+		pm.add_item("Shop", id)
+		id += 1
+	
+	if _scene_exists("res://scenes/EquipmentScreen.tscn"):
+		pm.add_item("Equipment", id)
+		id += 1
+	
+	pm.add_separator()
+	pm.add_item("Return to Main Menu", id)
+	
+	pm.id_pressed.connect(_on_fallback_victory_id_pressed)
+
+func _on_fallback_victory_id_pressed(id: int) -> void:
+	var pm := get_node("FallbackVictoryMenu") as PopupMenu
+	var label := pm.get_item_text(pm.get_item_index(id))
+	
+	print("[Victory] Selected: ", label)
+	
+	match label:
+		"Next Battle":
+			_on_next_battle_pressed()
+		"Shop":
+			_on_shop_pressed()
+		"Equipment":
+			_on_equipment_pressed()
+		"Return to Main Menu":
+			_on_return_to_main_pressed()
