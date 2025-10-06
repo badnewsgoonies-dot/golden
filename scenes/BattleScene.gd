@@ -220,12 +220,28 @@ func _ready() -> void:
 	# Connect UI buttons
 	if btn_attack:
 		btn_attack.pressed.connect(_on_attack)
+		btn_attack.visible = true
 	if btn_spells:
 		btn_spells.pressed.connect(_on_spells_pressed)
+		btn_spells.visible = true
 	if btn_items:
 		btn_items.pressed.connect(_on_items_pressed)
+		btn_items.visible = true
 	if btn_defend:
 		btn_defend.pressed.connect(_on_defend_pressed)
+		btn_defend.visible = true
+	
+	# Ensure action panel and its containers are visible
+	var action_panel = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel")
+	if action_panel:
+		action_panel.visible = true
+		var action_vbox = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox")
+		if action_vbox:
+			action_vbox.visible = true
+		var buttons_container = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons")
+		if buttons_container:
+			buttons_container.visible = true
+	
 	if spell_bubble:
 		spell_bubble.visible = false
 		_setup_spell_bubble()
@@ -924,12 +940,22 @@ func _update_unit_panel(panel: Panel, unit: Unit) -> void:
 
 func _enable_action_buttons(enable: bool, affect_menu_buttons: bool = true) -> void:
 	buttons_enabled = enable
-	if btn_attack: btn_attack.disabled = !enable
-	if btn_defend: btn_defend.disabled = !enable
+	
+	# Make buttons visible and set their enabled state
+	if btn_attack: 
+		btn_attack.visible = true
+		btn_attack.disabled = !enable
+	if btn_defend: 
+		btn_defend.visible = true
+		btn_defend.disabled = !enable
 	
 	if affect_menu_buttons:
-		if btn_spells: btn_spells.disabled = !enable or current_hero.skills.is_empty()
-		if btn_items: btn_items.disabled = !enable or RunManager.inventory.is_empty()
+		if btn_spells:
+			btn_spells.visible = true
+			btn_spells.disabled = !enable or (current_hero and current_hero.skills.is_empty())
+		if btn_items:
+			btn_items.visible = true
+			btn_items.disabled = !enable or RunManager.inventory.is_empty()
 	
 	# Hide bubbles if disabling actions
 	if !enable:
@@ -1099,4 +1125,3 @@ func _make_tone(hz: float, duration: float, volume_db: float = 0.0) -> AudioStre
 	# For real games, use pre-made AudioStreamGenerator or load files.
 	# This is a placeholder for simple feedback.
 	return null
-
