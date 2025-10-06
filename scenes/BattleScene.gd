@@ -20,7 +20,7 @@ const CHARACTER_ART := {
 # --- PRELOAD SCRIPT CLASSES ---
 const EnemyAIScript = preload("res://battle/EnemyAI.gd")
 const AnimatedFramesScript = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrowScript = preload("res://scripts/SelectorArrow.gd")
+const SelectorArrowScript = preload("res://ui/SelectorArrow.gd")
 const PortraitLoaderScript = preload("res://scripts/PortraitLoader.gd")
 
 # --- CONSTANTS ---
@@ -73,12 +73,12 @@ var target_selector: TargetSelector
 var hero_sprite: AnimatedFramesScript
 var enemy_sprite: AnimatedFramesScript
 
-var heroes: Array[Unit] = []
-var enemies: Array[Unit] = []
-var hero_sprites: Array[AnimatedFramesScript] = []
-var enemy_sprites: Array[AnimatedFramesScript] = []
-var hero_shadows: Array[Sprite2D] = []
-var enemy_shadows: Array[Sprite2D] = []
+var party: Array[UnitScript]
+var enemies: Array[UnitScript]
+var turn_order: Array[UnitScript]
+var current_hero: UnitScript
+var current_action: Action
+var current_targets: Array[UnitScript]
 
 var planned_actions: Array[Action] = []
 var enemy_ai: EnemyAIScript

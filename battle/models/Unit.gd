@@ -1,14 +1,14 @@
 class_name Unit
 extends RefCounted
 
-const Status := preload("res://battle/models/Status.gd")
+const StatusResource := preload("res://battle/models/Status.gd")
 
 var name: String = ""
 var character_id: String = ""  # Added to track the original character/enemy ID for sprite mapping
 var stats: Dictionary = {}
 var max_stats: Dictionary = {}
 var resist: Dictionary = {}
-var statuses: Array[Status] = [] # This will hold active status effects.
+var statuses: Array[StatusResource] = [] # This will hold active status effects.
 
 # DEPRECATED: The 'buffs' dictionary and 'stunned' boolean will be replaced by the new Status system.
 # We leave them for now to ensure the project still runs, and will remove them in a later step.
@@ -55,7 +55,7 @@ func spend_mp(amount: int) -> bool:
 ## Adds a new status effect to the unit.
 ## If the unit already has a status with the same ID, it will be removed and replaced.
 ## This prevents stacking the same effect (e.g., being poisoned twice).
-func add_status(new_status: Status) -> void:
+func add_status(new_status: StatusResource) -> void:
 	# First, remove any existing status with the same ID to prevent duplicates.
 	remove_status(new_status.id)
 	statuses.append(new_status)
@@ -69,16 +69,16 @@ func has_status(status_id: String) -> bool:
 
 ## Removes a status effect from the unit by its ID.
 func remove_status(status_id: String) -> void:
-	statuses = statuses.filter(func(s: Status):
+	statuses = statuses.filter(func(s: StatusResource):
 		return s.id != status_id
 	)
 
 ## Processes all active statuses at the end of a turn.
 ## It calls the 'tick' method on each status, which decrements its duration.
 ## If a status expires, it is removed from the unit.
-func tick_statuses() -> Array[Status]:
-	var expired: Array[Status] = []
-	var remaining_statuses: Array[Status] = []
+func tick_statuses() -> Array[StatusResource]:
+	var expired: Array[StatusResource] = []
+	var remaining_statuses: Array[StatusResource] = []
 	
 	for s in statuses:
 		# The tick() method returns true if the status has expired.
@@ -116,7 +116,7 @@ func apply_upgrade(upgrade_data: Dictionary) -> void:
 			
 			# If HP is boosted, also heal the unit for the increased amount
 			if stat_name == "HP":
-				var old_hp = int(stats.get("HP", 0))
+				var _old_hp = int(stats.get("HP", 0))
 				var new_max_hp = int(max_stats.get("HP", 0))
 				stats["HP"] = new_max_hp # Fully heal on HP upgrade
 
