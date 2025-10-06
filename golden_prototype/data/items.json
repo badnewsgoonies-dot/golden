@@ -1,0 +1,44 @@
+{
+  "potion": {
+    "name": "Health Potion",
+    "type": "consumable",
+    "effect": "heal_hp",
+    "power": 0.3,
+    "description": "Restores 30% of max HP."
+  },
+  "ether": {
+    "name": "Ether",
+    "type": "consumable",
+    "effect": "heal_mp",
+    "power": 20,
+    "description": "Restores 20 MP."
+  },
+  "phoenix_down": {
+    "name": "Phoenix Down",
+    "type": "consumable",
+    "effect": "revive",
+    "power": 0.5,
+    "description": "Revives a fallen ally with 50% HP."
+  },
+  "bronze_sword": {
+    "name": "Bronze Sword",
+    "type": "weapon",
+    "slot": "weapon",
+    "stats": { "atk": 5 },
+    "description": "A basic sword for a novice warrior."
+  },
+  "iron_armor": {
+    "name": "Iron Armor",
+    "type": "armor",
+    "slot": "armor",
+    "stats": { "def": 5 },
+    "description": "Sturdy armor that offers good protection."
+  },
+  "amulet_of_vigor": {
+    "name": "Amulet of Vigor",
+    "type": "accessory",
+    "slot": "accessory",
+    "stats": { "max_hp": 10 },
+    "description": "A magical amulet that slightly increases max HP."
+  }
+}

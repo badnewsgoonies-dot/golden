@@ -1,0 +1,42 @@
+[
+    {
+        "id": "hp_boost_1",
+        "name": "HP Boost I",
+        "description": "Increases maximum HP by 10%.",
+        "type": "stat_boost",
+        "stat": "HP",
+        "value": 0.10
+    },
+    {
+        "id": "atk_boost_1",
+        "name": "Attack Boost I",
+        "description": "Increases Attack by 10%.",
+        "type": "stat_boost",
+        "stat": "ATK",
+        "value": 0.10
+    },
+    {
+        "id": "def_boost_1",
+        "name": "Defense Boost I",
+        "description": "Increases Defense by 10%.",
+        "type": "stat_boost",
+        "stat": "DEF",
+        "value": 0.10
+    },
+    {
+        "id": "agi_boost_1",
+        "name": "Agility Boost I",
+        "description": "Increases Agility by 10%.",
+        "type": "stat_boost",
+        "stat": "AGI",
+        "value": 0.10
+    },
+    {
+        "id": "focus_boost_1",
+        "name": "Focus Boost I",
+        "description": "Increases Focus by 10%.",
+        "type": "stat_boost",
+        "stat": "FOCUS",
+        "value": 0.10
+    }
+]

@@ -1,0 +1,6 @@
+﻿{
+  "stage1_goblin": {
+    "enemies": ["goblin"],
+    "rewards": {"gold": 12}
+  }
+}
