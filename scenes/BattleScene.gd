@@ -29,35 +29,35 @@ const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
 const EQUIPMENT_SCENE_PATH = "res://scenes/Equipment.tscn"
 
 # --- UI NODE REFERENCES ---
-@onready var hero_info_container: HBoxContainer = $UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox
-@onready var enemy_info_container: HBoxContainer = $UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox
-@onready var active_portrait: TextureRect = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait
-@onready var active_hp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel
-@onready var active_hp_bar: ProgressBar = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPBar
-@onready var active_mp_label: Label = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel
-@onready var active_mp_bar: ProgressBar = $UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar
+@onready var hero_info_container: HBoxContainer = get_node_or_null("UI/HUD/TopRightAnchor/PartyPanel/PartyMargin/PartyHBox")
+@onready var enemy_info_container: HBoxContainer = get_node_or_null("UI/HUD/TopLeftAnchor/EnemyPanel/EnemyMargin/EnemyHBox")
+@onready var active_portrait: TextureRect = get_node_or_null("UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActivePortrait")
+@onready var active_hp_label: Label = get_node_or_null("UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPLabel")
+@onready var active_hp_bar: ProgressBar = get_node_or_null("UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveHPBar")
+@onready var active_mp_label: Label = get_node_or_null("UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPLabel")
+@onready var active_mp_bar: ProgressBar = get_node_or_null("UI/HUD/BottomLeftAnchor/ActiveCharacterPanel/ActiveMargin/ActiveHBox/ActiveStats/ActiveMPBar")
 
 # Bottom HUD - Action Panel
-@onready var btn_attack: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack
-@onready var btn_spells: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells
-@onready var btn_items: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Items
-@onready var btn_defend: Button = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend
-@onready var spell_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble
-@onready var item_bubble: PanelContainer = $UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/ItemBubble
+@onready var btn_attack: Button = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Attack")
+@onready var btn_spells: Button = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Spells")
+@onready var btn_items: Button = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Items")
+@onready var btn_defend: Button = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons/Defend")
+@onready var spell_bubble: PanelContainer = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/SpellBubble")
+@onready var item_bubble: PanelContainer = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/ItemBubble")
 
 # Stage
-@onready var hero_sprite_placeholder: Sprite2D = $Stage/HeroSprite
-@onready var enemy_sprite_placeholder: Sprite2D = $Stage/EnemySprite
-@onready var hero_shadow: Sprite2D = $Stage/HeroShadow
-@onready var enemy_shadow: Sprite2D = $Stage/EnemyShadow
+@onready var hero_sprite_placeholder: Sprite2D = get_node_or_null("Stage/HeroSprite")
+@onready var enemy_sprite_placeholder: Sprite2D = get_node_or_null("Stage/EnemySprite")
+@onready var hero_shadow: Sprite2D = get_node_or_null("Stage/HeroShadow")
+@onready var enemy_shadow: Sprite2D = get_node_or_null("Stage/EnemyShadow")
 
 # FX / Overlay
-@onready var fx_controller: Node = $FX
-@onready var popups_container: Control = $FX/Popups
-@onready var overlay_fade: ColorRect = $Overlay/Fade
-@onready var overlay_title: Label = $Overlay/CenterContainer/VBoxContainer/Label
-@onready var overlay_subtitle: Label = $Overlay/CenterContainer/VBoxContainer/Label2
-@onready var overlay_vbox: VBoxContainer = $Overlay/CenterContainer/VBoxContainer
+@onready var fx_controller: Node = get_node_or_null("FX")
+@onready var popups_container: Control = get_node_or_null("FX/Popups")
+@onready var overlay_fade: ColorRect = get_node_or_null("Overlay/Fade")
+@onready var overlay_title: Label = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label")
+@onready var overlay_subtitle: Label = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label2")
+@onready var overlay_vbox: VBoxContainer = get_node_or_null("Overlay/CenterContainer/VBoxContainer")
 
 # --- DYNAMIC UI NODES ---
 var victory_buttons_container: HBoxContainer
@@ -272,6 +272,9 @@ func _ready() -> void:
 
 # NEW: Create and configure the post-battle buttons programmatically.
 func _create_post_battle_buttons() -> void:
+	if overlay_vbox == null:
+		return  # keep as-is; we'll show a fallback elsewhere when needed
+	
 	# Create container for victory buttons
 	victory_buttons_container = HBoxContainer.new()
 	victory_buttons_container.alignment = HBoxContainer.ALIGNMENT_CENTER
@@ -310,6 +313,54 @@ func _create_styled_button(text: String) -> Button:
 	btn.mouse_entered.connect(func(): btn.modulate = Color(1.2, 1.2, 1.2))
 	btn.mouse_exited.connect(func(): btn.modulate = Color.WHITE)
 	return btn
+
+# Check if a scene file exists
+func _scene_exists(path: String) -> bool:
+	return ResourceLoader.exists(path)
+
+# Create fallback popup menu for prototype (when no overlay exists)
+func _ensure_fallback_post_battle_menu() -> void:
+	if overlay_vbox != null: 
+		return  # Overlay exists, use normal buttons
+	if has_node("FallbackVictoryMenu"): 
+		return  # Already created
+	
+	var pm := PopupMenu.new()
+	pm.name = "FallbackVictoryMenu"
+	add_child(pm)
+	
+	var id := 0
+	pm.add_item("Next Battle", id)
+	id += 1
+	
+	if _scene_exists("res://scenes/Shop.tscn"): 
+		pm.add_item("Shop", id)
+		id += 1
+	
+	if _scene_exists("res://scenes/EquipmentScreen.tscn"): 
+		pm.add_item("Equipment", id)
+		id += 1
+	
+	pm.add_separator()
+	pm.add_item("Return to Main Menu", id)
+	id += 1
+	
+	pm.id_pressed.connect(_on_fallback_victory_menu_id_pressed)
+
+# Handle fallback menu selections
+func _on_fallback_victory_menu_id_pressed(id: int) -> void:
+	var pm := get_node("FallbackVictoryMenu") as PopupMenu
+	var label := pm.get_item_text(pm.get_item_index(id))
+	
+	match label:
+		"Next Battle":
+			_on_next_battle_pressed()
+		"Shop":
+			_on_shop_pressed()
+		"Equipment":
+			_on_equipment_pressed()
+		"Return to Main Menu":
+			_on_return_to_main_pressed()
 
 # NEW: Setup spell bubble with clickable buttons
 func _setup_spell_bubble() -> void:
@@ -1035,7 +1086,9 @@ func play_sfx(kind: String) -> void:
 		s = sfx_streams.get("hit", null) as AudioStream
 	if s==null:
 		return
-	var pl: AudioStreamPlayer = $SFX
+	var pl: AudioStreamPlayer = get_node_or_null("SFX")
+	if pl == null:
+		return
 	pl.stream = s
 	pl.play()
 
@@ -1073,9 +1126,20 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 	_disable_all_buttons()
 	keyboard_end_turn_enabled = false
 	
-	$Overlay.visible = true
-	overlay_fade.modulate.a = 0.0
-	overlay_title.text = "Victory!" if victory else "Defeat"
+	# If no overlay exists, show fallback popup menu
+	if overlay_vbox == null:
+		_ensure_fallback_post_battle_menu()
+		var pm := get_node("FallbackVictoryMenu") as PopupMenu
+		# Center the popup with a reasonable size
+		pm.popup_centered(Vector2(300, 200))
+		return
+	
+	if has_node("Overlay"):
+		$Overlay.visible = true
+	if overlay_fade:
+		overlay_fade.modulate.a = 0.0
+	if overlay_title:
+		overlay_title.text = "Victory!" if victory else "Defeat"
 	
 	# Format loot text
 	var loot_text: String = "—"
@@ -1085,58 +1149,104 @@ func show_battle_result(victory: bool, xp:=0, loot: Array[String]=[]) -> void:
 			names.append(str(e))
 		loot_text = ", ".join(names)
 	
-	overlay_subtitle.text = ("XP +%d\nLoot: %s" % [xp, loot_text]) if victory else "You fall in battle."
+	if overlay_subtitle:
+		overlay_subtitle.text = ("XP +%d\nLoot: %s" % [xp, loot_text]) if victory else "You fall in battle."
 	
 	var t: Tween = create_tween()
-	t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
+	if overlay_fade:
+		t.tween_property(overlay_fade, "modulate:a", 0.6, 0.4)
 	t.tween_interval(0.1)
 	t.finished.connect(_on_battle_result_shown)
 
 func _on_battle_result_shown() -> void:
+	if overlay_vbox == null:
+		return  # Fallback menu is already shown
+	
 	# Hide all post-battle buttons first
-	victory_buttons_container.visible = false
-	btn_next_battle.visible = false
-	btn_shop.visible = false
-	btn_equipment.visible = false
-	btn_return_to_main.visible = false
+	if victory_buttons_container:
+		victory_buttons_container.visible = false
+	if btn_next_battle:
+		btn_next_battle.visible = false
+	if btn_shop:
+		btn_shop.visible = false
+	if btn_equipment:
+		btn_equipment.visible = false
+	if btn_return_to_main:
+		btn_return_to_main.visible = false
 	
 	# Show appropriate buttons based on victory/defeat
 	if battle_victory:
-		victory_buttons_container.visible = true
-		btn_next_battle.visible = true
-		btn_shop.visible = true
-		btn_equipment.visible = true
+		if victory_buttons_container:
+			victory_buttons_container.visible = true
+		if btn_next_battle:
+			btn_next_battle.visible = true
+		if btn_shop:
+			btn_shop.visible = true
+		if btn_equipment:
+			btn_equipment.visible = true
 	else:
-		btn_return_to_main.visible = true
+		if btn_return_to_main:
+			btn_return_to_main.visible = true
 
 # NEW: Button handlers for post-battle choices
 func _on_next_battle_pressed() -> void:
-	# Disable all buttons to prevent double-clicking
-	btn_next_battle.disabled = true
-	btn_shop.disabled = true
-	btn_equipment.disabled = true
+	# Disable all buttons to prevent double-clicks
+	if btn_next_battle: 
+		btn_next_battle.disabled = true
+	if btn_shop: 
+		btn_shop.disabled = true
+	if btn_equipment: 
+		btn_equipment.disabled = true
 	
-	# Reload the battle scene for a new fight
+	# Always reload battle scene
 	get_tree().change_scene_to_file(BATTLE_SCENE_PATH)
 
 func _on_shop_pressed() -> void:
-	# Disable all buttons to prevent double-clicking
-	btn_next_battle.disabled = true
-	btn_shop.disabled = true
-	btn_equipment.disabled = true
+	# Disable all buttons to prevent double-clicks
+	if btn_next_battle: 
+		btn_next_battle.disabled = true
+	if btn_shop: 
+		btn_shop.disabled = true
+	if btn_equipment: 
+		btn_equipment.disabled = true
 	
-	# Go to the shop
-	get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+	# Try to open shop; fall back to next battle if missing
+	if _scene_exists("res://scenes/Shop.tscn"):
+		get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+	else:
+		push_warning("Shop scene missing; starting next battle instead.")
+		_on_next_battle_pressed()
 
 func _on_equipment_pressed() -> void:
-	# Disable all buttons to prevent double-clicking
-	btn_next_battle.disabled = true
-	btn_shop.disabled = true
-	btn_equipment.disabled = true
+	# Disable all buttons to prevent double-clicks
+	if btn_next_battle: 
+		btn_next_battle.disabled = true
+	if btn_shop: 
+		btn_shop.disabled = true
+	if btn_equipment: 
+		btn_equipment.disabled = true
 	
-	# Go to the equipment screen
-	get_tree().change_scene_to_file(EQUIPMENT_SCENE_PATH)
+	# Try to open equipment screen; fall back to next battle if missing
+	if _scene_exists("res://scenes/EquipmentScreen.tscn"):
+		get_tree().change_scene_to_file("res://scenes/EquipmentScreen.tscn")
+	else:
+		push_warning("Equipment screen missing; starting next battle instead.")
+		_on_next_battle_pressed()
 
 func _on_return_to_main_pressed() -> void:
-	btn_return_to_main.disabled = true
-	get_tree().change_scene_to_file(MAIN_MENU_SCENE_PATH)
+	# Disable all buttons
+	if btn_next_battle: 
+		btn_next_battle.disabled = true
+	if btn_shop: 
+		btn_shop.disabled = true
+	if btn_equipment: 
+		btn_equipment.disabled = true
+	if btn_return_to_main:
+		btn_return_to_main.disabled = true
+	
+	# Return to main menu (adjust path if needed)
+	if _scene_exists("res://scenes/Main.tscn"):
+		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	else:
+		push_warning("Main menu scene missing; restarting battle instead.")
+		_on_next_battle_pressed()
