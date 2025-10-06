@@ -14,7 +14,8 @@ const CHARACTER_ART := {
 	"barbarian": "barbarian",
 	"cleric_blue": "cleric_blue",
 	"mage_red": "mage_red",
-	"werewolf": "werewolf",
+	"goblin": "goblin",
+	"water_slime": "water_slime",
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
@@ -250,7 +251,7 @@ func _ready() -> void:
 		GameManager.current_hero_unit = heroes[0]
 	
 	# Initialize enemies
-	var enemy_types := ["werewolf", "werewolf"]
+	var enemy_types := ["goblin", "water_slime"]
 	for i in range(min(2, enemy_types.size())):
 		var enemy_id: String = enemy_types[i]
 		var unit: Unit = _build_unit_from_enemy(enemy_id)
@@ -496,7 +497,7 @@ func _prompt_next_hero_action() -> void:
 	# Find the next available hero
 	while current_acting_hero_index < heroes.size():
 		current_hero = heroes[current_acting_hero_index]
-		if !current_hero.is_dead():
+		if current_hero.is_alive():
 			_log("Hero %s's turn." % current_hero.name)
 			_update_ui()
 			_enable_action_buttons(true)
@@ -520,7 +521,7 @@ func _execute_turn() -> void:
 	
 	# Execute actions sequentially
 	for action in action_queue:
-		if action.actor.is_dead():
+		if !action.actor.is_alive():
 			continue # Skip dead actors
 		
 		_log_action(action)
@@ -580,13 +581,13 @@ func _end_of_round_processing() -> void:
 func _check_battle_over() -> bool:
 	var all_heroes_dead := true
 	for hero in heroes:
-		if !hero.is_dead():
+		if hero.is_alive():
 			all_heroes_dead = false
 			break
 	
 	var all_enemies_dead := true
 	for enemy in enemies:
-		if !enemy.is_dead():
+		if enemy.is_alive():
 			all_enemies_dead = false
 			break
 	
@@ -679,7 +680,7 @@ func _on_spell_selected(skill: Dictionary) -> void:
 	_log("Spell selected: %s" % skill.name)
 	if spell_bubble: spell_bubble.hide()
 	
-	if current_hero.mp < skill.cost:
+	if current_hero.stats.get("MP", 0) < skill.cost:
 		_log("Not enough MP for %s" % skill.name)
 		_show_popup_on_sprite(_sprite_for(current_hero), "Not enough MP!", Color.CYAN)
 		return
@@ -717,9 +718,9 @@ func _start_target_selection(target_type: String) -> void:
 	var target_sprites: Array[AnimatedFramesScript]
 	
 	if target_type == "enemy":
-		valid_targets = enemies.filter(func(u): return !u.is_dead())
+		valid_targets = enemies.filter(func(u): return u.is_alive())
 	elif target_type == "ally":
-		valid_targets = heroes.filter(func(u): return !u.is_dead())
+		valid_targets = heroes.filter(func(u): return u.is_alive())
 	else: # "self" or other types
 		valid_targets = [current_hero]
 	
@@ -873,21 +874,21 @@ func _update_ui() -> void:
 				panel.visible = false
 	
 	# Update active character panel
-	if current_hero and !current_hero.is_dead():
+	if current_hero and current_hero.is_alive():
 		if active_portrait:
 			var portrait_loader = PortraitLoaderScript.new()
 			var tex = portrait_loader.get_portrait_for_unit(current_hero)
 			active_portrait.texture = tex
 		if active_hp_label:
-			active_hp_label.text = "HP: %d/%d" % [current_hero.hp, current_hero.stats.max_hp]
+			active_hp_label.text = "HP: %d/%d" % [current_hero.stats.get("HP", 0), current_hero.max_stats.get("HP", 100)]
 		if active_hp_bar:
-			active_hp_bar.max_value = current_hero.stats.max_hp
-			active_hp_bar.value = current_hero.hp
+			active_hp_bar.max_value = current_hero.max_stats.get("HP", 100)
+			active_hp_bar.value = current_hero.stats.get("HP", 0)
 		if active_mp_label:
-			active_mp_label.text = "MP: %d/%d" % [current_hero.mp, current_hero.stats.max_mp]
+			active_mp_label.text = "MP: %d/%d" % [current_hero.stats.get("MP", 0), current_hero.max_stats.get("MP", 50)]
 		if active_mp_bar:
-			active_mp_bar.max_value = current_hero.stats.max_mp
-			active_mp_bar.value = current_hero.mp
+			active_mp_bar.max_value = current_hero.max_stats.get("MP", 50)
+			active_mp_bar.value = current_hero.stats.get("MP", 0)
 
 func _update_unit_panel(panel: Panel, unit: Unit) -> void:
 	var name_label: Label = panel.get_node_or_null("Margin/VBox/NameLabel")
@@ -897,8 +898,8 @@ func _update_unit_panel(panel: Panel, unit: Unit) -> void:
 	if name_label:
 		name_label.text = unit.name
 	if hp_bar:
-		hp_bar.max_value = unit.stats.max_hp
-		hp_bar.value = unit.hp
+		hp_bar.max_value = unit.max_stats.get("HP", 100)
+		hp_bar.value = unit.stats.get("HP", 0)
 	
 	if status_container:
 		# Clear old icons
@@ -914,7 +915,7 @@ func _update_unit_panel(panel: Panel, unit: Unit) -> void:
 			status_container.add_child(icon)
 	
 	# Dim panel if unit is dead
-	panel.modulate.a = 0.5 if unit.is_dead() else 1.0
+	panel.modulate.a = 0.5 if !unit.is_alive() else 1.0
 
 func _enable_action_buttons(enable: bool, affect_menu_buttons: bool = true) -> void:
 	buttons_enabled = enable
@@ -993,13 +994,17 @@ func _build_unit_from_character(id: String, index: int) -> Unit:
 		return null
 	
 	var unit := Unit.new()
-	unit.is_player_team = true
+	# is_player_team property doesn't exist in Unit, we'll track this via the heroes array
 	unit.character_id = id
 	unit.stats = unit_def.get("stats", {})
-	unit.skills = unit_def.get("skills", [])
+	var skills_array = unit_def.get("skills", [])
+	unit.skills.clear()
+	for skill in skills_array:
+		unit.skills.append(str(skill))
 	unit.name = unit_def.get("name", "Hero " + str(index + 1))
-	unit.hp = unit.stats.max_hp
-	unit.mp = unit.stats.max_mp
+	unit.max_stats = unit.stats.duplicate()
+	unit.stats["HP"] = unit.stats.get("HP", 100)
+	unit.stats["MP"] = unit.stats.get("MP", 50)
 	return unit
 
 func _build_unit_from_enemy(id: String) -> Unit:
@@ -1009,22 +1014,26 @@ func _build_unit_from_enemy(id: String) -> Unit:
 		return null
 	
 	var unit := Unit.new()
-	unit.is_player_team = false
+	# is_player_team property doesn't exist in Unit, we'll track this via the enemies array
 	unit.character_id = id
 	unit.stats = unit_def.get("stats", {})
 	unit.skills = unit_def.get("skills", [])
 	unit.name = unit_def.get("name", "Enemy")
-	unit.hp = unit.stats.max_hp
-	unit.mp = unit.stats.max_mp
+	unit.max_stats = unit.stats.duplicate()
+	unit.stats["HP"] = unit.stats.get("HP", 100)
+	unit.stats["MP"] = unit.stats.get("MP", 50)
 	return unit
 
 func _sprite_for(unit: Unit) -> AnimatedFramesScript:
-	var unit_array: Array[Unit] = heroes if unit.is_player_team else enemies
-	var sprite_array: Array[AnimatedFramesScript] = hero_sprites if unit.is_player_team else enemy_sprites
+	# Check if unit is in heroes array
+	var hero_index: int = heroes.find(unit)
+	if hero_index != -1 and hero_index < hero_sprites.size():
+		return hero_sprites[hero_index]
 	
-	var index: int = unit_array.find(unit)
-	if index != -1 and index < sprite_array.size():
-		return sprite_array[index]
+	# Check if unit is in enemies array
+	var enemy_index: int = enemies.find(unit)
+	if enemy_index != -1 and enemy_index < enemy_sprites.size():
+		return enemy_sprites[enemy_index]
 	
 	return null
 
