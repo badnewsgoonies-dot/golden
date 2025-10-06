@@ -29,6 +29,7 @@ const SpriteFactory = preload("res://art/SpriteFactory.gd")
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
 const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
 const EQUIPMENT_SCENE_PATH = "res://scenes/EquipmentScreen.tscn"
+const SHOP_SCENE_PATH = "res://scenes/Shop.tscn"
 
 # --- UI NODE REFERENCES (nullable; populated at runtime) ---
 var hero_info_container: HBoxContainer = null
@@ -1086,7 +1087,7 @@ func _award_post_battle_equipment() -> void:
 	if Engine.has_singleton("SaveService"):
 		var snapshot := {
 			"inventory": RunManager.inventory,
-			"gold": (Engine.has_singleton("GameManager") ? GameManager.gold : 0)
+			"gold": GameManager.gold if Engine.has_singleton("GameManager") else 0
 		}
 		SaveService.save_snapshot(snapshot)
 		print("[Battle] Game state saved.")
@@ -1449,7 +1450,7 @@ func _on_shop_pressed() -> void:
 	btn_equipment.disabled = true
 	
 	# Go to the shop
-	get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+	get_tree().change_scene_to_file(SHOP_SCENE_PATH)
 
 func _on_equipment_pressed() -> void:
 	# Disable all buttons to prevent double-clicking
