@@ -23,7 +23,7 @@ const AnimatedFramesScript = preload("res://scripts/AnimatedFrames.gd")
 const SelectorArrowScript = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoaderScript = preload("res://scripts/PortraitLoader.gd")
 
-const Unit = preload("res://battle/models/Unit.gd")
+
 
 # --- CONSTANTS ---
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
