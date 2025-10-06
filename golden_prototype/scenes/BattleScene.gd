@@ -62,6 +62,7 @@ var overlay_fade: ColorRect = null
 var overlay_title: Label = null
 var overlay_subtitle: Label = null
 var overlay_vbox: VBoxContainer = null
+var victory_popup: Popup = null
 
 # Lightweight debug status label (created if full HUD absent)
 var debug_status_label: RichTextLabel = null
@@ -374,6 +375,7 @@ func _init_ui_references() -> void:
 	overlay_title = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label")
 	overlay_subtitle = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label2")
 	overlay_vbox = get_node_or_null("Overlay/CenterContainer/VBoxContainer")
+	victory_popup = get_node_or_null("UI/VictoryPopup")
 
 # If full HUD missing, build a minimal always-on debug HP/MP display.
 func _build_minimal_fallback_ui() -> void:
