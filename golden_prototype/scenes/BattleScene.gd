@@ -68,11 +68,11 @@ var victory_popup: Popup = null
 var debug_status_label: RichTextLabel = null
 
 # --- DYNAMIC UI NODES ---
-var victory_buttons_container: HBoxContainer
-var btn_next_battle: Button
-var btn_shop: Button
-var btn_return_to_main: Button
-var btn_equipment: Button
+var victory_buttons_container: HBoxContainer = null
+var btn_next_battle: Button = null
+var btn_shop: Button = null
+var btn_return_to_main: Button = null
+var btn_equipment: Button = null
 
 # Target Selector
 var target_selector: TargetSelector
@@ -141,6 +141,13 @@ func _ready() -> void:
 		stage.name = "Stage"
 		add_child(stage)
 		print("[Setup] Created placeholder Stage node (prototype scene lacked one).")
+
+	# Ensure an SFX player exists for sound playback.
+	if !has_node("SFX"):
+		var sfx_player := AudioStreamPlayer.new()
+		sfx_player.name = "SFX"
+		add_child(sfx_player)
+		print("[Setup] Created placeholder SFX node.")
 
 	_init_ui_references()
 	_build_minimal_fallback_ui()
@@ -1308,13 +1315,6 @@ func _play_attack_animation(a: Action, res: Dictionary) -> void:
 		await _flash_sprite(a.target)
 
 func _flash_sprite(u: Unit) -> void:
-	var s: AnimatedFrames = _sprite_for_unit(u)
-	if s==null:
-		return
-	var base: Color = _base_modulate_for(u)
-	var t: Tween = create_tween()
-	t.tween_property(s, "modulate", Color(1.0,0.6,0.6,1.0), 0.08)
-	t.tween_property(s, "modulate", base, 0.12)
 	await t.finished
 
 func _shake_sprite(u: Unit) -> void:
@@ -1338,14 +1338,16 @@ func spawn_damage_popup(node: Node2D, amount: int, crit:=false, miss:=false) -> 
 	fx_controller.spawn_damage_number(popups_container, p, amount, crit, miss)
 
 func play_sfx(kind: String) -> void:
-	var s: AudioStream = sfx_streams.get(kind, null) as AudioStream
-	if s==null:
-		s = sfx_streams.get("hit", null) as AudioStream
-	if s==null:
-		return
-	var pl: AudioStreamPlayer = $SFX
-	pl.stream = s
-	pl.play()
+	# Sound disabled to prevent errors
+	pass
+	#var s: AudioStream = sfx_streams.get(kind, null) as AudioStream
+	#if s==null:
+	#	s = sfx_streams.get("hit", null) as AudioStream
+	#if s==null:
+	#	return
+	#var pl: AudioStreamPlayer = $SFX
+	#pl.stream = s
+	#pl.play()
 
 func _make_tone(freq: float, duration: float, volume: float = 0.35) -> AudioStreamWAV:
 	var w := AudioStreamWAV.new()
