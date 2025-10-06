@@ -639,21 +639,16 @@ func _start_target_selection(target_type: String) -> void:
 		_reset_selection_state()
 		return
 	
-	target_selector.start_selection(target_sprites, valid_targets)
+	target_selector.start_selection(target_sprites)
 
-func _on_target_selected(target_sprite: AnimatedFramesScript, target_unit: Unit) -> void:
-	if !is_selecting_target: return
-	_log("Target selected: %s" % target_unit.name)
-	
-	current_targets = [target_unit]
-	
-	var action: Action
-	if pending_action_type == "item":
-		action = Action.new(current_hero, current_targets, "item", {"item_id": pending_skill.item_id})
-		RunManager.use_item(pending_skill.item_id)
-	else:
-		action = Action.new(current_hero, current_targets, pending_action_type, pending_skill)
-	
+func _on_target_selected(target_sprite: Node2D) -> void:
+	var target_unit: Unit = _unit_for_sprite(target_sprite)
+	if !target_unit:
+		_log("Target unit not found for sprite: %s" % target_sprite.name, "error")
+		_set_ui_mode("actions")
+		return
+
+	var action := Action.new(current_hero, current_skill, target_unit)
 	_add_planned_action(action)
 	_reset_selection_state()
 
@@ -984,57 +979,3 @@ func _make_tone(hz: float, duration: float, volume_db: float = 0.0) -> AudioStre
 	# This is a placeholder for simple feedback.
 	return null
 
-# --- Fallback Post-Battle Menu (for prototype without overlay) ---
-
-func _scene_exists(path: String) -> bool:
-	return ResourceLoader.exists(path)
-
-func _ensure_fallback_victory_menu() -> void:
-	# Only use fallback if the polished overlay VBox is NOT in the scene
-	if has_node("Overlay/CenterContainer/VBoxContainer"):
-		print("[Victory] Using polished overlay buttons")
-		return
-	
-	# Don't create twice
-	if has_node("FallbackVictoryMenu"):
-		return
-	
-	print("[Victory] Creating fallback menu (no overlay found)")
-	
-	var pm := PopupMenu.new()
-	pm.name = "FallbackVictoryMenu"
-	add_child(pm)
-	
-	var id := 0
-	pm.add_item("Next Battle", id)
-	id += 1
-	
-	if _scene_exists("res://scenes/Shop.tscn"):
-		pm.add_item("Shop", id)
-		id += 1
-	
-	if _scene_exists("res://scenes/EquipmentScreen.tscn"):
-		pm.add_item("Equipment", id)
-		id += 1
-	
-	pm.add_separator()
-	pm.add_item("Return to Main Menu", id)
-	
-	pm.id_pressed.connect(_on_fallback_victory_id_pressed)
-
-func _on_fallback_victory_id_pressed(id: int) -> void:
-	var pm := get_node("FallbackVictoryMenu") as PopupMenu
-	var label := pm.get_item_text(pm.get_item_index(id))
-	
-	print("[Victory] Selected: ", label)
-	
-	match label:
-		"Next Battle":
-			_on_next_battle_pressed()
-		"Shop":
-			_on_shop_pressed()
-		"Equipment":
-			_on_equipment_pressed()
-		"Return to Main Menu":
-			_on_return_to_main_pressed()
-```
