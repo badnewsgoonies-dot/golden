@@ -77,6 +77,12 @@ var enemy_sprite: AnimatedFramesScript
 
 var party: Array[Unit]
 var enemies: Array[Unit]
+var heroes: Array[Unit] = []  # Player party
+var hero_sprites: Array[AnimatedFramesScript] = []
+var enemy_sprites: Array[AnimatedFramesScript] = []
+var hero_shadows: Array[Sprite2D] = []
+var enemy_shadows: Array[Sprite2D] = []
+var action_queue: Array[Action] = []  # For turn execution
 var turn_order: Array[Unit]
 var current_hero: Unit
 var current_action: Action
@@ -510,10 +516,10 @@ func _execute_turn() -> void:
 	
 	# Combine and sort all actions
 	var all_actions: Array[Action] = planned_actions + enemy_actions
-	turn_order = turn_engine.build_queue(all_actions)
+	action_queue = turn_engine.build_queue(all_actions)
 	
 	# Execute actions sequentially
-	for action in turn_order:
+	for action in action_queue:
 		if action.actor.is_dead():
 			continue # Skip dead actors
 		
@@ -636,7 +642,7 @@ func show_battle_result(victory: bool) -> void:
 
 	# If the polished overlay isn't present in this prototype, show a simple fallback menu
 	if overlay_vbox == null:
-		_ensure_fallback_victory_menu()
+		_ensure_fallback_post_battle_menu()
 		var pm := get_node_or_null("FallbackVictoryMenu") as PopupMenu
 		if pm:
 			pm.popup_centered(Vector2(300, 200))
@@ -687,7 +693,7 @@ func _on_item_selected(item_id: String) -> void:
 	_log("Item selected: %s" % item_id)
 	if item_bubble: item_bubble.hide()
 	
-	var item_data: Dictionary = DataRegistry.get_item(item_id)
+	var item_data: Dictionary = DataRegistry.items.get(item_id, {})
 	if item_data.is_empty():
 		_log("ERROR: Item data not found for %s" % item_id)
 		return
@@ -727,14 +733,26 @@ func _start_target_selection(target_type: String) -> void:
 	
 	target_selector.start_selection(target_sprites)
 
+func _unit_for_sprite(sprite_node: Node2D) -> Unit:
+	# Find the unit that corresponds to this sprite
+	for i in range(hero_sprites.size()):
+		if hero_sprites[i] == sprite_node:
+			return heroes[i]
+	
+	for i in range(enemy_sprites.size()):
+		if enemy_sprites[i] == sprite_node:
+			return enemies[i]
+	
+	return null
+
 func _on_target_selected(target_sprite: Node2D) -> void:
 	var target_unit: Unit = _unit_for_sprite(target_sprite)
 	if !target_unit:
-		_log("Target unit not found for sprite: %s" % target_sprite.name, "error")
-		_set_ui_mode("actions")
+		_log("Target unit not found for sprite: %s" % target_sprite.name)
+		_reset_selection_state()
 		return
 
-	var action := Action.new(current_hero, current_skill, target_unit)
+	var action := Action.new(current_hero, pending_skill, target_unit)
 	_add_planned_action(action)
 	_reset_selection_state()
 
@@ -941,7 +959,7 @@ func _setup_item_bubble() -> void:
 	item_bubble.get_node("Margin").add_child(item_button_container)
 	
 	for item_id in RunManager.inventory:
-		var item_data: Dictionary = DataRegistry.get_item(item_id)
+		var item_data: Dictionary = DataRegistry.items.get(item_id, {})
 		if item_data.is_empty(): continue
 		
 		var count: int = RunManager.inventory[item_id]
@@ -969,7 +987,7 @@ func _show_popup_on_sprite(sprite: AnimatedFramesScript, text: String, color: Co
 
 # --- DATA & OBJECT HELPERS ---
 func _build_unit_from_character(id: String, index: int) -> Unit:
-	var unit_def: Dictionary = DataRegistry.get_character(id)
+	var unit_def: Dictionary = DataRegistry.characters.get(id, {})
 	if unit_def.is_empty():
 		_log("ERROR: Character definition not found for '%s'" % id)
 		return null
@@ -985,7 +1003,7 @@ func _build_unit_from_character(id: String, index: int) -> Unit:
 	return unit
 
 func _build_unit_from_enemy(id: String) -> Unit:
-	var unit_def: Dictionary = DataRegistry.get_enemy(id)
+	var unit_def: Dictionary = DataRegistry.enemies.get(id, {})
 	if unit_def.is_empty():
 		_log("ERROR: Enemy definition not found for '%s'" % id)
 		return null
@@ -1034,8 +1052,8 @@ func _log(message: String) -> void:
 
 func _log_turn_order() -> void:
 	var names: Array[String] = []
-	for unit in turn_order:
-		names.append(unit.name)
+	for action in action_queue:
+		names.append(action.actor.name)
 	_log("Turn order: " + ", ".join(names))
 
 func _log_action(action: Action) -> void:

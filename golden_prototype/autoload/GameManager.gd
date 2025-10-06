@@ -1,5 +1,6 @@
 extends Node
 
+
 const Unit = preload("res://battle/models/Unit.gd")
 
 var rng := RandomNumberGenerator.new()
