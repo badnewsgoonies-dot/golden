@@ -513,7 +513,12 @@ func _execute_turn() -> void:
 	_enable_action_buttons(false)
 	
 	# Enemies plan their actions
-	var enemy_actions: Array[Action] = enemy_ai.plan_actions(enemies, heroes)
+	var enemy_actions: Array[Action] = []
+	for enemy in enemies:
+		if enemy.is_alive():
+			var action: Action = enemy_ai.choose_action(enemy, heroes.filter(func(h): return h.is_alive()))
+			if action:
+				enemy_actions.append(action)
 	
 	# Combine and sort all actions
 	var all_actions: Array[Action] = planned_actions + enemy_actions
@@ -764,7 +769,7 @@ func _on_selection_cancelled() -> void:
 
 func _reset_selection_state() -> void:
 	is_selecting_target = false
-	target_selector.stop_selection()
+	target_selector.end_selection()
 	pending_action_type = ""
 	pending_skill = {}
 	current_targets = []
@@ -1017,7 +1022,10 @@ func _build_unit_from_enemy(id: String) -> Unit:
 	# is_player_team property doesn't exist in Unit, we'll track this via the enemies array
 	unit.character_id = id
 	unit.stats = unit_def.get("stats", {})
-	unit.skills = unit_def.get("skills", [])
+	var skills_array = unit_def.get("skills", [])
+	unit.skills.clear()
+	for skill in skills_array:
+		unit.skills.append(str(skill))
 	unit.name = unit_def.get("name", "Enemy")
 	unit.max_stats = unit.stats.duplicate()
 	unit.stats["HP"] = unit.stats.get("HP", 100)
