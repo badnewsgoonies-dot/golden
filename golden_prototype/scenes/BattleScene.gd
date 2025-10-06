@@ -1315,6 +1315,12 @@ func _play_attack_animation(a: Action, res: Dictionary) -> void:
 		await _flash_sprite(a.target)
 
 func _flash_sprite(u: Unit) -> void:
+	var s: AnimatedFrames = _sprite_for_unit(u)
+	if s == null:
+		return
+	var t: Tween = create_tween()
+	t.tween_property(s, "modulate", Color(1.5, 1.5, 1.5, 1.0), 0.05)
+	t.tween_property(s, "modulate", Color.WHITE, 0.1)
 	await t.finished
 
 func _shake_sprite(u: Unit) -> void:
