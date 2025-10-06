@@ -60,5 +60,25 @@
         "metadata": {}
       }
     ]
-  }
+  },
+  "skills": [
+    {
+      "id": "cure",
+      "name": "Cure",
+      "type": "heal",
+      "stat": "MAG",
+      "power": 1.0,
+      "mp_cost": 10,
+      "description": "Heals a single ally."
+    },
+    {
+      "id": "slash",
+      "name": "Slash",
+      "type": "damage",
+      "stat": "ATK",
+      "power": 1.0,
+      "mp_cost": 0,
+      "description": "A basic melee attack."
+    }
+  ]
 }

@@ -42,8 +42,10 @@ func use_item(id: String) -> bool:
 	return true
 
 func get_hero_stats(hero_index: int) -> Dictionary:
-	var hero_id = DataRegistry.get_party_member_id(hero_index)
-	if !hero_id: return {}
+	var party_ids = DataRegistry.get_party_member_ids()
+	if hero_index < 0 or hero_index >= party_ids.size():
+		return {}
+	var hero_id = party_ids[hero_index]
 
 	var base_stats = DataRegistry.characters.get(hero_id, {}).get("stats", {}).duplicate(true)
 	var equipment = hero_equipment.get(hero_index, {})

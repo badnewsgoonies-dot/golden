@@ -1,4 +1,3 @@
-
 extends Node
 # NOTE: No `class_name` here because this script is autoloaded as `DataRegistry`.
 # Having both `class_name DataRegistry` and an Autoload named `DataRegistry` causes symbol conflicts.
@@ -51,3 +50,13 @@ func _load_json_dict(path: String) -> Dictionary:
         _:
             pass
     return dict
+
+func get_party_member_ids() -> Array[String]:
+    # This is hardcoded for now, but could be loaded from save data later.
+    return ["barbarian", "cleric_blue", "mage_red", "barbarian"]
+
+func get_skill(id: String) -> Dictionary:
+    if skills.has(id):
+        return skills[id].duplicate(true)
+    # Return a fallback skill to prevent crashes if a skill is missing
+    return {"id": id, "name": id.capitalize(), "type": "damage", "stat": "ATK", "power": 1.0}
