@@ -20,8 +20,10 @@ const CHARACTER_ART := {
 # --- PRELOAD SCRIPT CLASSES ---
 const EnemyAIScript = preload("res://battle/EnemyAI.gd")
 const AnimatedFramesScript = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrowScript = preload("res://ui/SelectorArrow.gd")
+const SelectorArrowScript = preload("res://scripts/SelectorArrow.gd")
 const PortraitLoaderScript = preload("res://scripts/PortraitLoader.gd")
+
+const Unit = preload("res://battle/models/Unit.gd")
 
 # --- CONSTANTS ---
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
@@ -73,12 +75,12 @@ var target_selector: TargetSelector
 var hero_sprite: AnimatedFramesScript
 var enemy_sprite: AnimatedFramesScript
 
-var party: Array[UnitScript]
-var enemies: Array[UnitScript]
-var turn_order: Array[UnitScript]
-var current_hero: UnitScript
+var party: Array[Unit]
+var enemies: Array[Unit]
+var turn_order: Array[Unit]
+var current_hero: Unit
 var current_action: Action
-var current_targets: Array[UnitScript]
+var current_targets: Array[Unit]
 
 var planned_actions: Array[Action] = []
 var enemy_ai: EnemyAIScript
@@ -433,7 +435,7 @@ func _execute_turn() -> void:
 	
 	# Combine and sort all actions
 	var all_actions: Array[Action] = planned_actions + enemy_actions
-	turn_order = turn_engine.get_turn_order(all_actions)
+	turn_order = turn_engine.build_queue(all_actions)
 	
 	# Execute actions sequentially
 	for action in turn_order:
@@ -443,9 +445,7 @@ func _execute_turn() -> void:
 		_log_action(action)
 		
 		var source_sprite: AnimatedFramesScript = _sprite_for(action.actor)
-		var target_sprites: Array[AnimatedFramesScript] = []
-		for t in action.targets:
-			target_sprites.append(_sprite_for(t))
+		var target_sprite: AnimatedFramesScript = _sprite_for(action.target)
 		
 		# Play actor's attack animation
 		if source_sprite:
@@ -453,32 +453,21 @@ func _execute_turn() -> void:
 			await get_tree().create_timer(0.3).timeout
 		
 		# Execute the action logic
-		var results: Array[Dictionary] = turn_engine.execute_action(action)
+		var result: Dictionary = turn_engine.execute_action(action)
 		
 		# Show results (damage, miss, etc.)
-		for i in range(results.size()):
-			var result: Dictionary = results[i]
-			var target_unit: Unit = action.targets[i]
-			var target_sprite: AnimatedFramesScript = target_sprites[i]
-			
-			if target_sprite:
-				if result.type == Formula.MISS:
-					_show_popup_on_sprite(target_sprite, "Miss", Color.WHITE)
-					AudioService.play_sfx(sfx_streams["miss"])
-				elif result.type == Formula.CRIT:
-					_show_popup_on_sprite(target_sprite, "CRIT! %d" % result.damage, Color.YELLOW)
-					target_sprite.play_anim("hurt")
-					AudioService.play_sfx(sfx_streams["crit"])
-				else: # HIT
-					_show_popup_on_sprite(target_sprite, str(result.damage), Color.WHITE)
-					target_sprite.play_anim("hurt")
-					AudioService.play_sfx(sfx_streams["hit"])
-			
-			# Apply damage/healing to the unit
-			if result.damage > 0:
-				target_unit.take_damage(result.damage)
-			elif result.damage < 0:
-				target_unit.heal_damage(-result.damage)
+		if target_sprite:
+			if !result.hit:
+				_show_popup_on_sprite(target_sprite, "Miss", Color.WHITE)
+				AudioService.play_sfx("miss")
+			elif result.crit:
+				_show_popup_on_sprite(target_sprite, "CRIT! %d" % result.damage, Color.YELLOW)
+				target_sprite.play_anim("hurt")
+				AudioService.play_sfx("crit")
+			else: # HIT
+				_show_popup_on_sprite(target_sprite, str(result.damage), Color.WHITE)
+				target_sprite.play_anim("hurt")
+				AudioService.play_sfx("hit")
 		
 		_update_ui()
 		await get_tree().create_timer(0.8).timeout
@@ -500,20 +489,11 @@ func _execute_turn() -> void:
 func _end_of_round_processing() -> void:
 	_log("--- End of Round Status Effects ---")
 	var all_units: Array[Unit] = heroes + enemies
-	for unit in all_units:
-		if unit.is_dead():
-			continue
-		
-		var effect_results: Array[Dictionary] = EffectSystem.process_end_of_round(unit)
-		for result in effect_results:
-			_log("%s takes %d %s damage." % [unit.name, result.damage, result.type])
-			var sprite: AnimatedFramesScript = _sprite_for(unit)
-			if sprite:
-				_show_popup_on_sprite(sprite, str(result.damage), Color.PALE_VIOLET_RED)
-				sprite.play_anim("hurt")
-			
-			_update_ui()
-			await get_tree().create_timer(0.5).timeout
+	var logs = turn_engine.process_end_of_round(all_units)
+	for log in logs:
+		_log(log)
+	_update_ui()
+	await get_tree().create_timer(0.5).timeout
 
 # --- BATTLE END LOGIC ---
 func _check_battle_over() -> bool:
@@ -545,14 +525,6 @@ func show_battle_result(victory: bool) -> void:
 	
 	_log("Battle finished. Victory: %s" % victory)
 	
-	# Fallback for prototype mode
-	if overlay_vbox == null:
-		_ensure_fallback_post_battle_menu()
-		var pm := get_node_or_null("FallbackVictoryMenu") as PopupMenu
-		if pm:
-			pm.popup(Rect2(get_viewport().get_visible_rect().size / 2, pm.size))
-		return
-
 	# Standard UI flow
 	overlay_title.text = "Victory!" if victory else "Defeat"
 	overlay_subtitle.text = "You gained 100 EXP and 50 Gold." if victory else "Your journey ends here."
@@ -575,6 +547,14 @@ func show_battle_result(victory: bool) -> void:
 		$Overlay.visible = true
 	if overlay_fade:
 		tween.tween_property(overlay_fade, "modulate:a", 0.7, 0.5)
+
+	# If the polished overlay isn't present in this prototype, show a simple fallback menu
+	if overlay_vbox == null:
+		_ensure_fallback_victory_menu()
+		var pm := get_node_or_null("FallbackVictoryMenu") as PopupMenu
+		if pm:
+			pm.popup_centered(Vector2(300, 200))
+			print("[Victory] Fallback menu displayed")
 
 # --- UI BUTTON HANDLERS ---
 func _on_attack() -> void:
@@ -599,7 +579,7 @@ func _on_items_pressed() -> void:
 func _on_defend_pressed() -> void:
 	if !buttons_enabled: return
 	_log("Defend button pressed.")
-	var action := Action.new(current_hero, [current_hero], "defend")
+	var action := Action.new(current_hero, {"name": "Defend"}, current_hero)
 	_add_planned_action(action)
 
 func _on_spell_selected(skill: Dictionary) -> void:
@@ -700,16 +680,61 @@ func _add_planned_action(action: Action) -> void:
 
 # --- POST-BATTLE NAVIGATION ---
 func _on_next_battle_pressed() -> void:
-	_fade_to_scene(BATTLE_SCENE_PATH)
+	# Disable buttons to prevent double-clicks
+	if btn_next_battle: btn_next_battle.disabled = true
+	if btn_shop: btn_shop.disabled = true
+	if btn_equipment: btn_equipment.disabled = true
+	
+	print("[Victory] Starting next battle...")
+	
+	# Try using BATTLE_SCENE_PATH constant if it exists, otherwise use hardcoded path
+	var battle_path := "res://scenes/BattleScene.tscn"
+	if "BATTLE_SCENE_PATH" in self and BATTLE_SCENE_PATH:
+		battle_path = BATTLE_SCENE_PATH
+	
+	get_tree().change_scene_to_file(battle_path)
 
 func _on_shop_pressed() -> void:
-	_fade_to_scene(RunManager.SHOP_SCENE_PATH)
+	# Disable buttons to prevent double-clicks
+	if btn_next_battle: btn_next_battle.disabled = true
+	if btn_shop: btn_shop.disabled = true
+	if btn_equipment: btn_equipment.disabled = true
+	
+	if _scene_exists("res://scenes/Shop.tscn"):
+		print("[Victory] Opening shop...")
+		get_tree().change_scene_to_file("res://scenes/Shop.tscn")
+	else:
+		push_warning("Shop scene missing; starting next battle instead.")
+		print("[Victory] Shop not found, falling back to next battle")
+		_on_next_battle_pressed()
 
 func _on_equipment_pressed() -> void:
-	_fade_to_scene(RunManager.EQUIPMENT_SCENE_PATH)
+	# Disable buttons to prevent double-clicks
+	if btn_next_battle: btn_next_battle.disabled = true
+	if btn_shop: btn_shop.disabled = true
+	if btn_equipment: btn_equipment.disabled = true
+	
+	if _scene_exists("res://scenes/EquipmentScreen.tscn"):
+		print("[Victory] Opening equipment screen...")
+		get_tree().change_scene_to_file("res://scenes/EquipmentScreen.tscn")
+	else:
+		push_warning("Equipment screen missing; starting next battle instead.")
+		print("[Victory] Equipment not found, falling back to next battle")
+		_on_next_battle_pressed()
 
 func _on_return_to_main_pressed() -> void:
-	_fade_to_scene(MAIN_MENU_SCENE_PATH)
+	# Disable buttons to prevent double-clicks
+	if btn_next_battle: btn_next_battle.disabled = true
+	if btn_shop: btn_shop.disabled = true
+	if btn_equipment: btn_equipment.disabled = true
+	
+	if _scene_exists("res://scenes/Main.tscn"):
+		print("[Victory] Returning to main menu...")
+		get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	else:
+		push_warning("Main menu missing; restarting battle instead.")
+		print("[Victory] Main menu not found, falling back to next battle")
+		_on_next_battle_pressed()
 
 func _fade_to_scene(scene_path: String) -> void:
 	if !ResourceLoader.exists(scene_path):
@@ -1012,3 +1037,4 @@ func _on_fallback_victory_id_pressed(id: int) -> void:
 			_on_equipment_pressed()
 		"Return to Main Menu":
 			_on_return_to_main_pressed()
+```
