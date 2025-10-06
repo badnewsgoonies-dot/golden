@@ -18,10 +18,10 @@ const CHARACTER_ART := {
 }
 
 # --- PRELOAD SCRIPT CLASSES ---
-const EnemyAI = preload("res://battle/EnemyAI.gd")
-const AnimatedFrames = preload("res://scripts/AnimatedFrames.gd")
-const SelectorArrow = preload("res://scripts/SelectorArrow.gd")
-const PortraitLoader = preload("res://scripts/PortraitLoader.gd")
+const EnemyAIScript = preload("res://battle/EnemyAI.gd")
+const AnimatedFramesScript = preload("res://scripts/AnimatedFrames.gd")
+const SelectorArrowScript = preload("res://scripts/SelectorArrow.gd")
+const PortraitLoaderScript = preload("res://scripts/PortraitLoader.gd")
 
 # --- CONSTANTS ---
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
@@ -70,18 +70,18 @@ var btn_equipment: Button
 var target_selector: TargetSelector
 
 # Runtime objects
-var hero_sprite: AnimatedFrames
-var enemy_sprite: AnimatedFrames
+var hero_sprite: AnimatedFramesScript
+var enemy_sprite: AnimatedFramesScript
 
 var heroes: Array[Unit] = []
 var enemies: Array[Unit] = []
-var hero_sprites: Array[AnimatedFrames] = []
-var enemy_sprites: Array[AnimatedFrames] = []
+var hero_sprites: Array[AnimatedFramesScript] = []
+var enemy_sprites: Array[AnimatedFramesScript] = []
 var hero_shadows: Array[Sprite2D] = []
 var enemy_shadows: Array[Sprite2D] = []
 
 var planned_actions: Array[Action] = []
-var enemy_ai: EnemyAI
+var enemy_ai: EnemyAIScript
 var turn_engine: TurnEngine
 var potion_used := false
 var battle_finished := false
@@ -180,7 +180,7 @@ func _ready() -> void:
 	# Engine
 	turn_engine = TurnEngine.new()
 	add_child(turn_engine)
-	enemy_ai = EnemyAI.new()
+	enemy_ai = EnemyAIScript.new()
 	
 	# Hide placeholders
 	if hero_sprite_placeholder:
@@ -198,7 +198,7 @@ func _ready() -> void:
 		var hero_id: String = hero_characters[i]
 		var hero_folder: String = CHARACTER_ART.get(hero_id, hero_id)
 		
-		var sprite := AnimatedFrames.new()
+		var sprite := AnimatedFramesScript.new()
 		sprite.character = hero_folder
 		sprite.set_facing_back(false)
 		sprite.centered = true
@@ -226,7 +226,7 @@ func _ready() -> void:
 		var enemy_id: String = enemy_types[i]
 		var enemy_folder: String = CHARACTER_ART.get(enemy_id, enemy_id)
 		
-		var sprite := AnimatedFrames.new()
+		var sprite := AnimatedFramesScript.new()
 		sprite.character = enemy_folder
 		sprite.set_facing_back(false)
 		sprite.centered = true
@@ -764,8 +764,8 @@ func _on_end_turn() -> void:
 			var target_sprite = _sprite_for_unit(a.target)
 			if target_sprite:
 				spawn_damage_popup(target_sprite, dmg, crit, false)
-				if target_sprite is AnimatedFrames:
-					(target_sprite as AnimatedFrames).play_hit()
+				if target_sprite is AnimatedFramesScript:
+					(target_sprite as AnimatedFramesScript).play_hit()
 			
 			# Log any status effects that were applied
 			for status_log in res.get("status_logs", []):
@@ -836,7 +836,7 @@ func _update_ui() -> void:
 			active_mp_bar.max_value = current_hero.max_stats.get("MP",0)
 			active_mp_bar.value = current_hero.stats.get("MP",0)
 		if active_portrait:
-			active_portrait.texture = PortraitLoader.get_portrait_for(current_hero.name)
+			active_portrait.texture = PortraitLoaderScript.get_portrait_for(current_hero.name)
 	
 	_update_sprites()
 
