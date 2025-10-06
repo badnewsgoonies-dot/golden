@@ -194,6 +194,131 @@ func _ensure_overlay_scaffold() -> void:
 		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		vbox.add_child(sub)
 
+# === Action Buttons: Self-instantiating UI ===
+
+func _ensure_action_buttons() -> void:
+	# Check if buttons already exist
+	if btn_attack != null:
+		return  # UI already exists
+	
+	# Check if UI node exists
+	var ui_node = get_node_or_null("UI")
+	if ui_node == null:
+		ui_node = CanvasLayer.new()
+		ui_node.name = "UI"
+		add_child(ui_node)
+	
+	# Create HUD container
+	var hud = ui_node.get_node_or_null("HUD")
+	if hud == null:
+		hud = Control.new()
+		hud.name = "HUD"
+		hud.anchor_left = 0; hud.anchor_top = 0; hud.anchor_right = 1; hud.anchor_bottom = 1
+		hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ui_node.add_child(hud)
+	
+	# Create bottom right anchor for action buttons
+	var bottom_right = hud.get_node_or_null("BottomRightAnchor")
+	if bottom_right == null:
+		bottom_right = Control.new()
+		bottom_right.name = "BottomRightAnchor"
+		bottom_right.anchor_left = 1.0
+		bottom_right.anchor_top = 1.0
+		bottom_right.anchor_right = 1.0
+		bottom_right.anchor_bottom = 1.0
+		bottom_right.grow_horizontal = Control.GROW_DIRECTION_END
+		bottom_right.grow_vertical = Control.GROW_DIRECTION_END
+		bottom_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hud.add_child(bottom_right)
+	
+	# Create action panel
+	var action_panel = PanelContainer.new()
+	action_panel.name = "ActionPanel"
+	action_panel.position = Vector2(-420, -180)  # Position in bottom right
+	action_panel.custom_minimum_size = Vector2(400, 160)
+	bottom_right.add_child(action_panel)
+	
+	# Create margin container
+	var margin = MarginContainer.new()
+	margin.name = "ActionMargin"
+	margin.add_theme_constant_override("margin_left", 10)
+	margin.add_theme_constant_override("margin_right", 10)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	action_panel.add_child(margin)
+	
+	# Create VBox for buttons
+	var vbox = VBoxContainer.new()
+	vbox.name = "ActionVBox"
+	margin.add_child(vbox)
+	
+	# Create title label
+	var title = Label.new()
+	title.text = "Actions"
+	title.add_theme_font_size_override("font_size", 20)
+	vbox.add_child(title)
+	
+	# Create buttons container
+	var buttons_container = HBoxContainer.new()
+	buttons_container.name = "Buttons"
+	buttons_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_child(buttons_container)
+	
+	# Create action buttons
+	btn_attack = Button.new()
+	btn_attack.name = "Attack"
+	btn_attack.text = "Attack"
+	btn_attack.custom_minimum_size = Vector2(90, 40)
+	buttons_container.add_child(btn_attack)
+	
+	btn_defend = Button.new()
+	btn_defend.name = "Defend"
+	btn_defend.text = "Defend"
+	btn_defend.custom_minimum_size = Vector2(90, 40)
+	buttons_container.add_child(btn_defend)
+	
+	btn_spells = Button.new()
+	btn_spells.name = "Spells"
+	btn_spells.text = "Spells"
+	btn_spells.custom_minimum_size = Vector2(90, 40)
+	buttons_container.add_child(btn_spells)
+	
+	btn_items = Button.new()
+	btn_items.name = "Items"
+	btn_items.text = "Items"
+	btn_items.custom_minimum_size = Vector2(90, 40)
+	buttons_container.add_child(btn_items)
+	
+	# Create spell bubble (hidden by default)
+	spell_bubble = PanelContainer.new()
+	spell_bubble.name = "SpellBubble"
+	spell_bubble.visible = false
+	vbox.add_child(spell_bubble)
+	
+	var spell_margin = MarginContainer.new()
+	spell_margin.name = "Margin"
+	spell_margin.add_theme_constant_override("margin_left", 5)
+	spell_margin.add_theme_constant_override("margin_right", 5)
+	spell_margin.add_theme_constant_override("margin_top", 5)
+	spell_margin.add_theme_constant_override("margin_bottom", 5)
+	spell_bubble.add_child(spell_margin)
+	
+	# Create item bubble (hidden by default)
+	item_bubble = PanelContainer.new()
+	item_bubble.name = "ItemBubble"
+	item_bubble.visible = false
+	vbox.add_child(item_bubble)
+	
+	var item_margin = MarginContainer.new()
+	item_margin.name = "Margin"
+	item_margin.add_theme_constant_override("margin_left", 5)
+	item_margin.add_theme_constant_override("margin_right", 5)
+	item_margin.add_theme_constant_override("margin_top", 5)
+	item_margin.add_theme_constant_override("margin_bottom", 5)
+	item_bubble.add_child(item_margin)
+	
+	_log("Action buttons created successfully!")
+
 func _ready() -> void:
 	if !has_node("Stage"):
 		print("ERROR: BattleScene missing required Stage node!")
@@ -217,30 +342,50 @@ func _ready() -> void:
 	# 3) Build victory buttons (idempotent; early-return if overlay_vbox is null)
 	_create_post_battle_buttons()
 	
+	# 4) Ensure action buttons exist (create if missing)
+	_ensure_action_buttons()
+	
 	# Connect UI buttons
 	if btn_attack:
 		btn_attack.pressed.connect(_on_attack)
 		btn_attack.visible = true
+		_log("Attack button found and visible")
+	else:
+		_log("WARNING: Attack button NOT found!")
 	if btn_spells:
 		btn_spells.pressed.connect(_on_spells_pressed)
 		btn_spells.visible = true
+		_log("Spells button found and visible")
+	else:
+		_log("WARNING: Spells button NOT found!")
 	if btn_items:
 		btn_items.pressed.connect(_on_items_pressed)
 		btn_items.visible = true
+		_log("Items button found and visible")
+	else:
+		_log("WARNING: Items button NOT found!")
 	if btn_defend:
 		btn_defend.pressed.connect(_on_defend_pressed)
 		btn_defend.visible = true
+		_log("Defend button found and visible")
+	else:
+		_log("WARNING: Defend button NOT found!")
 	
 	# Ensure action panel and its containers are visible
 	var action_panel = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel")
 	if action_panel:
 		action_panel.visible = true
+		_log("ActionPanel found and visible")
 		var action_vbox = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox")
 		if action_vbox:
 			action_vbox.visible = true
+			_log("ActionVBox found and visible")
 		var buttons_container = get_node_or_null("UI/HUD/BottomRightAnchor/ActionPanel/ActionMargin/ActionVBox/Buttons")
 		if buttons_container:
 			buttons_container.visible = true
+			_log("Buttons container found and visible")
+	else:
+		_log("WARNING: ActionPanel NOT found - UI might not exist in scene!")
 	
 	if spell_bubble:
 		spell_bubble.visible = false
