@@ -28,7 +28,7 @@ const SpriteFactory = preload("res://art/SpriteFactory.gd")
 # --- CONSTANTS ---
 const BATTLE_SCENE_PATH = "res://scenes/BattleScene.tscn"
 const MAIN_MENU_SCENE_PATH = "res://scenes/Main.tscn"
-const EQUIPMENT_SCENE_PATH = "res://scenes/Equipment.tscn"
+const EQUIPMENT_SCENE_PATH = "res://scenes/EquipmentScreen.tscn"
 
 # --- UI NODE REFERENCES (nullable; populated at runtime) ---
 var hero_info_container: HBoxContainer = null
@@ -1026,6 +1026,7 @@ func _check_end() -> void:
 	
 	if enemies_alive.is_empty():
 		_log("\n🎉 VICTORY! All enemies defeated!")
+		_award_post_battle_equipment() # <-- ADDED
 		var gold_reward = 50 # Example gold reward
 		GameManager.gold += gold_reward
 		show_battle_result(true, 100, ["Goblin Ear", "Rusty Dagger"]) # Example XP and loot
@@ -1035,7 +1036,22 @@ func _check_end() -> void:
 		show_battle_result(false)
 		battle_finished = true
 
-func _update_ui() -> void:
+func _award_post_battle_equipment() -> void:
+	# Build list of equipment ids from DataRegistry.items
+	var options: Array[String] = []
+	for id in DataRegistry.items.keys():
+		var def = DataRegistry.items[id]
+		if def.has("slot") and def.slot in ["weapon","armor","accessory"]:
+			options.append(id)
+	if options.is_empty():
+		return
+	# Pick one simple deterministic choice for now (e.g., first or round-robin).
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var chosen_id := options[rng.randi() % options.size()]
+	RunManager.inventory[chosen_id] = int(RunManager.inventory.get(chosen_id, 0)) + 1
+	print("[Loot] Awarded equipment: ", chosen_id)
+	print("[Shop Preview] ", options.slice(0, 3))func _update_ui() -> void:
 	var current_hero: Unit = null
 	if current_acting_hero_index < heroes.size():
 		current_hero = heroes[current_acting_hero_index]
