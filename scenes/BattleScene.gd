@@ -123,6 +123,70 @@ var sfx_streams: Dictionary[String, AudioStream] = {}
 var spell_button_container: VBoxContainer = null
 var item_button_container: VBoxContainer = null
 
+# === Overlay & Victory UI: Self-instantiating scaffold ===
+
+func _ensure_overlay_scaffold() -> void:
+	# If polished overlay already exists, do nothing.
+	if get_node_or_null("Overlay/CenterContainer/VBoxContainer"):
+		return
+
+	# Create a CanvasLayer Overlay compatible with the polished path.
+	var overlay := get_node_or_null("Overlay") as CanvasLayer
+	if overlay == null:
+		overlay = CanvasLayer.new()
+		overlay.name = "Overlay"
+		overlay.layer = 100  # above gameplay
+		add_child(overlay)
+
+	# Fade layer
+	var fade := overlay.get_node_or_null("Fade") as ColorRect
+	if fade == null:
+		fade = ColorRect.new()
+		fade.name = "Fade"
+		fade.color = Color(0, 0, 0, 0)  # we'll tween alpha later
+		fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		fade.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		fade.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		fade.anchor_left = 0; fade.anchor_top = 0; fade.anchor_right = 1; fade.anchor_bottom = 1
+		overlay.add_child(fade)
+
+	# Centered VBox for title, subtitle, and victory buttons
+	var cc := overlay.get_node_or_null("CenterContainer") as CenterContainer
+	if cc == null:
+		cc = CenterContainer.new()
+		cc.name = "CenterContainer"
+		cc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		cc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		cc.anchor_left = 0; cc.anchor_top = 0; cc.anchor_right = 1; cc.anchor_bottom = 1
+		overlay.add_child(cc)
+
+	var vbox := cc.get_node_or_null("VBoxContainer") as VBoxContainer
+	if vbox == null:
+		vbox = VBoxContainer.new()
+		vbox.name = "VBoxContainer"
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		vbox.grow_vertical = Control.GROW_DIRECTION_BOTH
+		vbox.custom_minimum_size = Vector2(400, 200)
+		cc.add_child(vbox)
+
+	# Title & subtitle labels (ensure exact names the script expects)
+	if vbox.get_node_or_null("Label") == null:
+		var title := Label.new()
+		title.name = "Label"
+		title.text = "Victory!"
+		title.add_theme_font_size_override("font_size", 42)
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(title)
+
+	if vbox.get_node_or_null("Label2") == null:
+		var sub := Label.new()
+		sub.name = "Label2"
+		sub.text = "Loot & XP awarded"
+		sub.add_theme_font_size_override("font_size", 18)
+		sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		vbox.add_child(sub)
+
 func _ready() -> void:
 	if !has_node("Stage"):
 		print("ERROR: BattleScene missing required Stage node!")
@@ -134,7 +198,16 @@ func _ready() -> void:
 	target_selector.target_selected.connect(_on_target_selected)
 	target_selector.selection_cancelled.connect(_on_selection_cancelled)
 	
-	# --- Create Post-Battle UI ---
+	# 1) Make sure an overlay exists (creates one if missing)
+	_ensure_overlay_scaffold()
+
+	# 2) Resolve references now that an overlay is guaranteed to exist
+	overlay_fade = get_node_or_null("Overlay/Fade")
+	overlay_title = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label")
+	overlay_subtitle = get_node_or_null("Overlay/CenterContainer/VBoxContainer/Label2")
+	overlay_vbox = get_node_or_null("Overlay/CenterContainer/VBoxContainer")
+
+	# 3) Build victory buttons (idempotent; early-return if overlay_vbox is null)
 	_create_post_battle_buttons()
 	
 	# Connect UI buttons
@@ -275,7 +348,9 @@ func _ready() -> void:
 # NEW: Create and configure the post-battle buttons programmatically.
 func _create_post_battle_buttons() -> void:
 	if overlay_vbox == null:
-		return  # keep as-is; we'll show a fallback elsewhere when needed
+		return
+	if victory_buttons_container:  # already built
+		return
 	
 	# Create container for victory buttons
 	victory_buttons_container = HBoxContainer.new()
@@ -525,21 +600,32 @@ func show_battle_result(victory: bool) -> void:
 	
 	_log("Battle finished. Victory: %s" % victory)
 	
+	# Make sure our overlay + buttons exist even in prototype
+	_ensure_overlay_scaffold()
+	if victory_buttons_container == null:
+		_create_post_battle_buttons()
+	
 	# Standard UI flow
 	overlay_title.text = "Victory!" if victory else "Defeat"
 	overlay_subtitle.text = "You gained 100 EXP and 50 Gold." if victory else "Your journey ends here."
 	
-	# Show/hide buttons based on victory status
-	if victory_buttons_container:
-		victory_buttons_container.visible = victory
-	if btn_next_battle:
-		btn_next_battle.visible = victory
-	if btn_shop:
-		btn_shop.visible = victory and _scene_exists(RunManager.SHOP_SCENE_PATH)
-	if btn_equipment:
-		btn_equipment.visible = victory and _scene_exists(RunManager.EQUIPMENT_SCENE_PATH)
-	if btn_return_to_main:
-		btn_return_to_main.visible = true # Always show this
+	# Toggle which controls to show
+	if overlay_vbox:
+		# hide all first
+		if victory_buttons_container: victory_buttons_container.visible = false
+		if btn_next_battle: btn_next_battle.visible = false
+		if btn_shop: btn_shop.visible = false
+		if btn_equipment: btn_equipment.visible = false
+		if btn_return_to_main: btn_return_to_main.visible = false
+
+		# show relevant set
+		if victory:
+			if victory_buttons_container: victory_buttons_container.visible = true
+			if btn_next_battle: btn_next_battle.visible = true
+			if btn_shop: btn_shop.visible = true  # allowed even if scene may be missing (handler guards)
+			if btn_equipment: btn_equipment.visible = true
+		else:
+			if btn_return_to_main: btn_return_to_main.visible = true
 	
 	# Fade in the overlay
 	var tween := create_tween()
